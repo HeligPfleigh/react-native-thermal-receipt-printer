@@ -19,4 +19,13 @@ public class RNThermalReceiptPrinterModule extends ReactContextBaseJavaModule {
   public String getName() {
     return "RNThermalReceiptPrinter";
   }
+
+  @ReactMethod
+  public void greetUserWithPromises(String name, Boolean isAdmin, Promise promise) {
+      System.out.println("User Name: " + name + ", Administrator: " + (isAdmin ? "Yes" : "No"));
+
+      String greeting = "Welcome " + name + ", you " + (isAdmin ? "are" : "are not") + " an administrator";
+
+      promise.resolve(greeting);
+  }
 }
