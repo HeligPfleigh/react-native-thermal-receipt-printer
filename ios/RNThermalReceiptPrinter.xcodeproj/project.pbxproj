@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2248FA1822AE5CDD0015571C /* RNBLEPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */; };
 		22BC54C9229E811F006DE50F /* libPrinterSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BC54C8229E811F006DE50F /* libPrinterSDK.a */; };
 		B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */; };
 /* End PBXBuildFile section */
@@ -25,6 +26,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNThermalReceiptPrinter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNThermalReceiptPrinter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2248FA1622AE5CB40015571C /* RNBLEPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNBLEPrinter.h; sourceTree = "<group>"; };
+		2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNBLEPrinter.m; sourceTree = "<group>"; };
 		22BC54C6229E80D8006DE50F /* PrinterSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrinterSDK; sourceTree = "<group>"; };
 		22BC54C8229E811F006DE50F /* libPrinterSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPrinterSDK.a; path = PrinterSDK/libPrinterSDK.a; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RNThermalReceiptPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNThermalReceiptPrinter.h; sourceTree = "<group>"; };
@@ -62,6 +65,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */,
+				2248FA1622AE5CB40015571C /* RNBLEPrinter.h */,
 				22BC54C6229E80D8006DE50F /* PrinterSDK */,
 				B3E7B5881CC2AC0600A0062D /* RNThermalReceiptPrinter.h */,
 				B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */,
@@ -127,6 +132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2248FA1822AE5CDD0015571C /* RNBLEPrinter.m in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
