@@ -1,5 +1,6 @@
 
 #import "RNThermalReceiptPrinter.h"
+#import "PrinterSDK.h"
 
 @implementation RNThermalReceiptPrinter
 
@@ -14,15 +15,40 @@ RCT_EXPORT_METHOD(greetUserWithPromises:(NSString *)name
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
   
-  NSLog(@"User Name: %@ , Administrator: %@", name, isAdmin ? @"Yes" : @"No");
+//   NSLog(@"User Name: %@ , Administrator: %@", name, isAdmin ? @"Yes" : @"No");
   
-  NSString *greeting = [NSString stringWithFormat:@"Welcome %@, you %@ an administrator",
-                        name, isAdmin ? @"are" : @"are not"];
-  
-  
-  resolve(@[greeting]);
-  
+//   NSString *greeting = [NSString stringWithFormat:@"Welcome %@, you %@ an administrator",
+//                         name, isAdmin ? @"are" : @"are not"];
+
+//   resolve(@[greeting]);
+    NSMutableArray* _printerArray;
+    [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){
+        if (nil == _printerArray)
+        {
+            _printerArray = [[NSMutableArray alloc] initWithCapacity:1];
+        }
+        
+        [_printerArray addObject:printer];
+    }]
+
+    resolve(@[_printerArray]);
+
+}
+
+RCT_EXPORT_METHOD(scanPrinter:resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    __block NSMutableArray* _printerArray;
+    [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){
+        if (nil == _printerArray)
+        {
+            _printerArray = [[NSMutableArray alloc] initWithCapacity:1];
+        }
+        
+        [_printerArray addObject:printer];
+    }]
+
+    resolve(@[_printerArray]);
+    
 }
 
 @end
-  

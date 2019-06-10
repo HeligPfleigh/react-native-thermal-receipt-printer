@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22BC54C9229E811F006DE50F /* libPrinterSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BC54C8229E811F006DE50F /* libPrinterSDK.a */; };
 		B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */; };
 /* End PBXBuildFile section */
 
@@ -24,6 +25,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNThermalReceiptPrinter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNThermalReceiptPrinter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		22BC54C6229E80D8006DE50F /* PrinterSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrinterSDK; sourceTree = "<group>"; };
+		22BC54C8229E811F006DE50F /* libPrinterSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPrinterSDK.a; path = PrinterSDK/libPrinterSDK.a; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RNThermalReceiptPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNThermalReceiptPrinter.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNThermalReceiptPrinter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -33,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22BC54C9229E811F006DE50F /* libPrinterSDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,12 +51,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		22BC54C7229E811F006DE50F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				22BC54C8229E811F006DE50F /* libPrinterSDK.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				22BC54C6229E80D8006DE50F /* PrinterSDK */,
 				B3E7B5881CC2AC0600A0062D /* RNThermalReceiptPrinter.h */,
 				B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				22BC54C7229E811F006DE50F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -95,6 +109,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -204,12 +219,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-				"$(inherited)",
+					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
+					"$(PROJECT_DIR)/PrinterSDK",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/PrinterSDK",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNThermalReceiptPrinter;
 				SKIP_INSTALL = YES;
@@ -224,8 +243,12 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
+					"$(PROJECT_DIR)/PrinterSDK",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/PrinterSDK",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNThermalReceiptPrinter;
 				SKIP_INSTALL = YES;
