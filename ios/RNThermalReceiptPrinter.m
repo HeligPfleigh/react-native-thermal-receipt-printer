@@ -14,9 +14,9 @@ RCT_EXPORT_METHOD(greetUserWithPromises:(NSString *)name
                   isAdmin:(BOOL *)isAdmin
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  
+
   NSLog(@"User Name: %@ , Administrator: %@", name, isAdmin ? @"Yes" : @"No");
-  
+
   NSString *greeting = [NSString stringWithFormat:@"Welcome %@, you %@ an administrator",
                         name, isAdmin ? @"are" : @"are not"];
 
@@ -24,20 +24,17 @@ RCT_EXPORT_METHOD(greetUserWithPromises:(NSString *)name
 
 }
 
-RCT_EXPORT_METHOD(scanPrinter:resolver: (RCTPromiseResolveBlock)resolve
+RCT_REMAP_METHOD(scanBLEPrinter,
+                  resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    __block NSMutableArray* _printerArray;
+    NSMutableArray* _printerArray = [NSMutableArray new];
+
     [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){
-        if (nil == _printerArray)
-        {
-            _printerArray = [[NSMutableArray alloc] initWithCapacity:1];
-        }
-        
         [_printerArray addObject:printer];
     }];
 
     resolve(@[_printerArray]);
-    
+
 }
 
 @end
