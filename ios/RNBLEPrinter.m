@@ -23,6 +23,7 @@ RCT_REMAP_METHOD(init,
                  init_resolver:(RCTPromiseResolveBlock)resolve
                  init_rejecter:(RCTPromiseRejectBlock)reject) {
     _printerArray = [NSMutableArray new];
+    m_printer = [[NSObject alloc] init];
     resolve(@"Init successful");
 }
 
@@ -31,7 +32,7 @@ RCT_REMAP_METHOD(getDeviceList,
                  get_device_list_rejecter:(RCTPromiseRejectBlock)reject) {
     if (!_printerArray) {
         NSError *error = nil;
-        reject(@"no_events", @"Must call init function first", error);
+        reject(nil, @"Must call init function first", error);
     } else {
         [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){
             [_printerArray addObject:printer];
@@ -49,21 +50,50 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
                  connect_printer_resolver:(RCTPromiseResolveBlock)resolve
                  connect_printer_rejecter:(RCTPromiseRejectBlock)reject) {
     // TODO
-    resolve(@"TODO");
+    __block BOOL found = NO;
+    __block Printer* selectedPrinter = nil;
+    [_printerArray enumerateObjectsUsingBlock: ^(id obj, NSUInteger idx, BOOL *stop){
+        selectedPrinter = (Printer *)obj;
+        if ([inner_mac_address isEqualToString:(selectedPrinter.UUIDString)]) {
+            found = YES;
+            *stop = YES;
+        }
+    }];
+    
+    if (found) {
+        [[PrinterSDK defaultPrinterSDK] connectBT:selectedPrinter];
+        m_printer = selectedPrinter;
+        resolve([NSString stringWithFormat:@"Connected to printer %@", selectedPrinter.name]);
+    } else {
+        reject(nil, [NSString stringWithFormat:@"Can't connect to printer %@", inner_mac_address], nil);
+    }
+    
 }
 
-RCT_EXPORT_METHOD(printRawData:(NSString *)text
+RCT_EXPORT_METHOD(printText:(NSString *)text
                  print_data_resolver:(RCTPromiseResolveBlock)resolve
                  print_data_rejecter:(RCTPromiseRejectBlock)reject) {
     // TODO
-    resolve(@"TODO");
+    if (m_printer) {
+        [[PrinterSDK defaultPrinterSDK] printTestPaper];
+        resolve(@"Print successful!!!");
+    } else {
+        reject(nil, @"Can't connect to printer", nil);
+    }
+
 }
 
 RCT_REMAP_METHOD(closeConn,
                  close_connect_resolver:(RCTPromiseResolveBlock)resolve
                  close_connect_rejecter:(RCTPromiseRejectBlock)reject) {
-    [[PrinterSDK defaultPrinterSDK] disconnect];
-    resolve(@"Successful disconnect");
+    if (m_printer) {
+        [[PrinterSDK defaultPrinterSDK] disconnect];
+        m_printer = nil;
+        resolve(@"Successful disconnect");
+    } else {
+        reject(nil, @"Can't disconnect to printer", nil);
+    }
+
 }
 
 @end
