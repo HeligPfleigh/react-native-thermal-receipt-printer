@@ -24,6 +24,8 @@ RCT_REMAP_METHOD(init,
                  init_rejecter:(RCTPromiseRejectBlock)reject) {
     _printerArray = [NSMutableArray new];
     m_printer = [[NSObject alloc] init];
+    // tricky one, should be replaced later API MISUSE: <CBCentralManager> can only accept this command while in the powered on state
+    [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){}];
     resolve(@"Init successful");
 }
 
@@ -70,12 +72,23 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
     
 }
 
-RCT_EXPORT_METHOD(printText:(NSString *)text
+RCT_EXPORT_METHOD(printText:(NSString *)text printerOptions:(NSDictionary *)options
                  print_data_resolver:(RCTPromiseResolveBlock)resolve
                  print_data_rejecter:(RCTPromiseRejectBlock)reject) {
-    // TODO
+    NSNumber* fontSizePtr = [options valueForKey:@"fontSize"];
+    NSNumber* beepPtr = [options valueForKey:@"beep"];
+    NSNumber* cutPtr = [options valueForKey:@"cut"];
+    
+    NSInteger fontSize = [fontSizePtr intValue] || 1;
+    BOOL beep = (BOOL)[beepPtr intValue];
+    BOOL cut = (BOOL)[cutPtr intValue];
+
     if (m_printer) {
-        [[PrinterSDK defaultPrinterSDK] printTestPaper];
+        [[PrinterSDK defaultPrinterSDK] setFontSizeMultiple:(fontSize)];
+        // [[PrinterSDK defaultPrinterSDK] printTestPaper];
+        [[PrinterSDK defaultPrinterSDK] printText:text];
+        beep ? [[PrinterSDK defaultPrinterSDK] beep] : nil;
+        cut ? [[PrinterSDK defaultPrinterSDK] cutPaper] : nil;
         resolve(@"Print successful!!!");
     } else {
         reject(nil, @"Can't connect to printer", nil);
