@@ -15,8 +15,9 @@
 #import <React/RCTBridgeModule.h>
 #endif
 
-@interface RNBLEPrinter : NSObject <RCTBridgeModule>
-
+@interface RNBLEPrinter : NSObject <RCTBridgeModule>{
+    NSMutableArray* _printerArray;
+}
 @end
 
 

@@ -56,8 +56,8 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)base64
 RCT_REMAP_METHOD(closeConn,
                  close_connect_resolver:(RCTPromiseResolveBlock)resolve
                  close_connect_rejecter:(RCTPromiseRejectBlock)reject) {
-    // TODO
-    resolve(@"TODO");
+    [[PrinterSDK defaultPrinterSDK] disconnect];
+    resolve(@"Successful");
 }
 
 @end
