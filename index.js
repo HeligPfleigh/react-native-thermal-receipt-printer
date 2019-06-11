@@ -1,9 +1,10 @@
 
 import { NativeModules } from 'react-native';
 
-const { RNThermalReceiptPrinter, RNBLEPrinter } = NativeModules;
+const { RNThermalReceiptPrinter, RNBLEPrinter, RNNetPrinter } = NativeModules;
 
 export {
     RNThermalReceiptPrinter,
-    RNBLEPrinter
+    RNBLEPrinter,
+    RNNetPrinter,
 }
