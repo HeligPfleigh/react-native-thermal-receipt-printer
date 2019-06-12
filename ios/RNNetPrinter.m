@@ -30,7 +30,7 @@ RCT_REMAP_METHOD(getDeviceList,
                  get_device_list_resolver:(RCTPromiseResolveBlock)resolve
                  get_device_list_rejecter:(RCTPromiseRejectBlock)reject) {
     // TODO
-    NSMutableArray printerArray = [NSMutableArray new];
+    NSMutableArray *printerArray = [NSMutableArray new];
     resolve(@[printerArray]);
 }
 

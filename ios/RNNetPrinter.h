@@ -5,7 +5,9 @@
 #import <React/RCTBridgeModule.h>
 #endif
 
-@interface RNNetPrinter : NSObject <RCTBridgeModule>
+@interface RNNetPrinter : NSObject <RCTBridgeModule>{
+    NSString *connected_ip;
+}
 
 @end
 
