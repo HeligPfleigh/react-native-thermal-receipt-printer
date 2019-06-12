@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2248FA1822AE5CDD0015571C /* RNBLEPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */; };
+		225666E122B0ABD800EF323A /* RNUSBPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 225666E022B0ABD800EF323A /* RNUSBPrinter.m */; };
 		22BC54C9229E811F006DE50F /* libPrinterSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BC54C8229E811F006DE50F /* libPrinterSDK.a */; };
 		22F425A422AFB2A400673AFC /* RNNetPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F425A322AFB2A400673AFC /* RNNetPrinter.m */; };
 		B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */; };
@@ -29,6 +30,8 @@
 		134814201AA4EA6300B7C361 /* libRNThermalReceiptPrinter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNThermalReceiptPrinter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2248FA1622AE5CB40015571C /* RNBLEPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNBLEPrinter.h; sourceTree = "<group>"; };
 		2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNBLEPrinter.m; sourceTree = "<group>"; };
+		225666E022B0ABD800EF323A /* RNUSBPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNUSBPrinter.m; sourceTree = "<group>"; };
+		225666E222B0ABE900EF323A /* RNUSBPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNUSBPrinter.h; sourceTree = "<group>"; };
 		22BC54C6229E80D8006DE50F /* PrinterSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrinterSDK; sourceTree = "<group>"; };
 		22BC54C8229E811F006DE50F /* libPrinterSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPrinterSDK.a; path = PrinterSDK/libPrinterSDK.a; sourceTree = "<group>"; };
 		22F425A222AFB28F00673AFC /* RNNetPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNetPrinter.h; sourceTree = "<group>"; };
@@ -68,6 +71,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				225666E222B0ABE900EF323A /* RNUSBPrinter.h */,
+				225666E022B0ABD800EF323A /* RNUSBPrinter.m */,
 				22F425A322AFB2A400673AFC /* RNNetPrinter.m */,
 				22F425A222AFB28F00673AFC /* RNNetPrinter.h */,
 				2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */,
@@ -140,6 +145,7 @@
 				22F425A422AFB2A400673AFC /* RNNetPrinter.m in Sources */,
 				2248FA1822AE5CDD0015571C /* RNBLEPrinter.m in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */,
+				225666E122B0ABD800EF323A /* RNUSBPrinter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
