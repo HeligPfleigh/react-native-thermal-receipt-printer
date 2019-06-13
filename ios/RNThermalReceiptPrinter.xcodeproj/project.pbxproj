@@ -11,7 +11,6 @@
 		225666E122B0ABD800EF323A /* RNUSBPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 225666E022B0ABD800EF323A /* RNUSBPrinter.m */; };
 		22BC54C9229E811F006DE50F /* libPrinterSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BC54C8229E811F006DE50F /* libPrinterSDK.a */; };
 		22F425A422AFB2A400673AFC /* RNNetPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F425A322AFB2A400673AFC /* RNNetPrinter.m */; };
-		B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,8 +35,6 @@
 		22BC54C8229E811F006DE50F /* libPrinterSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPrinterSDK.a; path = PrinterSDK/libPrinterSDK.a; sourceTree = "<group>"; };
 		22F425A222AFB28F00673AFC /* RNNetPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNetPrinter.h; sourceTree = "<group>"; };
 		22F425A322AFB2A400673AFC /* RNNetPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNetPrinter.m; sourceTree = "<group>"; };
-		B3E7B5881CC2AC0600A0062D /* RNThermalReceiptPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNThermalReceiptPrinter.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNThermalReceiptPrinter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,8 +75,6 @@
 				2248FA1722AE5CDD0015571C /* RNBLEPrinter.m */,
 				2248FA1622AE5CB40015571C /* RNBLEPrinter.h */,
 				22BC54C6229E80D8006DE50F /* PrinterSDK */,
-				B3E7B5881CC2AC0600A0062D /* RNThermalReceiptPrinter.h */,
-				B3E7B5891CC2AC0600A0062D /* RNThermalReceiptPrinter.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 				22BC54C7229E811F006DE50F /* Frameworks */,
 			);
@@ -144,7 +139,6 @@
 			files = (
 				22F425A422AFB2A400673AFC /* RNNetPrinter.m in Sources */,
 				2248FA1822AE5CDD0015571C /* RNBLEPrinter.m in Sources */,
-				B3E7B58A1CC2AC0600A0062D /* RNThermalReceiptPrinter.m in Sources */,
 				225666E122B0ABD800EF323A /* RNUSBPrinter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
