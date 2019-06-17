@@ -6,10 +6,10 @@
 //  Copyright © 2019 Facebook. All rights reserved.
 //
 
-#import "RNNetPrinter.h"
+#import "RNUSBPrinter.h"
 #import "PrinterSDK.h"
 
-@implementation RNNetPrinter
+@implementation RNUSBPrinter
 
 - (dispatch_queue_t)methodQueue
 {
@@ -17,39 +17,36 @@
 }
 RCT_EXPORT_MODULE()
 
-RCT_REMAP_METHOD(init,
-                 init_resolver:(RCTPromiseResolveBlock)resolve
-                 init_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(init:(RCTResponseSenderBlock)successCallback
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     // TODO
-    resolve(@"Init successful");
+    successCallback(@[@"Init successful"]);
 }
 
-RCT_REMAP_METHOD(getDeviceList,
-                 get_device_list_resolver:(RCTPromiseResolveBlock)resolve
-                 get_device_list_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     // TODO
     NSMutableArray *printerArray = [NSMutableArray new];
-    resolve(@[printerArray]);
+    successCallback(@[printerArray]);
 }
 
-RCT_EXPORT_METHOD(connectPrinter:(NSInteger)vendorId withProductID:(NSInteger)productId                               connect_printer_resolver:(RCTPromiseResolveBlock)resolve
-                  connect_printer_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(connectPrinter:(NSInteger)vendorId
+                  withProductID:(NSInteger)productId
+                  success:(RCTResponseSenderBlock)successCallback
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     // TODO
-    resolve(@"Connect successful");
+    errorCallback(@[@"This function is not supported"]);
 }
 
-RCT_EXPORT_METHOD(printText:(NSString *)text printerOptions:(NSDictionary *)options
-                  print_data_resolver:(RCTPromiseResolveBlock)resolve
-                  print_data_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(printRawData:(NSString *)text
+                  printerOptions:(NSDictionary *)options
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     // TODO
-    resolve(@"Print successful");
+    errorCallback(@[@"This function is not supported"]);
 }
 
-RCT_REMAP_METHOD(closeConn,
-                 close_connect_resolver:(RCTPromiseResolveBlock)resolve
-                 close_connect_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(closeConn) {
     // TODO
-    resolve(@"Successful disconnect");
 }
 
 @end

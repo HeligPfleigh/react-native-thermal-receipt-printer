@@ -5,6 +5,7 @@
 //  Copyright © 2019 Facebook. All rights reserved.
 //
 
+
 #import <Foundation/Foundation.h>
 
 #import "RNBLEPrinter.h"
@@ -19,23 +20,27 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_REMAP_METHOD(init,
-                 init_resolver:(RCTPromiseResolveBlock)resolve
-                 init_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(init:(RCTResponseSenderBlock)successCallback
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
         _printerArray = [NSMutableArray new];
         m_printer = [[NSObject alloc] init];
-        // tricky one, should be replaced later API MISUSE: <CBCentralManager> can only accept this command while in the powered on state
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNetPrinterConnectedNotification:) name:@"NetPrinterConnected" object:nil];
+        // API MISUSE: <CBCentralManager> can only accept this command while in the powered on state
         [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){}];
-        resolve(@"Init successful");
+        successCallback(@[@"Init successful"]);
     } @catch (NSException *exception) {
-        reject(nil, exception.reason, nil);
+        errorCallback(@[@"No bluetooth adapter available"]);
     }
 }
 
-RCT_REMAP_METHOD(getDeviceList,
-                 get_device_list_resolver:(RCTPromiseResolveBlock)resolve
-                 get_device_list_rejecter:(RCTPromiseRejectBlock)reject) {
+- (void)handleNetPrinterConnectedNotification:(NSNotification*)notification
+{
+    m_printer = nil;
+}
+
+RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
         !_printerArray ? [NSException raise:@"Null pointer exception" format:@"Must call init function first"] : nil;
         [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){
@@ -45,16 +50,17 @@ RCT_REMAP_METHOD(getDeviceList,
                 NSDictionary *dict = @{ @"device_name" : printer.name, @"inner_mac_address" : printer.UUIDString};
                 [mapped addObject:dict];
             }];
-            resolve(@[mapped]);
+            NSMutableArray *uniquearray = (NSMutableArray *)[[NSSet setWithArray:mapped] allObjects];;
+            successCallback(@[uniquearray]);
         }];
     } @catch (NSException *exception) {
-        reject(nil, exception.reason, nil);
+        errorCallback(@[exception.reason]);
     }
 }
 
 RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
-                 connect_printer_resolver:(RCTPromiseResolveBlock)resolve
-                 connect_printer_rejecter:(RCTPromiseRejectBlock)reject) {
+                  success:(RCTResponseSenderBlock)successCallback
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
         __block BOOL found = NO;
         __block Printer* selectedPrinter = nil;
@@ -68,50 +74,54 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
         
         if (found) {
             [[PrinterSDK defaultPrinterSDK] connectBT:selectedPrinter];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"BLEPrinterConnected" object:nil];
             m_printer = selectedPrinter;
-            resolve([NSString stringWithFormat:@"Connected to printer %@", selectedPrinter.name]);
+            successCallback(@[[NSString stringWithFormat:@"Connected to printer %@", selectedPrinter.name]]);
         } else {
-            [NSException raise:@"Invalid connection" format:@"Can't connect to printer %@", inner_mac_address];
+            [NSException raise:@"Invalid connection" format:@"connectPrinter: Can't connect to printer %@", inner_mac_address];
         }
     } @catch (NSException *exception) {
-        reject(nil, exception.reason, nil);
+        errorCallback(@[exception.reason]);
     }
 }
 
-RCT_EXPORT_METHOD(printText:(NSString *)text printerOptions:(NSDictionary *)options
-                 print_data_resolver:(RCTPromiseResolveBlock)resolve
-                 print_data_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(printRawData:(NSString *)text
+                  printerOptions:(NSDictionary *)options
+                  fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
-        !m_printer ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
-        NSNumber* fontSizePtr = [options valueForKey:@"fontSize"];
+        !m_printer ? [NSException raise:@"Invalid connection" format:@"printRawData: Can't connect to printer"] : nil;
+        
+        NSNumber* boldPtr = [options valueForKey:@"bold"];
+        NSNumber* alignCenterPtr = [options valueForKey:@"center"];
+
+        BOOL bold = (BOOL)[boldPtr intValue];
+        BOOL alignCenter = (BOOL)[alignCenterPtr intValue];
+
+        bold ? [[PrinterSDK defaultPrinterSDK] sendHex:@"1B2108"] : [[PrinterSDK defaultPrinterSDK] sendHex:@"1B2100"];
+        alignCenter ? [[PrinterSDK defaultPrinterSDK] sendHex:@"1B6102"] : [[PrinterSDK defaultPrinterSDK] sendHex:@"1B6101"];
+        [[PrinterSDK defaultPrinterSDK] printText:text];
+        
         NSNumber* beepPtr = [options valueForKey:@"beep"];
         NSNumber* cutPtr = [options valueForKey:@"cut"];
         
-        NSInteger fontSize = [fontSizePtr intValue] || 1;
         BOOL beep = (BOOL)[beepPtr intValue];
         BOOL cut = (BOOL)[cutPtr intValue];
         
-        [[PrinterSDK defaultPrinterSDK] setFontSizeMultiple:(fontSize)];
-        // [[PrinterSDK defaultPrinterSDK] printTestPaper];
-        [[PrinterSDK defaultPrinterSDK] printText:text];
         beep ? [[PrinterSDK defaultPrinterSDK] beep] : nil;
         cut ? [[PrinterSDK defaultPrinterSDK] cutPaper] : nil;
-        resolve(@"Print successful!!!");
+        
     } @catch (NSException *exception) {
-        reject(nil, exception.reason, nil);
+        errorCallback(@[exception.reason]);
     }
 }
 
-RCT_REMAP_METHOD(closeConn,
-                 close_connect_resolver:(RCTPromiseResolveBlock)resolve
-                 close_connect_rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(closeConn) {
     @try {
-        !m_printer ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
+        !m_printer ? [NSException raise:@"Invalid connection" format:@"closeConn: Can't connect to printer"] : nil;
         [[PrinterSDK defaultPrinterSDK] disconnect];
         m_printer = nil;
-        resolve(@"Successful disconnect");
     } @catch (NSException *exception) {
-        reject(nil, exception.reason, nil);
+        NSLog(@"%@", exception.reason);
     }
 }
 
