@@ -1,11 +1,11 @@
 # react-native-printer
-Fork of react-native-printer and add implement for auto connect printer with usb
-A React Native Library to support USB/BLE/Net printer for Android platform 
+Fork of `react-native-printer` and add implement for auto connect printer with usb
+A React Native Library to support USB/BLE/Net printer
 
 ## Installation
 
 ```
-npm install react-native-printer --save
+npm install "git+https://github.com/HeligPfleigh/react-native-thermal-receipt-printer" --save
 
 ```
 
@@ -30,7 +30,7 @@ USBPrinter.printBill("<C>这是一段打印测试文字</C>")
 
 ## Example
 
-### USBPrinter 
+### USBPrinter (only support android)
 
 Printer structure:
 ```
