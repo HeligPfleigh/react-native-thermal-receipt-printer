@@ -1,53 +1,260 @@
+# react-native-printer
+Fork of react-native-printer and add implement for auto connect printer with usb
+A React Native Library to support USB/BLE/Net printer for Android platform 
 
-# react-native-thermal-receipt-printer
+## Installation
 
-## Getting started
+```
+npm install react-native-printer --save
 
-`$ npm install react-native-thermal-receipt-printer --save`
+```
 
-### Mostly automatic installation
+## Integrate module
 
-`$ react-native link react-native-thermal-receipt-printer`
+To integrate `react-native-printer` with the rest of your react app just execute:
 
-### Manual installation
+```
+react-native link react-native-printer
 
-
-#### iOS
-
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `react-native-thermal-receipt-printer` and add `RNThermalReceiptPrinter.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libRNThermalReceiptPrinter.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`)<
-
-#### Android
-
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.reactlibrary.RNThermalReceiptPrinterPackage;` to the imports at the top of the file
-  - Add `new RNThermalReceiptPrinterPackage()` to the list returned by the `getPackages()` method
-2. Append the following lines to `android/settings.gradle`:
-  	```
-  	include ':react-native-thermal-receipt-printer'
-  	project(':react-native-thermal-receipt-printer').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-thermal-receipt-printer/android')
-  	```
-3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-  	```
-      compile project(':react-native-thermal-receipt-printer')
-  	```
-
-#### Windows
-[Read it! :D](https://github.com/ReactWindows/react-native)
-
-1. In Visual Studio add the `RNThermalReceiptPrinter.sln` in `node_modules/react-native-thermal-receipt-printer/windows/RNThermalReceiptPrinter.sln` folder to their solution, reference from their app.
-2. Open up your `MainPage.cs` app
-  - Add `using Thermal.Receipt.Printer.RNThermalReceiptPrinter;` to the usings at the top of the file
-  - Add `new RNThermalReceiptPrinterPackage()` to the `List<IReactPackage>` returned by the `Packages` method
-
+```
 
 ## Usage
-```javascript
-import RNThermalReceiptPrinter from 'react-native-thermal-receipt-printer';
 
-// TODO: What to do with the module?
-RNThermalReceiptPrinter;
+```javascript
+import { USBPrinter, NetPrinter, BLEPrinter } from 'react-native-printer';
+
+USBPrinter.printText('<C>这是一个测试打印</C>')
+USBPrinter.printBill("<C>这是一段打印测试文字</C>")
+
 ```
-  
+
+## Example
+
+### USBPrinter 
+
+Printer structure:
+```
+{
+  device_name: '/usb/lp1',
+  vendor_id: 1155,
+  product_id: 22304,
+}
+```
+
+
+```javascript
+
+  componentDidMount = () => {
+    if(Platform.OS == 'android'){
+      USBPrinter.init().then(()=> {
+        //list printers
+        USBPrinter.getDeviceList()
+          .then(printers => {
+            this.setState(Object.assign({}, this.state, {printers: printers}))
+          });
+
+        //connect printer
+        vendorID = 1155
+        productId = 22304
+        USBPrinter.connectPrinter(vendorID, productId).then(
+          (printer) => this.setState(Object.assign({}, this.state, {currentPrinter: printer})), 
+          error => console.warn(error))
+      })
+    }
+  }
+
+  printTextTest = () => {
+    if(this.state.currentPrinter) {
+      USBPrinter.printText("<C>这是一段打印测试文字</C>\n");
+    }else{
+      console.log("没有设置打印机")
+    }
+    
+  }
+
+  printBillTest = () => {
+    if(this.state.currentPrinter) {
+      USBPrinter.printBill("<C>这是一段打印测试文字</C>");
+    }else{
+      console.log("没有设置打印机")
+    }
+  }
+
+  ...
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {
+          this.state.printers.map(printer => (
+            <TouchableOpacity key={printer.device_id} onPress={(printer) => this._connectPrinter(printer.vendor_id, printer.product_id)}>
+              {`device_name: ${printer.device_name}, device_id: ${printer.device_id}, vendor_id: ${printer.vendor_id}, product_id: ${printer.product_id}`}
+            </TouchableOpacity>
+            ))
+        }
+        <TouchableOpacity onPress={() => this.printTextTest()}>
+          <Text> Print Text </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.printBillTest()}>
+          <Text> Print Bill Text </Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  ...
+
+```
+
+### BLEPrinter 
+
+Printer structure:
+```
+{
+  device_name: '内部打印机',
+  inner_mac_address: 'XXXXX-XXXXXXXX',
+}
+```
+
+
+```javascript
+
+  componentDidMount = () => {
+    if(Platform.OS == 'android'){
+      USBPrinter.init().then(()=> {
+        //list printers
+        USBPrinter.getDeviceList()
+          .then(printers => {
+            this.setState(Object.assign({}, this.state, {printers: printers}))
+          });
+
+        
+      })
+    }
+  }
+
+  _connectPrinter => (inner_mac_address) => {
+    if(Platform.OS == 'android'){
+      //connect printer
+      USBPrinter.connectPrinter(inner_mac_address).then(
+        (printer) => this.setState(Object.assign({}, this.state, {currentPrinter: printer})), 
+        error => console.warn(error))
+    }
+  }
+
+  printTextTest = () => {
+    if(this.state.currentPrinter) {
+      USBPrinter.printText("<C>这是一段打印测试文字</C>\n");
+    }else{
+      console.log("没有设置打印机")
+    }
+    
+  }
+
+  printBillTest = () => {
+    if(this.state.currentPrinter) {
+      USBPrinter.printBill("<C>这是一段打印测试文字</C>");
+    }else{
+      console.log("没有设置打印机")
+    }
+  }
+
+  ...
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {
+          this.state.printers.map(printer => (
+            <TouchableOpacity key={printer.inner_mac_address} onPress={(printer) => this._connectPrinter(printer.inner_mac_address)}>
+              {`device_name: ${printer.device_name}, inner_mac_address: ${printer.inner_mac_address}`}
+            </TouchableOpacity>
+            ))
+        }
+        <TouchableOpacity onPress={() => this.printTextTest()}>
+          <Text> Print Text </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.printBillTest()}>
+          <Text> Print Bill Text </Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  ...
+
+```
+
+### NetPrinter 
+
+Printer structure:
+```
+{
+  device_name: "192.168.10.241:9100",
+  host: '192.168.10.241',
+  port: 9100
+}
+```
+
+
+```javascript
+
+  componentDidMount = () => {
+    if(Platform.OS == 'android'){
+      NetPrinter.init().then(() => {
+        this.setState(Object.assign({}, this.state, {printers: [{host: '192.168.10.241', port: 9100}]}))
+        })
+    }
+  }
+
+  _connectPrinter => (host, port) => {
+    if(Platform.OS == 'android'){
+      //connect printer
+      NetPrinter.connectPrinter(host, port).then(
+        (printer) => this.setState(Object.assign({}, this.state, {currentPrinter: printer})), 
+        error => console.warn(error))
+    }
+  }
+
+  printTextTest = () => {
+    if(this.state.currentPrinter) {
+      NetPrinter.printText("<C>这是一段打印测试文字</C>\n");
+    }else{
+      console.log("没有设置打印机")
+    }
+    
+  }
+
+  printBillTest = () => {
+    if(this.state.currentPrinter) {
+      NetPrinter.printBill("<C>这是一段打印测试文字</C>");
+    }else{
+      console.log("没有设置打印机")
+    }
+  }
+
+  ...
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {
+          this.state.printers.map(printer => (
+            <TouchableOpacity key={printer.device_id} onPress={(printer) => this._connectPrinter(printer.host, printer.port)}>
+              {`device_name: ${printer.device_name}, host: ${printer.host}, port: ${printer.port}`}
+            </TouchableOpacity>
+            ))
+        }
+        <TouchableOpacity onPress={() => this.printTextTest()}>
+          <Text> Print Text </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.printBillTest()}>
+          <Text> Print Bill Text </Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  ...
+
+``` 
