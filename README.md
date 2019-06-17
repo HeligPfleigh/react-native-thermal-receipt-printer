@@ -11,10 +11,10 @@ npm install "git+https://github.com/HeligPfleigh/react-native-thermal-receipt-pr
 
 ## Integrate module
 
-To integrate `react-native-printer` with the rest of your react app just execute:
+To integrate `react-native-thermal-receipt-printer` with the rest of your react app just execute:
 
 ```
-react-native link react-native-printer
+react-native link react-native-thermal-receipt-printer
 
 ```
 
