@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "buffer": "^5.0.7",
-    "@mtt-nails/escpos-printer-toolkit": "^1.0.1",
+    "escpos-printer-toolkit": "^1.0.8",
     "iconv-lite": "^0.4.19",
     "string_decoder": "^1.0.3"
   },
