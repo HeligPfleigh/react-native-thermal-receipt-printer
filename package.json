@@ -26,5 +26,6 @@
     "string_decoder": "^1.0.3"
   },
   "author": "diandanbao",
+  "homepage": "https://github.com/HeligPfleigh/react-native-thermal-receipt-printer#readme",
   "license": "ISC"
 }
