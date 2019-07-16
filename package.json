@@ -1,5 +1,5 @@
 {
-  "name": "@mtt-nails/react-native-printer",
+  "name": "react-native-thermal-receipt-printer",
   "version": "1.0.6",
   "description": "Fork of react-native-printer. A React Native Library to support USB/BLE/Net printer for Android platform ",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.mttjsc.com/nailshop-sas/development-base/react-native-printer.git"
+    "url": "https://github.com/HeligPfleigh/react-native-thermal-receipt-printer.git"
   },
   "keywords": [
     "react-native",
@@ -21,10 +21,11 @@
   ],
   "dependencies": {
     "buffer": "^5.0.7",
-    "@mtt-nails/escpos-printer-toolkit": "^1.0.1",
+    "escpos-printer-toolkit": "^1.0.8",
     "iconv-lite": "^0.4.19",
     "string_decoder": "^1.0.3"
   },
   "author": "diandanbao",
+  "homepage": "https://github.com/HeligPfleigh/react-native-thermal-receipt-printer#readme",
   "license": "ISC"
 }
