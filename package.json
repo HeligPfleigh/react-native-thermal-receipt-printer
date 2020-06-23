@@ -1,10 +1,10 @@
 {
   "name": "react-native-thermal-receipt-printer",
   "version": "1.0.6",
-  "description": "Fork of react-native-printer. A React Native Library to support USB/BLE/Net printer for Android platform ",
-  "main": "index.js",
+  "description": "Fork of react-native-printer. A React Native Library to support USB/BLE/Net printer",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rimraf ./dist && tsc"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,20 @@
     "escpos-printer-toolkit": "^1.0.8",
     "iconv-lite": "^0.4.19",
     "string_decoder": "^1.0.3"
+  },
+  "peerDependencies": {
+    "react": "^16.8.1",
+    "react-native": ">=0.60.0-rc.0 <1.0.x"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.0",
+    "@types/react": "^16.9.36",
+    "@types/react-native": "^0.62.13",
+    "@types/react-test-renderer": "^16.9.2",
+    "react": "^16.9.0",
+    "react-native": "^0.61.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.9.5"
   },
   "author": "diandanbao",
   "homepage": "https://github.com/HeligPfleigh/react-native-thermal-receipt-printer#readme",
