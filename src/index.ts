@@ -15,8 +15,8 @@ interface PrinterOptions {
 
 interface IUSBPrinter {
   device_name: string;
-  vendor_id: string;
-  product_id: string;
+  vendor_id: number;
+  product_id: number;
 }
 
 interface IBLEPrinter {
