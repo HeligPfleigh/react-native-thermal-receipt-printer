@@ -6,7 +6,6 @@ A React Native Library to support USB/BLE/Net printer
 
 ```
 yarn add react-native-thermal-receipt-printer
-
 ```
 
 ## Usage
@@ -166,7 +165,7 @@ interface INetPrinter {
   _connectPrinter => (host, port) => {
     //connect printer
     NetPrinter.connectPrinter(host, port).then(
-      (printer) => this.setState(Object.assign({}, this.state, {currentPrinter: printer})), 
+      (printer) => this.setState(Object.assign({}, this.state, {currentPrinter: printer})),
       error => console.warn(error))
 }
 
@@ -207,3 +206,31 @@ interface INetPrinter {
   ...
 
 ```
+
+## Troubleshoot
+
+- when install in `react-native` version >= 0.60, xcode show this error
+
+```
+duplicate symbols for architecture x86_64
+```
+
+that because the .a library uses [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket) library and Flipper uses it too
+
+*Podfile*
+```diff
+...
+  use_native_modules!
+
+  # Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable these next few lines.
+  # add_flipper_pods!
+  # post_install do |installer|
+  #   flipper_post_install(installer)
+  # end
+...
+```
+
+and comment out code related to Flipper in `ios/AppDelegate.m`
