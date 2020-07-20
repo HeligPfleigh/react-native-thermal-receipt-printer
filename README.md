@@ -1,6 +1,9 @@
 # react-native-thermal-receipt-printer
+
 Fork of `react-native-printer` and add implement for auto connect printer with usb
 A React Native Library to support USB/BLE/Net printer
+
+![Node.js Package](https://github.com/HeligPfleigh/react-native-thermal-receipt-printer/workflows/Node.js%20Package/badge.svg)
 
 ## Installation
 
@@ -11,19 +14,23 @@ yarn add react-native-thermal-receipt-printer
 ## Usage
 
 ```javascript
-import { USBPrinter, NetPrinter, BLEPrinter } from 'react-native-thermal-receipt-printer';
+import {
+  USBPrinter,
+  NetPrinter,
+  BLEPrinter,
+} from "react-native-thermal-receipt-printer";
 
-USBPrinter.printText('<C>sample text</C>')
-USBPrinter.printBill("<C>sample bill</C>")
-
+USBPrinter.printText("<C>sample text</C>");
+USBPrinter.printBill("<C>sample bill</C>");
 ```
 
 ## Support
-| Printer       | Android           | IOS               |
-| ------------- | -------------     | -------------     |
-| USBPrinter    | :heavy_check_mark:|                   |
-| BLEPrinter    | :heavy_check_mark:| :heavy_check_mark:|
-| NetPrinter    | :heavy_check_mark:| :heavy_check_mark:|
+
+| Printer    | Android            | IOS                |
+| ---------- | ------------------ | ------------------ |
+| USBPrinter | :heavy_check_mark: |                    |
+| BLEPrinter | :heavy_check_mark: | :heavy_check_mark: |
+| NetPrinter | :heavy_check_mark: | :heavy_check_mark: |
 
 ## Example
 
@@ -31,12 +38,11 @@ USBPrinter.printBill("<C>sample bill</C>")
 
 ```typescript
 interface IUSBPrinter {
-    device_name: string;
-    vendor_id: number;
-    product_id: number;
+  device_name: string;
+  vendor_id: number;
+  product_id: number;
 }
 ```
-
 
 ```javascript
   const [printers, setPrinters] = useState([]);
@@ -93,7 +99,6 @@ interface IBLEPrinter {
   inner_mac_address: string;
 }
 ```
-
 
 ```javascript
   const [printers, setPrinters] = useState([]);
@@ -217,7 +222,8 @@ duplicate symbols for architecture x86_64
 
 that because the .a library uses [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket) library and Flipper uses it too
 
-*Podfile*
+_Podfile_
+
 ```diff
 ...
   use_native_modules!
