@@ -1,5 +1,12 @@
 import * as React from "react";
-import { StyleSheet, View, Text, Button, Picker } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  Picker,
+  TextInput,
+} from "react-native";
 import {
   BLEPrinter,
   NetPrinter,
@@ -31,21 +38,40 @@ export default function App() {
       const Printer = printerList[selectedValue];
       try {
         setLoading(true);
-        await Printer.init();
-        const results = await Printer.getDeviceList();
-        setDevices(
-          results.map((item) => ({ ...item, printerType: selectedValue }))
+        Object.keys(printerList).map(
+          async (item) => await printerList[item].init()
         );
+        await Printer.init();
       } catch (err) {
-        console.error(err);
+        console.warn(err);
       } finally {
         setLoading(false);
       }
     };
     init();
-  }, [selectedValue]);
+  }, []);
 
   React.useEffect(() => {
+    const getListDevices = async () => {
+      const Printer = printerList[selectedValue];
+      try {
+        setLoading(true);
+        const results = await Printer.getDeviceList();
+        setDevices(
+          results.map((item) => ({ ...item, printerType: selectedValue }))
+        );
+      } catch (err) {
+        console.warn(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getListDevices();
+  }, [selectedValue]);
+
+  const handleConnectSelectedPrinter = () => {
+    console.log(selectedPrinter);
+    if (!selectedPrinter) return;
     const connect = async () => {
       try {
         setLoading(true);
@@ -65,54 +91,87 @@ export default function App() {
           default:
         }
       } catch (err) {
-        console.error(err);
+        console.warn(err);
       } finally {
         setLoading(false);
       }
     };
     connect();
-  }, [selectedPrinter]);
+  };
 
   const handlePrint = async () => {
     try {
       const Printer = printerList[selectedValue];
-      await Printer.printText("<C>sample text</C>\n");
+      await Printer.printBill("<C>sample text</C>\n");
     } catch (err) {
-      console.error(err);
+      console.warn(err);
     }
   };
 
+  const handleChangePrinterType = async (type: keyof typeof printerList) => {
+    setSelectedValue((prev) => {
+      printerList[prev].closeConn();
+      return type;
+    });
+    setSelectedPrinter({});
+  };
+
+  const _renderNet = () => (
+    <View style={{ paddingVertical: 16 }}>
+      <View style={styles.rowDirection}>
+        <Text>Host: </Text>
+        <TextInput placeholder="192.168.100.19" />
+      </View>
+      <View style={styles.rowDirection}>
+        <Text>Port: </Text>
+        <TextInput placeholder="9100" />
+      </View>
+    </View>
+  );
+
+  const _renderOther = () => (
+    <Picker selectedValue={selectedPrinter} onValueChange={setSelectedPrinter}>
+      {devices.map((item, index) => (
+        <Picker.Item
+          label={item.device_name}
+          value={item}
+          key={`printer-item-${index}`}
+        />
+      ))}
+    </Picker>
+  );
+
   return (
     <View style={styles.container}>
-      <Text>Select printer type: </Text>
-      <Picker
-        selectedValue={selectedValue}
-        style={{ height: 50, width: 150 }}
-        onValueChange={setSelectedValue}
-      >
-        {Object.keys(printerList).map((item, index) => (
-          <Picker.Item
-            label={item.toUpperCase()}
-            value={item}
-            key={`printer-type-item-${index}`}
-          />
-        ))}
-      </Picker>
-      <Text>Select printer: </Text>
-      <Picker
-        selectedValue={selectedPrinter}
-        style={{ height: 50, width: 150 }}
-        onValueChange={setSelectedPrinter}
-      >
-        {devices.map((item, index) => (
-          <Picker.Item
-            label={item.device_name}
-            value={item}
-            key={`printer-item-${index}`}
-          />
-        ))}
-      </Picker>
-      <Button title="Print sample" onPress={handlePrint} />
+      <View style={styles.section}>
+        <Text>Select printer type: </Text>
+        <Picker
+          selectedValue={selectedValue}
+          onValueChange={handleChangePrinterType}
+        >
+          {Object.keys(printerList).map((item, index) => (
+            <Picker.Item
+              label={item.toUpperCase()}
+              value={item}
+              key={`printer-type-item-${index}`}
+            />
+          ))}
+        </Picker>
+      </View>
+      <View style={styles.section}>
+        <Text>Select printer: </Text>
+        {selectedValue === "net" ? _renderNet() : _renderOther()}
+      </View>
+      <Button
+        disabled={!selectedPrinter?.device_name}
+        title="Connect"
+        onPress={handleConnectSelectedPrinter}
+      />
+      <Button
+        disabled={!selectedPrinter?.device_name}
+        title="Print sample"
+        onPress={handlePrint}
+      />
       <Loader loading={loading} />
     </View>
   );
@@ -123,5 +182,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
+  },
+  section: {
+    flex: 1,
+  },
+  rowDirection: {
+    flexDirection: "row",
   },
 });
