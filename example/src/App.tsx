@@ -79,7 +79,10 @@ export default function App() {
             await BLEPrinter.connectPrinter(selectedPrinter.inner_mac_address);
             break;
           case "net":
-            // TODO
+            await NetPrinter.connectPrinter(
+              selectedPrinter.host,
+              selectedPrinter.port
+            );
             break;
           case "usb":
             await USBPrinter.connectPrinter(
@@ -115,34 +118,28 @@ export default function App() {
     setSelectedPrinter({});
   };
 
+  const handleChangeHostAndPort = (params: string) => (text: string) =>
+    setSelectedPrinter((prev) => ({
+      ...prev,
+      device_name: "Net Printer",
+      [params]: text,
+      printerType: "net",
+    }));
+
   const _renderNet = () => (
     <View style={{ paddingVertical: 16 }}>
       <View style={styles.rowDirection}>
         <Text>Host: </Text>
         <TextInput
           placeholder="192.168.100.19"
-          onChangeText={(text) =>
-            setSelectedPrinter((prev) => ({
-              ...prev,
-              device_name: "Net Printer",
-              host: text,
-              printerType: "net",
-            }))
-          }
+          onChangeText={handleChangeHostAndPort("host")}
         />
       </View>
       <View style={styles.rowDirection}>
         <Text>Port: </Text>
         <TextInput
           placeholder="9100"
-          onChangeText={(text) =>
-            setSelectedPrinter((prev) => ({
-              ...prev,
-              device_name: "Net Printer",
-              port: text,
-              printerType: "net",
-            }))
-          }
+          onChangeText={handleChangeHostAndPort("port")}
         />
       </View>
     </View>
