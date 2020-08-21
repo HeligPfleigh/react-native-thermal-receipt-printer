@@ -42,8 +42,11 @@ var textPreprocessingIOS = function (text) {
         cut: true,
     };
     return {
-        text: text.replace(/<\/?CB>/g, '').replace(/<\/?C>/g, '').replace(/<\/?B>/g, ''),
-        opts: options
+        text: text
+            .replace(/<\/?CB>/g, "")
+            .replace(/<\/?C>/g, "")
+            .replace(/<\/?B>/g, ""),
+        opts: options,
     };
 };
 export var USBPrinter = {
@@ -79,7 +82,7 @@ export var USBPrinter = {
         return RNUSBPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
             return console.warn(error);
         });
-    }
+    },
 };
 export var BLEPrinter = {
     init: function () {
@@ -105,13 +108,19 @@ export var BLEPrinter = {
     },
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
-        return RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-            return console.warn(error);
-        });
+        if (Platform.OS === "ios") {
+            var processedText = textPreprocessingIOS(text);
+            RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
+        }
+        else {
+            RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
+                return console.warn(error);
+            });
+        }
     },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
-        if (Platform.OS === 'ios') {
+        if (Platform.OS === "ios") {
             var processedText = textPreprocessingIOS(text);
             RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
@@ -120,7 +129,7 @@ export var BLEPrinter = {
                 return console.warn(error);
             });
         }
-    }
+    },
 };
 export var NetPrinter = {
     init: function () {
@@ -146,13 +155,19 @@ export var NetPrinter = {
     },
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
-        return RNNetPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-            return console.warn(error);
-        });
+        if (Platform.OS === "ios") {
+            var processedText = textPreprocessingIOS(text);
+            RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
+        }
+        else {
+            RNNetPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
+                return console.warn(error);
+            });
+        }
     },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
-        if (Platform.OS === 'ios') {
+        if (Platform.OS === "ios") {
             var processedText = textPreprocessingIOS(text);
             RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
@@ -161,6 +176,6 @@ export var NetPrinter = {
                 return console.warn(error);
             });
         }
-    }
+    },
 };
 export var NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
