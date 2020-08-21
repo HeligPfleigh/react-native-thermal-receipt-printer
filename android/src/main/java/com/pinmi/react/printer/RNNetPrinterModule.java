@@ -39,7 +39,13 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
     @ReactMethod
     @Override
     public void getDeviceList(Callback successCallback, Callback errorCallback) {
-        this.adapter.getDeviceList(errorCallback);
+        try {
+            this.adapter.getDeviceList();
+            successCallback.invoke();
+        } catch (Exception ex) {
+            errorCallback.invoke(ex.getMessage());
+        }
+        // this.adapter.getDeviceList(errorCallback);
     }
 
     @ReactMethod

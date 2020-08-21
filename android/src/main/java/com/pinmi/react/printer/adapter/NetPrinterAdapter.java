@@ -60,8 +60,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
     @Override
     public List<PrinterDevice> getDeviceList(Callback errorCallback) {
-//        errorCallback.invoke("do not need to invoke get device list for net printer");
-//  Use emitter instancee get devicelist to non block main thread
+        // errorCallback.invoke("do not need to invoke get device list for net printer");
+        // Use emitter instancee get devicelist to non block main thread
         this.scan();
         return null;
     }
