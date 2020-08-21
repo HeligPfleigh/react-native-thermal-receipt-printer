@@ -70,7 +70,6 @@ export default function App() {
   }, [selectedValue]);
 
   const handleConnectSelectedPrinter = () => {
-    console.log(selectedPrinter);
     if (!selectedPrinter) return;
     const connect = async () => {
       try {
@@ -102,7 +101,7 @@ export default function App() {
   const handlePrint = async () => {
     try {
       const Printer = printerList[selectedValue];
-      await Printer.printBill("<C>sample text</C>\n");
+      await Printer.printText("<C>sample text</C>\n");
     } catch (err) {
       console.warn(err);
     }
@@ -120,11 +119,31 @@ export default function App() {
     <View style={{ paddingVertical: 16 }}>
       <View style={styles.rowDirection}>
         <Text>Host: </Text>
-        <TextInput placeholder="192.168.100.19" />
+        <TextInput
+          placeholder="192.168.100.19"
+          onChangeText={(text) =>
+            setSelectedPrinter((prev) => ({
+              ...prev,
+              device_name: "Net Printer",
+              host: text,
+              printerType: "net",
+            }))
+          }
+        />
       </View>
       <View style={styles.rowDirection}>
         <Text>Port: </Text>
-        <TextInput placeholder="9100" />
+        <TextInput
+          placeholder="9100"
+          onChangeText={(text) =>
+            setSelectedPrinter((prev) => ({
+              ...prev,
+              device_name: "Net Printer",
+              port: text,
+              printerType: "net",
+            }))
+          }
+        />
       </View>
     </View>
   );
