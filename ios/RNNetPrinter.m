@@ -131,7 +131,7 @@ RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
 }
 
 RCT_EXPORT_METHOD(connectPrinter:(NSString *)host
-                  withPort:(NSInteger)port
+                  withPort:(NSString *)port
                   success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {

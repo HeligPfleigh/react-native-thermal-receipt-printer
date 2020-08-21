@@ -1,4 +1,4 @@
-import {NativeModules, NativeEventEmitter, Platform} from "react-native";
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 import EPToolkit from "escpos-printer-toolkit";
 
@@ -52,7 +52,7 @@ const billTo64Buffer = (text: string, opts: PrinterOptions) => {
     cut: true,
     encoding: "UTF8",
     tailingLine: true,
-  }
+  };
   const options = {
     ...defaultOptions,
     ...opts,
@@ -67,15 +67,21 @@ const textPreprocessingIOS = (text: string) => {
     cut: true,
   };
   return {
-    text: text.replace(/<\/?CB>/g, '').replace(/<\/?C>/g, '').replace(/<\/?B>/g, ''),
-    opts: options
-  }
-}
+    text: text
+      .replace(/<\/?CB>/g, "")
+      .replace(/<\/?C>/g, "")
+      .replace(/<\/?B>/g, ""),
+    opts: options,
+  };
+};
 
 export const USBPrinter = {
   init: (): Promise<void> =>
     new Promise((resolve, reject) =>
-      RNUSBPrinter.init(() => resolve(), (error: Error) => reject(error))
+      RNUSBPrinter.init(
+        () => resolve(),
+        (error: Error) => reject(error)
+      )
     ),
 
   getDeviceList: (): Promise<IUSBPrinter[]> =>
@@ -110,13 +116,16 @@ export const USBPrinter = {
   printBill: (text: string, opts: PrinterOptions = {}): void =>
     RNUSBPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
       console.warn(error)
-    )
+    ),
 };
 
 export const BLEPrinter = {
   init: (): Promise<void> =>
     new Promise((resolve, reject) =>
-      RNBLEPrinter.init(() => resolve(), (error: Error) => reject(error))
+      RNBLEPrinter.init(
+        () => resolve(),
+        (error: Error) => reject(error)
+      )
     ),
 
   getDeviceList: (): Promise<IBLEPrinter[]> =>
@@ -142,27 +151,44 @@ export const BLEPrinter = {
       resolve();
     }),
 
-  printText: (text: string, opts: PrinterOptions = {}): void =>
-    RNBLEPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
-    ),
+  printText: (text: string, opts: PrinterOptions = {}): void => {
+    if (Platform.OS === "ios") {
+      const processedText = textPreprocessingIOS(text);
+      RNBLEPrinter.printRawData(
+        processedText.text,
+        processedText.opts,
+        (error: Error) => console.warn(error)
+      );
+    } else {
+      RNBLEPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
+        console.warn(error)
+      );
+    }
+  },
 
   printBill: (text: string, opts: PrinterOptions = {}): void => {
-    if (Platform.OS === 'ios') {
-      const processedText = textPreprocessingIOS(text)
-      RNBLEPrinter.printRawData(processedText.text, processedText.opts, (error: Error) => console.warn(error))
+    if (Platform.OS === "ios") {
+      const processedText = textPreprocessingIOS(text);
+      RNBLEPrinter.printRawData(
+        processedText.text,
+        processedText.opts,
+        (error: Error) => console.warn(error)
+      );
     } else {
       RNBLEPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
         console.warn(error)
-      )
+      );
     }
-  }
+  },
 };
 
 export const NetPrinter = {
   init: (): Promise<void> =>
     new Promise((resolve, reject) =>
-      RNNetPrinter.init(() => resolve(), (error: Error) => reject(error))
+      RNNetPrinter.init(
+        () => resolve(),
+        (error: Error) => reject(error)
+      )
     ),
 
   getDeviceList: (): Promise<INetPrinter[]> =>
@@ -189,21 +215,40 @@ export const NetPrinter = {
       resolve();
     }),
 
-  printText: (text: string, opts = {}): void =>
-    RNNetPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
-    ),
+  printText: (text: string, opts = {}): void => {
+    if (Platform.OS === "ios") {
+      const processedText = textPreprocessingIOS(text);
+      RNNetPrinter.printRawData(
+        processedText.text,
+        processedText.opts,
+        (error: Error) => console.warn(error)
+      );
+    } else {
+      RNNetPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
+        console.warn(error)
+      );
+    }
+  },
 
   printBill: (text: string, opts = {}): void => {
-    if (Platform.OS === 'ios') {
-      const processedText = textPreprocessingIOS(text)
-      RNNetPrinter.printRawData(processedText.text, processedText.opts, (error: Error) => console.warn(error))
+    if (Platform.OS === "ios") {
+      const processedText = textPreprocessingIOS(text);
+      RNNetPrinter.printRawData(
+        processedText.text,
+        processedText.opts,
+        (error: Error) => console.warn(error)
+      );
     } else {
       RNNetPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
         console.warn(error)
-      )
+      );
     }
-  }
+  },
 };
 
 export const NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
+
+export enum RN_THERMAL_RECEIPT_PRINTER_EVENTS {
+  EVENT_NET_PRINTER_SCANNED_SUCCESS = "scannerResolved",
+  EVENT_NET_PRINTER_SCANNED_ERROR = "registerError",
+}

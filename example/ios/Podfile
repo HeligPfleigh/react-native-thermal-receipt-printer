@@ -1,0 +1,14 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '10.0'
+
+target 'ThermalReceiptPrinterExample' do
+  config = use_native_modules!
+
+  use_react_native!(:path => config["reactNativePath"])
+
+  pod 'react-native-thermal-receipt-printer', :path => '../..'
+
+  use_native_modules!
+end
