@@ -48,6 +48,17 @@ and comment out code related to Flipper in `ios/AppDelegate.m`
 | BLEPrinter | :heavy_check_mark: | :heavy_check_mark: |
 | NetPrinter | :heavy_check_mark: | :heavy_check_mark: |
 
+## Predefined tag
+| Tags          | Description           |
+|:-------------:|:---------------------:|
+| C             | Center                |
+| D             | Medium font           |
+| B             | Large font            |
+| M             | Medium font           |
+| CM            | Medium font, centered |
+| CB            | Medium font, centered |
+| CD            | Large font, centered  |
+
 ## Development workflow
 
 To get started with the project, run `yarn bootstrap` in the root directory to install the required dependencies for each package:
