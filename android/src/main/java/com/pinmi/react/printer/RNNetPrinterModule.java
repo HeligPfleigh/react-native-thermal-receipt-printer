@@ -40,7 +40,7 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
     @Override
     public void getDeviceList(Callback successCallback, Callback errorCallback) {
         try {
-            this.adapter.getDeviceList();
+            this.adapter.getDeviceList(errorCallback);
             successCallback.invoke();
         } catch (Exception ex) {
             errorCallback.invoke(ex.getMessage());
