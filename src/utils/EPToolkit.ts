@@ -1,35 +1,79 @@
 import { Buffer } from "buffer";
 import * as iconv from "iconv-lite";
+
 import BufferHelper from "./buffer-helper";
 
-export function exchange_text(text: any, options: any) {
-  options = options || {
-    beep: false,
-    cut: true,
-    tailingLine: true,
-    encoding: "UTF8",
-  };
+const init_printer_bytes = new Buffer([27, 64]);
+const l_start_bytes = new Buffer([27, 97, 0]);
+const l_end_bytes = new Buffer([]);
+const c_start_bytes = new Buffer([27, 97, 1]);
+const c_end_bytes = new Buffer([]); // [ 27, 97, 0 ];
+const r_start_bytes = new Buffer([27, 97, 2]);
+const r_end_bytes = new Buffer([]);
 
-  let init_printer_bytes = new Buffer([27, 64]);
-  let c_start_bytes = new Buffer([27, 97, 1]);
-  let c_end_bytes = new Buffer([]); // [ 27, 97, 0 ];
-  let reset_bytes = new Buffer([27, 97, 0, 29, 33, 0, 27, 50]);
-  let m_start_bytes = new Buffer([27, 33, 16, 28, 33, 8]);
-  let m_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-  let b_start_bytes = new Buffer([27, 33, 48, 28, 33, 12]);
-  let b_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-  let cm_start_bytes = new Buffer([27, 97, 1, 27, 33, 16, 28, 33, 8]);
-  let cm_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-  let cb_start_bytes = new Buffer([27, 97, 1, 27, 33, 48, 28, 33, 12]);
-  let cb_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-  let cd_start_bytes = new Buffer([27, 97, 1, 27, 33, 32, 28, 33, 4]);
-  let cd_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-  let d_start_bytes = new Buffer([27, 33, 32, 28, 33, 4]);
-  let d_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const default_space_bytes = new Buffer([27, 50]);
 
-  let default_space_bytes = new Buffer([27, 50]);
-  let cut_bytes = new Buffer([27, 105]);
-  let beep_bytes = new Buffer([27, 66, 3, 2]);
+const reset_bytes = new Buffer([27, 97, 0, 29, 33, 0, 27, 50]);
+const m_start_bytes = new Buffer([27, 33, 16, 28, 33, 8]);
+const m_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const b_start_bytes = new Buffer([27, 33, 48, 28, 33, 12]);
+const b_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const cm_start_bytes = new Buffer([27, 97, 1, 27, 33, 16, 28, 33, 8]);
+const cm_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const cb_start_bytes = new Buffer([27, 97, 1, 27, 33, 48, 28, 33, 12]);
+const cb_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const cd_start_bytes = new Buffer([27, 97, 1, 27, 33, 32, 28, 33, 4]);
+const cd_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const d_start_bytes = new Buffer([27, 33, 32, 28, 33, 4]);
+const d_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+
+const cut_bytes = new Buffer([27, 105]);
+const beep_bytes = new Buffer([27, 66, 3, 2]);
+const line_bytes = new Buffer([10, 10, 10, 10, 10]);
+
+const options_controller = {
+  cut: cut_bytes,
+  beep: beep_bytes,
+  tailingLine: line_bytes,
+};
+
+const controller = {
+  "<M>": m_start_bytes,
+  "</M>": m_end_bytes,
+  "<B>": b_start_bytes,
+  "</B>": b_end_bytes,
+  "<D>": d_start_bytes,
+  "</D>": d_end_bytes,
+  "<C>": c_start_bytes,
+  "</C>": c_end_bytes,
+  "<CM>": cm_start_bytes,
+  "</CM>": cm_end_bytes,
+  "<CD>": cd_start_bytes,
+  "</CD>": cd_end_bytes,
+  "<CB>": cb_start_bytes,
+  "</CB>": cb_end_bytes,
+  "<L>": l_start_bytes,
+  "</L>": l_end_bytes,
+  "<R>": r_start_bytes,
+  "</R>": r_end_bytes,
+};
+
+type IOptions = {
+  beep: boolean;
+  cut: boolean;
+  tailingLine: boolean;
+  encoding: string;
+};
+
+const default_options: IOptions = {
+  beep: false,
+  cut: true,
+  tailingLine: true,
+  encoding: "UTF8",
+};
+
+export function exchange_text(text: string, options: IOptions): Buffer {
+  const m_options = options || default_options;
 
   let bytes = new BufferHelper();
   bytes.concat(init_printer_bytes);
@@ -37,73 +81,31 @@ export function exchange_text(text: any, options: any) {
   let temp = "";
   for (let i = 0; i < text.length; i++) {
     let ch = text[i];
-    if (ch == "<") {
-      bytes.concat(iconv.encode(temp, options.encoding));
+    if (ch === "<") {
+      bytes.concat(iconv.encode(temp, m_options.encoding));
       temp = "";
-      if (text.substring(i, i + 3) == "<M>") {
-        bytes.concat(m_start_bytes);
-        i += 2;
-      } else if (text.substring(i, i + 4) == "</M>") {
-        bytes.concat(m_end_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 3) == "<B>") {
-        bytes.concat(b_start_bytes);
-        i += 2;
-      } else if (text.substring(i, i + 4) == "</B>") {
-        bytes.concat(b_end_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 3) == "<D>") {
-        bytes.concat(d_start_bytes);
-        i += 2;
-      } else if (text.substring(i, i + 4) == "</D>") {
-        bytes.concat(d_end_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 3) == "<C>") {
-        bytes.concat(c_start_bytes);
-        i += 2;
-      } else if (text.substring(i, i + 4) == "</C>") {
-        bytes.concat(c_end_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 4) == "<CM>") {
-        bytes.concat(cm_start_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 5) == "</CM>") {
-        bytes.concat(cm_end_bytes);
-        i += 4;
-      } else if (text.substring(i, i + 4) == "<CD>") {
-        bytes.concat(cd_start_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 5) == "</CD>") {
-        bytes.concat(cd_end_bytes);
-        i += 4;
-      } else if (text.substring(i, i + 4) == "<CB>") {
-        bytes.concat(cb_start_bytes);
-        i += 3;
-      } else if (text.substring(i, i + 5) == "</CB>") {
-        bytes.concat(cb_end_bytes);
-        i += 4;
+      // add bytes for changing font and justifying text
+      for (const tag in controller) {
+        if (text.substring(i, i + tag.length) === tag) {
+          bytes.concat(controller[tag]);
+          i += tag.length - 1;
+        }
       }
-    } else if (ch == "\n") {
-      temp = temp + ch;
-      bytes.concat(iconv.encode(temp, options.encoding));
+    } else if (ch === "\n") {
+      temp = `${temp}${ch}`;
+      bytes.concat(iconv.encode(temp, m_options.encoding));
       bytes.concat(reset_bytes);
       temp = "";
     } else {
-      temp = temp + ch;
+      temp = `${temp}${ch}`;
     }
   }
-  if (temp.length > 0) {
-    bytes.concat(iconv.encode(temp, options.encoding));
-  }
-  let line_bytes = new Buffer([10, 10, 10, 10, 10]);
-  if (options.tailingLine) {
-    bytes.concat(line_bytes);
-  }
-  if (options.cut) {
-    bytes.concat(cut_bytes);
-  }
-  if (options.beep) {
-    bytes.concat(beep_bytes);
+  temp.length && bytes.concat(iconv.encode(temp, m_options.encoding));
+
+  // add option bytes
+  for (const key in m_options) {
+    if (typeof m_options[key] === "boolean" && options_controller[key])
+      bytes.concat(options_controller[key]);
   }
   return bytes.toBuffer();
 }
