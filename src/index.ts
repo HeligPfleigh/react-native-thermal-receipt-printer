@@ -1,6 +1,6 @@
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
-import EPToolkit from "escpos-printer-toolkit";
+import * as EPToolkit from "./utils/EPToolkit";
 
 const RNUSBPrinter = NativeModules.RNUSBPrinter;
 const RNBLEPrinter = NativeModules.RNBLEPrinter;
