@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
 import * as iconv from "iconv-lite";
+// import * as Jimp from "jimp";
 
 import BufferHelper from "./buffer-helper";
 
@@ -81,23 +82,27 @@ export function exchange_text(text: string, options: IOptions): Buffer {
   let temp = "";
   for (let i = 0; i < text.length; i++) {
     let ch = text[i];
-    if (ch === "<") {
-      bytes.concat(iconv.encode(temp, m_options.encoding));
-      temp = "";
-      // add bytes for changing font and justifying text
-      for (const tag in controller) {
-        if (text.substring(i, i + tag.length) === tag) {
-          bytes.concat(controller[tag]);
-          i += tag.length - 1;
+    switch (ch) {
+      case "<":
+        bytes.concat(iconv.encode(temp, m_options.encoding));
+        temp = "";
+        // add bytes for changing font and justifying text
+        for (const tag in controller) {
+          if (text.substring(i, i + tag.length) === tag) {
+            bytes.concat(controller[tag]);
+            i += tag.length - 1;
+          }
         }
-      }
-    } else if (ch === "\n") {
-      temp = `${temp}${ch}`;
-      bytes.concat(iconv.encode(temp, m_options.encoding));
-      bytes.concat(reset_bytes);
-      temp = "";
-    } else {
-      temp = `${temp}${ch}`;
+        break;
+      case "\n":
+        temp = `${temp}${ch}`;
+        bytes.concat(iconv.encode(temp, m_options.encoding));
+        bytes.concat(reset_bytes);
+        temp = "";
+        break;
+      default:
+        temp = `${temp}${ch}`;
+        break;
     }
   }
   temp.length && bytes.concat(iconv.encode(temp, m_options.encoding));
@@ -109,3 +114,47 @@ export function exchange_text(text: string, options: IOptions): Buffer {
   }
   return bytes.toBuffer();
 }
+
+// export async function exchange_image(
+//   imagePath: string,
+//   threshold: number
+// ): Promise<Buffer> {
+//   let bytes = new BufferHelper();
+
+//   try {
+//     // need to find other solution cause jimp is not working in RN
+//     const raw_image = await Jimp.read(imagePath);
+//     const img = raw_image.resize(250, 250).quality(60).greyscale();
+
+//     let hex;
+//     const nl = img.bitmap.width % 256;
+//     const nh = Math.round(img.bitmap.width / 256);
+
+//     // data
+//     const data = new Buffer([0, 0, 0]);
+//     const line = new Buffer([10]);
+//     for (let i = 0; i < Math.round(img.bitmap.height / 24) + 1; i++) {
+//       // ESC * m nL nH bitmap
+//       let header = new Buffer([27, 42, 33, nl, nh]);
+//       bytes.concat(header);
+//       for (let j = 0; j < img.bitmap.width; j++) {
+//         data[0] = data[1] = data[2] = 0; // Clear to Zero.
+//         for (let k = 0; k < 24; k++) {
+//           if (i * 24 + k < img.bitmap.height) {
+//             // if within the BMP size
+//             hex = img.getPixelColor(j, i * 24 + k);
+//             if (Jimp.intToRGBA(hex).r <= threshold) {
+//               data[Math.round(k / 8)] += 128 >> k % 8;
+//             }
+//           }
+//         }
+//         const dit = new Buffer([data[0], data[1], data[2]]);
+//         bytes.concat(dit);
+//       }
+//       bytes.concat(line);
+//     } // data
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   return bytes.toBuffer();
+// }

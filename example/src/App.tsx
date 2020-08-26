@@ -17,11 +17,16 @@ import {
 } from "react-native-thermal-receipt-printer";
 import Loader from "./Loader";
 
-const printerList = {
+const printerList: Record<string, any> = {
   ble: BLEPrinter,
   net: NetPrinter,
   usb: USBPrinter,
 };
+
+interface SelectedPrinter
+  extends Partial<IUSBPrinter & IBLEPrinter & INetPrinter> {
+  printerType?: keyof typeof printerList;
+}
 
 export default function App() {
   const [selectedValue, setSelectedValue] = React.useState<
@@ -29,19 +34,17 @@ export default function App() {
   >("ble");
   const [devices, setDevices] = React.useState([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [selectedPrinter, setSelectedPrinter] = React.useState<
-    IUSBPrinter | IBLEPrinter | INetPrinter
-  >({});
+  const [selectedPrinter, setSelectedPrinter] = React.useState<SelectedPrinter>(
+    {}
+  );
 
   React.useEffect(() => {
     const init = async () => {
-      const Printer = printerList[selectedValue];
       try {
         setLoading(true);
         Object.keys(printerList).map(
           async (item) => await printerList[item].init()
         );
-        await Printer.init();
       } catch (err) {
         console.warn(err);
       } finally {
@@ -60,7 +63,7 @@ export default function App() {
         setLoading(true);
         const results = await Printer.getDeviceList();
         setDevices(
-          results.map((item) => ({ ...item, printerType: selectedValue }))
+          results.map((item: any) => ({ ...item, printerType: selectedValue }))
         );
       } catch (err) {
         console.warn(err);
@@ -78,18 +81,20 @@ export default function App() {
         setLoading(true);
         switch (selectedPrinter.printerType) {
           case "ble":
-            await BLEPrinter.connectPrinter(selectedPrinter.inner_mac_address);
+            await BLEPrinter.connectPrinter(
+              selectedPrinter?.inner_mac_address || ""
+            );
             break;
           case "net":
             await NetPrinter.connectPrinter(
-              selectedPrinter.host,
-              selectedPrinter.port
+              selectedPrinter?.host || "",
+              selectedPrinter?.port || ""
             );
             break;
           case "usb":
             await USBPrinter.connectPrinter(
-              selectedPrinter.vendorId,
-              selectedPrinter.productId
+              selectedPrinter?.vendor_id || "",
+              selectedPrinter?.product_id || ""
             );
             break;
           default:
@@ -149,7 +154,7 @@ export default function App() {
 
   const _renderOther = () => (
     <Picker selectedValue={selectedPrinter} onValueChange={setSelectedPrinter}>
-      {devices.map((item, index) => (
+      {devices.map((item: any, index) => (
         <Picker.Item
           label={item.device_name}
           value={item}

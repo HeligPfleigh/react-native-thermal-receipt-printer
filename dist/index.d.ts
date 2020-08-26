@@ -1,23 +1,23 @@
 import { NativeEventEmitter } from "react-native";
-interface PrinterOptions {
+export interface PrinterOptions {
     beep?: boolean;
     cut?: boolean;
     tailingLine?: boolean;
     encoding?: string;
 }
-interface IUSBPrinter {
+export interface IUSBPrinter {
     device_name: string;
-    vendor_id: number;
-    product_id: number;
+    vendor_id: string;
+    product_id: string;
 }
-interface IBLEPrinter {
+export interface IBLEPrinter {
     device_name: string;
     inner_mac_address: string;
 }
-interface INetPrinter {
+export interface INetPrinter {
     device_name: string;
     host: string;
-    port: number;
+    port: string;
 }
 export declare const USBPrinter: {
     init: () => Promise<void>;
@@ -48,4 +48,3 @@ export declare enum RN_THERMAL_RECEIPT_PRINTER_EVENTS {
     EVENT_NET_PRINTER_SCANNED_SUCCESS = "scannerResolved",
     EVENT_NET_PRINTER_SCANNED_ERROR = "registerError"
 }
-export {};
