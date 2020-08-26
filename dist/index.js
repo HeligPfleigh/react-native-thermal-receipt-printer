@@ -10,7 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
-import EPToolkit from "escpos-printer-toolkit";
+import * as EPToolkit from "./utils/EPToolkit";
 var RNUSBPrinter = NativeModules.RNUSBPrinter;
 var RNBLEPrinter = NativeModules.RNBLEPrinter;
 var RNNetPrinter = NativeModules.RNNetPrinter;
@@ -49,6 +49,10 @@ var textPreprocessingIOS = function (text) {
         opts: options,
     };
 };
+// const imageToBuffer = async (imagePath: string, threshold: number = 60) => {
+//   const buffer = await EPToolkit.exchange_image(imagePath, threshold);
+//   return buffer.toString("base64");
+// };
 export var USBPrinter = {
     init: function () {
         return new Promise(function (resolve, reject) {
