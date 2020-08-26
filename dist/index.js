@@ -49,6 +49,10 @@ var textPreprocessingIOS = function (text) {
         opts: options,
     };
 };
+// const imageToBuffer = async (imagePath: string, threshold: number = 60) => {
+//   const buffer = await EPToolkit.exchange_image(imagePath, threshold);
+//   return buffer.toString("base64");
+// };
 export var USBPrinter = {
     init: function () {
         return new Promise(function (resolve, reject) {

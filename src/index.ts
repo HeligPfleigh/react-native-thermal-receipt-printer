@@ -6,28 +6,28 @@ const RNUSBPrinter = NativeModules.RNUSBPrinter;
 const RNBLEPrinter = NativeModules.RNBLEPrinter;
 const RNNetPrinter = NativeModules.RNNetPrinter;
 
-interface PrinterOptions {
+export interface PrinterOptions {
   beep?: boolean;
   cut?: boolean;
   tailingLine?: boolean;
   encoding?: string;
 }
 
-interface IUSBPrinter {
+export interface IUSBPrinter {
   device_name: string;
-  vendor_id: number;
-  product_id: number;
+  vendor_id: string;
+  product_id: string;
 }
 
-interface IBLEPrinter {
+export interface IBLEPrinter {
   device_name: string;
   inner_mac_address: string;
 }
 
-interface INetPrinter {
+export interface INetPrinter {
   device_name: string;
   host: string;
-  port: number;
+  port: string;
 }
 
 const textTo64Buffer = (text: string, opts: PrinterOptions) => {
@@ -74,6 +74,11 @@ const textPreprocessingIOS = (text: string) => {
     opts: options,
   };
 };
+
+// const imageToBuffer = async (imagePath: string, threshold: number = 60) => {
+//   const buffer = await EPToolkit.exchange_image(imagePath, threshold);
+//   return buffer.toString("base64");
+// };
 
 export const USBPrinter = {
   init: (): Promise<void> =>
@@ -180,6 +185,11 @@ export const BLEPrinter = {
       );
     }
   },
+
+  // printImage: async (imagePath: string) => {
+  //   const tmp = await imageToBuffer(imagePath);
+  //   RNBLEPrinter.printRawData(tmp, (error: Error) => console.warn(error));
+  // },
 };
 
 export const NetPrinter = {
