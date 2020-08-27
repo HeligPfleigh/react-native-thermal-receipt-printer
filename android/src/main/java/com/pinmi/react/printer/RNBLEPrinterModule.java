@@ -1,5 +1,7 @@
 package com.pinmi.react.printer;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,6 +13,7 @@ import com.pinmi.react.printer.adapter.BLEPrinterDeviceId;
 import com.pinmi.react.printer.adapter.PrinterAdapter;
 import com.pinmi.react.printer.adapter.PrinterDevice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +56,7 @@ public class RNBLEPrinterModule extends ReactContextBaseJavaModule implements RN
                 pairedDeviceList.pushMap(printerDevice.toRNWritableMap());
             }
             successCallback.invoke(pairedDeviceList);
-        }else{
+        } else {
             errorCallback.invoke("No Device Found");
         }
     }

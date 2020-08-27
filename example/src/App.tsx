@@ -39,28 +39,13 @@ export default function App() {
   );
 
   React.useEffect(() => {
-    const init = async () => {
-      try {
-        setLoading(true);
-        Object.keys(printerList).map(
-          async (item) => await printerList[item].init()
-        );
-      } catch (err) {
-        console.warn(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    init();
-  }, []);
-
-  React.useEffect(() => {
     const getListDevices = async () => {
       const Printer = printerList[selectedValue];
       // get list device for net printers is support scanning in local ip but not recommended
       if (selectedValue === "net") return;
       try {
         setLoading(true);
+        await Printer.init();
         const results = await Printer.getDeviceList();
         setDevices(
           results.map((item: any) => ({ ...item, printerType: selectedValue }))

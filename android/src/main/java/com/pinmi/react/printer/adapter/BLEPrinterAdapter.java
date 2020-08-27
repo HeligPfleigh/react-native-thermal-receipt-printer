@@ -76,16 +76,16 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     @Override
     public List<PrinterDevice> getDeviceList(Callback errorCallback) {
         BluetoothAdapter bluetoothAdapter = getBTAdapter();
+        List<PrinterDevice> printerDevices = new ArrayList<>();
         if(bluetoothAdapter == null) {
             errorCallback.invoke("No bluetooth adapter available");
-            return null;
+            return printerDevices;
         }
         if (!bluetoothAdapter.isEnabled()) {
             errorCallback.invoke("bluetooth is not enabled");
-            return null;
+            return printerDevices;
         }
         Set<BluetoothDevice> pairedDevices = getBTAdapter().getBondedDevices();
-        List<PrinterDevice> printerDevices = new ArrayList<>();
         for (BluetoothDevice device : pairedDevices) {
             printerDevices.add(new BLEPrinterDevice(device));
         }

@@ -108,11 +108,12 @@ public class USBPrinterAdapter implements PrinterAdapter {
     }
 
     public List<PrinterDevice> getDeviceList(Callback errorCallback) {
+        List<PrinterDevice> lists = new ArrayList<>();
         if (mUSBManager == null) {
             errorCallback.invoke("USBManager is not initialized while get device list");
-            return null;
+            return lists;
         }
-        List<PrinterDevice> lists = new ArrayList<>();
+
         for (UsbDevice usbDevice : mUSBManager.getDeviceList().values()) {
             lists.add(new USBPrinterDevice(usbDevice));
         }
