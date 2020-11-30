@@ -4,33 +4,33 @@ import * as iconv from "iconv-lite";
 
 import BufferHelper from "./buffer-helper";
 
-const init_printer_bytes = new Buffer([27, 64]);
-const l_start_bytes = new Buffer([27, 97, 0]);
-const l_end_bytes = new Buffer([]);
-const c_start_bytes = new Buffer([27, 97, 1]);
-const c_end_bytes = new Buffer([]); // [ 27, 97, 0 ];
-const r_start_bytes = new Buffer([27, 97, 2]);
-const r_end_bytes = new Buffer([]);
+const init_printer_bytes = Buffer.from([27, 64]);
+const l_start_bytes = Buffer.from([27, 97, 0]);
+const l_end_bytes = Buffer.from([]);
+const c_start_bytes = Buffer.from([27, 97, 1]);
+const c_end_bytes = Buffer.from([]); // [ 27, 97, 0 ];
+const r_start_bytes = Buffer.from([27, 97, 2]);
+const r_end_bytes = Buffer.from([]);
 
-const default_space_bytes = new Buffer([27, 50]);
+const default_space_bytes = Buffer.from([27, 50]);
 
-const reset_bytes = new Buffer([27, 97, 0, 29, 33, 0, 27, 50]);
-const m_start_bytes = new Buffer([27, 33, 16, 28, 33, 8]);
-const m_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-const b_start_bytes = new Buffer([27, 33, 48, 28, 33, 12]);
-const b_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-const cm_start_bytes = new Buffer([27, 97, 1, 27, 33, 16, 28, 33, 8]);
-const cm_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-const cb_start_bytes = new Buffer([27, 97, 1, 27, 33, 48, 28, 33, 12]);
-const cb_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-const cd_start_bytes = new Buffer([27, 97, 1, 27, 33, 32, 28, 33, 4]);
-const cd_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
-const d_start_bytes = new Buffer([27, 33, 32, 28, 33, 4]);
-const d_end_bytes = new Buffer([27, 33, 0, 28, 33, 0]);
+const reset_bytes = Buffer.from([27, 97, 0, 29, 33, 0, 27, 50]);
+const m_start_bytes = Buffer.from([27, 33, 16, 28, 33, 8]);
+const m_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
+const b_start_bytes = Buffer.from([27, 33, 48, 28, 33, 12]);
+const b_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
+const cm_start_bytes = Buffer.from([27, 97, 1, 27, 33, 16, 28, 33, 8]);
+const cm_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
+const cb_start_bytes = Buffer.from([27, 97, 1, 27, 33, 48, 28, 33, 12]);
+const cb_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
+const cd_start_bytes = Buffer.from([27, 97, 1, 27, 33, 32, 28, 33, 4]);
+const cd_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
+const d_start_bytes = Buffer.from([27, 33, 32, 28, 33, 4]);
+const d_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
 
-const cut_bytes = new Buffer([27, 105]);
-const beep_bytes = new Buffer([27, 66, 3, 2]);
-const line_bytes = new Buffer([10, 10, 10, 10, 10]);
+const cut_bytes = Buffer.from([27, 105]);
+const beep_bytes = Buffer.from([27, 66, 3, 2]);
+const line_bytes = Buffer.from([10, 10, 10, 10, 10]);
 
 const options_controller = {
   cut: cut_bytes,
@@ -131,11 +131,11 @@ export function exchange_text(text: string, options: IOptions): Buffer {
 //     const nh = Math.round(img.bitmap.width / 256);
 
 //     // data
-//     const data = new Buffer([0, 0, 0]);
-//     const line = new Buffer([10]);
+//     const data = Buffer.from([0, 0, 0]);
+//     const line = Buffer.from([10]);
 //     for (let i = 0; i < Math.round(img.bitmap.height / 24) + 1; i++) {
 //       // ESC * m nL nH bitmap
-//       let header = new Buffer([27, 42, 33, nl, nh]);
+//       let header = Buffer.from([27, 42, 33, nl, nh]);
 //       bytes.concat(header);
 //       for (let j = 0; j < img.bitmap.width; j++) {
 //         data[0] = data[1] = data[2] = 0; // Clear to Zero.
@@ -148,7 +148,7 @@ export function exchange_text(text: string, options: IOptions): Buffer {
 //             }
 //           }
 //         }
-//         const dit = new Buffer([data[0], data[1], data[2]]);
+//         const dit = Buffer.from([data[0], data[1], data[2]]);
 //         bytes.concat(dit);
 //       }
 //       bytes.concat(line);
