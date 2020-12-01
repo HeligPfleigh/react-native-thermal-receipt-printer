@@ -44,8 +44,12 @@ var textPreprocessingIOS = function (text) {
     return {
         text: text
             .replace(/<\/?CB>/g, "")
+            .replace(/<\/?CM>/g, "")
+            .replace(/<\/?CD>/g, "")
             .replace(/<\/?C>/g, "")
-            .replace(/<\/?B>/g, ""),
+            .replace(/<\/?D>/g, "")
+            .replace(/<\/?B>/g, "")
+            .replace(/<\/?M>/g, ""),
         opts: options,
     };
 };
