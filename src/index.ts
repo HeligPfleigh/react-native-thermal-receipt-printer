@@ -264,5 +264,6 @@ export const NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
 
 export enum RN_THERMAL_RECEIPT_PRINTER_EVENTS {
   EVENT_NET_PRINTER_SCANNED_SUCCESS = "scannerResolved",
+  EVENT_NET_PRINTER_SCANNING = "scannerRunning",
   EVENT_NET_PRINTER_SCANNED_ERROR = "registerError",
 }

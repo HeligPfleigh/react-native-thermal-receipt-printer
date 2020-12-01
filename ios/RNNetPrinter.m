@@ -140,7 +140,7 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)host
         
         connected_ip = host;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"NetPrinterConnected" object:nil];
-        successCallback(@[[NSString stringWithFormat:@"Connected to printer %@", host]]);
+        successCallback(@[[NSString stringWithFormat:@"Connecting to printer %@", host]]);
         
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
