@@ -73,7 +73,7 @@ export default function App() {
           case "net":
             await NetPrinter.connectPrinter(
               selectedPrinter?.host || "",
-              selectedPrinter?.port || ""
+              selectedPrinter?.port || 9100
             );
             break;
           case "usb":
