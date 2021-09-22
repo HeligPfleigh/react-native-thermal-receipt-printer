@@ -11,6 +11,8 @@
 #import "PrinterSDK.h"
 #include <ifaddrs.h>
 #include <arpa/inet.h>
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 NSString *const EVENT_SCANNER_RESOLVED = @"scannerResolved";
 NSString *const EVENT_SCANNER_RUNNING = @"scannerRunning";
@@ -131,7 +133,7 @@ RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
 }
 
 RCT_EXPORT_METHOD(connectPrinter:(NSString *)host
-                  withPort:(nonnull NSNumber *)port
+                  withPort:(NSNumber *)port
                   success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
@@ -166,6 +168,78 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
+}
+
+RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
+                  printerOptions:(NSDictionary *)options
+                  fail:(RCTResponseSenderBlock)errorCallback) {
+    @try {
+        
+        
+        !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
+        NSURL * url = [NSURL URLWithString:imgUrl];
+        NSData * imageData = [NSData dataWithContentsOfURL:url];
+        
+        if(imageData != nil){
+            UIImage * image = [UIImage imageWithData:imageData];
+            NSLog(@"image1 %f %f", image.size.height, image.size.width);
+            UIImage * printImage = [self getPrintImage:image];
+            
+            [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
+        }
+        // [[PrinterSDK defaultPrinterSDK] printTestPaper];
+        
+    } @catch (NSException *exception) {
+        errorCallback(@[exception.reason]);
+    }
+}
+
+-(UIImage * ) getPrintImage :  (UIImage * ) image {
+    CGFloat newWidth = 150;
+    CGFloat newHeight = (newWidth / image.size.width) * image.size.height;
+    CGSize newSize = CGSizeMake(newWidth, newHeight);
+    UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    CGImageRef immageRef = image.CGImage;
+    CGContextDrawImage(context, CGRectMake(0, 0, newWidth, newHeight), immageRef);
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    UIImage *  newImage = [UIImage imageWithCGImage:newImageRef];
+
+    CGImageRelease(newImageRef);
+    UIGraphicsEndImageContext();
+    NSLog(@"image2 %f %f", newImage.size.height, newImage.size.width);
+    UIImage * paddedImage = [self addImagePadding:newImage paddingX:250 paddingY:0];
+    NSLog(@"image2 %f %f", paddedImage.size.height, paddedImage.size.width);
+    return paddedImage;
+    
+}
+
+-(UIImage * ) addImagePadding : (UIImage * ) image
+                        paddingX: (CGFloat) paddingX
+                        paddingY: (CGFloat) paddingY
+{
+    
+    CGFloat width = image.size.width + paddingX;
+    CGFloat height = image.size.height + paddingY;
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), true, 0.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    CGContextFillRect(context, CGRectMake(0, 0, width, height));
+    CGFloat originX = (width - image.size.width)/2;
+    CGFloat originY = (height -  image.size.height)/2;
+    CGImageRef immageRef = image.CGImage;
+    CGContextDrawImage(context, CGRectMake(originX, originY, image.size.width, image.size.height), immageRef);
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    UIImage *  paddedImage = [UIImage imageWithCGImage:newImageRef];
+
+    CGImageRelease(newImageRef);
+    UIGraphicsEndImageContext();
+    
+    return paddedImage;
+    
 }
 
 RCT_EXPORT_METHOD(closeConn) {
