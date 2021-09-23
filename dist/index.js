@@ -188,15 +188,13 @@ export var NetPrinter = {
     printImage: function (imgUrl, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            console.log("i am here in ios side")
             RNNetPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
         }
-        // else {
-        //     console.log("i am here in android side");
-        //     RNNetPrinter.printImageData(imgUrl, function (error) {
-        //         return console.warn(error);
-        //     });
-        // }
+        else {
+            RNNetPrinter.printImageData(imgUrl, function (error) {
+                return console.warn(error);
+            });
+        }
     },
 
 };

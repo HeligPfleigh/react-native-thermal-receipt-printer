@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>reactnativethermalreceiptprinter</name>
-	<comment>Project android created by Buildship.</comment>
+	<name>app</name>
+	<comment>Project app created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -22,7 +22,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1632297731534</id>
+			<id>1632297731516</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

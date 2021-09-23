@@ -1,5 +1,7 @@
 package com.pinmi.react.printer;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -59,6 +61,15 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
     public void printRawData(String base64Data, Callback errorCallback) {
         adapter.printRawData(base64Data, errorCallback);
     }
+
+    @ReactMethod
+    @Override
+    public void printImageData(String base64Data, Callback errorCallback) {
+        Log.v("base64Data", base64Data);
+        adapter.printImageData(base64Data, errorCallback);
+    }
+
+
 
     @Override
     public String getName() {
