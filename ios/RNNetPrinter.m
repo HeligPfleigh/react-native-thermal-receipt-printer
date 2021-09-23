@@ -175,27 +175,47 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
         
-        
         !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
-        NSURL * url = [NSURL URLWithString:imgUrl];
-        NSData * imageData = [NSData dataWithContentsOfURL:url];
+        NSURL* url = [NSURL URLWithString:imgUrl];
+        NSData* imageData = [NSData dataWithContentsOfURL:url];
+        
+        NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
+        
+        NSInteger printerWidth = 576;
+        
+        if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
+            printerWidth = 384;
+        }
         
         if(imageData != nil){
-            UIImage * image = [UIImage imageWithData:imageData];
-            NSLog(@"image1 %f %f", image.size.height, image.size.width);
-            UIImage * printImage = [self getPrintImage:image];
+            UIImage* image = [UIImage imageWithData:imageData];
+            UIImage* printImage = [self getPrintImage:image printerOptions:options];
             
+            [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
             [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
         }
-        // [[PrinterSDK defaultPrinterSDK] printTestPaper];
         
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
 }
 
--(UIImage * ) getPrintImage :  (UIImage * ) image {
+-(UIImage *)getPrintImage:(UIImage *)image
+           printerOptions:(NSDictionary *)options {
+    
+    NSNumber* nWidth = [options valueForKey:@"imageWidth"];
+    NSNumber* nPaddingX = [options valueForKey:@"paddingX"];
+    
     CGFloat newWidth = 150;
+    if(nWidth != nil) {
+        newWidth = [nWidth floatValue];
+    }
+    
+    CGFloat paddingX = 250;
+    if(nPaddingX != nil) {
+        paddingX = [nPaddingX floatValue];
+    }
+    
     CGFloat newHeight = (newWidth / image.size.width) * image.size.height;
     CGSize newSize = CGSizeMake(newWidth, newHeight);
     UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0);
@@ -204,22 +224,20 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
     CGImageRef immageRef = image.CGImage;
     CGContextDrawImage(context, CGRectMake(0, 0, newWidth, newHeight), immageRef);
     CGImageRef newImageRef = CGBitmapContextCreateImage(context);
-    UIImage *  newImage = [UIImage imageWithCGImage:newImageRef];
-
+    UIImage* newImage = [UIImage imageWithCGImage:newImageRef];
+    
     CGImageRelease(newImageRef);
     UIGraphicsEndImageContext();
-    NSLog(@"image2 %f %f", newImage.size.height, newImage.size.width);
-    UIImage * paddedImage = [self addImagePadding:newImage paddingX:250 paddingY:0];
-    NSLog(@"image2 %f %f", paddedImage.size.height, paddedImage.size.width);
+
+    UIImage* paddedImage = [self addImagePadding:newImage paddingX:paddingX paddingY:0];
     return paddedImage;
-    
+
 }
 
--(UIImage * ) addImagePadding : (UIImage * ) image
-                        paddingX: (CGFloat) paddingX
-                        paddingY: (CGFloat) paddingY
+-(UIImage *)addImagePadding:(UIImage * )image
+                   paddingX: (CGFloat) paddingX
+                   paddingY: (CGFloat) paddingY
 {
-    
     CGFloat width = image.size.width + paddingX;
     CGFloat height = image.size.height + paddingY;
     
@@ -233,13 +251,12 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
     CGImageRef immageRef = image.CGImage;
     CGContextDrawImage(context, CGRectMake(originX, originY, image.size.width, image.size.height), immageRef);
     CGImageRef newImageRef = CGBitmapContextCreateImage(context);
-    UIImage *  paddedImage = [UIImage imageWithCGImage:newImageRef];
-
+    UIImage* paddedImage = [UIImage imageWithCGImage:newImageRef];
+    
     CGImageRelease(newImageRef);
     UIGraphicsEndImageContext();
     
     return paddedImage;
-    
 }
 
 RCT_EXPORT_METHOD(closeConn) {
