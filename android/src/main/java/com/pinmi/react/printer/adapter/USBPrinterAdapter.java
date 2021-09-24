@@ -222,5 +222,10 @@ public class USBPrinterAdapter implements PrinterAdapter {
         }
     }
 
+    @Override
+    public void printImageData(String imageUrl, Callback errorCallback) {
+
+    }
+
 
 }

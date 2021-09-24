@@ -68,6 +68,11 @@ public class RNBLEPrinterModule extends ReactContextBaseJavaModule implements RN
         adapter.printRawData(base64Data, errorCallback);
     }
 
+    @Override
+    public void printImageData(String imageUrl, Callback errorCallback) {
+
+    }
+
 
     @ReactMethod
     public void connectPrinter(String innerAddress, Callback successCallback, Callback errorCallback) {

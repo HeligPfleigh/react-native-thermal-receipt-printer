@@ -20,10 +20,14 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -242,8 +246,30 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
     }
 
+private String getBase64FromImageURL(String url) {
+
+    try {
+        URL imageUrl = new URL(url);
+        URLConnection ucon = imageUrl.openConnection();
+        InputStream is = ucon.getInputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int read = 0;
+        while ((read = is.read(buffer, 0, buffer.length)) != -1) {
+            baos.write(buffer, 0, read);
+        }
+        baos.flush();
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+    } catch (Exception e) {
+        Log.d("Error", e.toString());
+    }
+    return null;
+}
+
     @Override
-    public void printImageData(final String rawBase64Data, Callback errorCallback) {
+    public void printImageData(final String imageUrl, Callback errorCallback) {
+        final String rawBase64Data = getBase64FromImageURL(imageUrl);
+
         Log.v("callingornot", String.valueOf(rawBase64Data));
         if (this.mSocket == null) {
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");

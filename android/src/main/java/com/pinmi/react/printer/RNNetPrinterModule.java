@@ -64,9 +64,9 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
 
     @ReactMethod
     @Override
-    public void printImageData(String base64Data, Callback errorCallback) {
-        Log.v("base64Data", base64Data);
-        adapter.printImageData(base64Data, errorCallback);
+    public void printImageData(String imageUrl, Callback errorCallback) {
+        Log.v("imageUrl", imageUrl);
+        adapter.printImageData(imageUrl, errorCallback);
     }
 
 
