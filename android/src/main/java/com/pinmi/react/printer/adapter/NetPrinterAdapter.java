@@ -2,12 +2,7 @@ package com.pinmi.react.printer.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Base64;
@@ -24,16 +19,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import android.graphics.BitmapFactory;
 
 import androidx.annotation.RequiresApi;
@@ -60,6 +52,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 24 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
+    private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
 
     private Socket mSocket;
 
@@ -246,263 +239,78 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
     }
 
-private String getBase64FromImageURL(String url) {
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
 
-    try {
-        URL imageUrl = new URL(url);
-        URLConnection ucon = imageUrl.openConnection();
-        InputStream is = ucon.getInputStream();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int read = 0;
-        while ((read = is.read(buffer, 0, buffer.length)) != -1) {
-            baos.write(buffer, 0, read);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
         }
-        baos.flush();
-        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-    } catch (Exception e) {
-        Log.d("Error", e.toString());
     }
-    return null;
-}
+
 
     @Override
     public void printImageData(final String imageUrl, Callback errorCallback) {
-        final String rawBase64Data = getBase64FromImageURL(imageUrl);
+        final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
 
-        Log.v("callingornot", String.valueOf(rawBase64Data));
+        if(bitmapImage == null) {
+            errorCallback.invoke("image not found");
+            return;
+        }
+
         if (this.mSocket == null) {
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
             return;
         }
-        final String rawData = rawBase64Data;
+
         final Socket socket = this.mSocket;
-        Log.v(LOG_TAG, "start to print raw data " + rawBase64Data);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
 
-                    ArrayList<ArrayList<Byte>> bytes = new ArrayList<ArrayList<Byte>>();
+        try {
+            int[][] pixels = getPixelsSlow(bitmapImage);
 
-                    ArrayList<Byte> bitimgarrayList = new ArrayList<Byte>();
-                    for (int j = 0; j < SELECT_BIT_IMAGE_MODE.length; j++) {
-                        bitimgarrayList.add(SELECT_BIT_IMAGE_MODE[j]);
-                    }
-                    bytes.add(bitimgarrayList);
-                    Bitmap image = addPaddingLeftForBitmap(getPixelsSlow(rawBase64Data), 40);
-                    byte[] instructionBytes  = POS_PrintBMP(image, 250, 50 );/// here should be image data in base64
+            OutputStream printerOutputStream = socket.getOutputStream();
 
-                    ArrayList<Byte> arrayList = new ArrayList<Byte>();
-                    for (int j = 0; j < instructionBytes.length; j++) {
-                        arrayList.add(instructionBytes[j]);
-                    }
-                    bytes.add(arrayList);
+            printerOutputStream.write(SET_LINE_SPACE_24);
+            printerOutputStream.write(CENTER_ALIGN);
 
-                                                                  /// Base64.decode(rawData, Base64.DEFAULT);
-//                    bytes.add(convertByteToArrayList(SET_LINE_SPACE_24));
-//                    for (int y = 0; y < pixels.length; y += 24) {
-//                        // Like I said before, when done sending data,
-//                        // the printer will resume to normal text printing
-//                        bytes.add(convertByteToArrayList(SELECT_BIT_IMAGE_MODE));
-//                        // Set nL and nH based on the width of the image
-//                        byte[] byt = (new byte[] { (byte) (0x00ff & pixels[y].length),
-//                                (byte) ((0xff00 & pixels[y].length) >> 8) });
-//                        bytes.add(convertByteToArrayList(byt));
-//                        for (int x = 0; x < pixels[y].length; x++) {
-//                            // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
-//                            byte[] b = (recollectSlice(y, x, pixels));
-//                            bytes.add(convertByteToArrayList(b));
-//                        }
-//                        // Do a line feed, if not the printing will resume on the same line
-//                        bytes.add(convertByteToArrayList(LINE_FEED));
-//                    }
-//                    bytes.add(convertByteToArrayList(SET_LINE_SPACE_32));
-
-                    OutputStream printerOutputStream = socket.getOutputStream();
-                    byte[] temp = new byte[0];
-                    for (int j = 0; j < bytes.size(); j++) {
-                        ArrayList<Byte> byteArrayList = bytes.get(j);
-                        temp = new byte[byteArrayList.size()];
-                        for (int k = 0; k < byteArrayList.size(); k++)
-                            temp[k] = byteArrayList.get(k);
-                    }
-
-//                    byte[] temp = new byte[bytes.size()];
-                    printerOutputStream.write(temp, 0, temp.length);
-                    printerOutputStream.flush();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "failed to print data" + rawData);
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-    }
-
-    public Bitmap addPaddingLeftForBitmap(Bitmap bitmap, int paddingLeft) {
-        Bitmap outputBitmap = Bitmap.createBitmap(bitmap.getWidth() + paddingLeft, bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(outputBitmap);
-        canvas.drawColor(Color.WHITE);
-        canvas.drawBitmap(bitmap, paddingLeft, 0, null);
-        return outputBitmap;
-    }
-
-    private ArrayList<Byte> convertByteToArrayList(byte[] bytes) {
-
-        ArrayList<Byte> arrayList = new ArrayList<>();
-        for (int i = 0; i < bytes.length; i++) {
-            arrayList.add(bytes[i]);
-        }
-        return arrayList;
-    }
-
-    public static byte[] POS_PrintBMP(Bitmap mBitmap, int nWidth, int nMode) {
-        // 先转黑白，再调用函数缩放位图
-        int width = ((nWidth + 7) / 8) * 8;
-        int height = mBitmap.getHeight() * width / mBitmap.getWidth();
-        height = ((height + 7) / 8) * 8;
-
-        Bitmap rszBitmap = mBitmap;
-        if (mBitmap.getWidth() != width){
-            rszBitmap = resizeImage(mBitmap, width, height);
-        }
-
-    
-        Bitmap grayBitmap = toGrayscale(rszBitmap);
-        
-        byte[] dithered = thresholdToBWPic(grayBitmap);
-
-        byte[] data = eachLinePixToCmd(dithered, width, nMode);
-        
-        return data;
-    }
-    private static void format_K_threshold(int[] orgpixels, int xsize, int ysize, byte[] despixels) {
-        int graytotal = 0;
-
-        int k = 0;
-
-        int i;
-        int j;
-        int gray;
-        for(i = 0; i < ysize; ++i) {
-            for(j = 0; j < xsize; ++j) {
-                gray = orgpixels[k] & 255;
-                graytotal += gray;
-                ++k;
-            }
-        }
-
-        int grayave = graytotal / ysize / xsize;
-        k = 0;
-
-        for(i = 0; i < ysize; ++i) {
-            for(j = 0; j < xsize; ++j) {
-                gray = orgpixels[k] & 255;
-                if (gray > grayave) {
-                    despixels[k] = 0;
-                } else {
-                    despixels[k] = 1;
+            for (int y = 0; y < pixels.length; y += 24) {
+                // Like I said before, when done sending data,
+                // the printer will resume to normal text printing
+                printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
+                // Set nL and nH based on the width of the image
+                printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
+                        , (byte)((0xff00 & pixels[y].length) >> 8)});
+                for (int x = 0; x < pixels[y].length; x++) {
+                    // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
+                    printerOutputStream.write(recollectSlice(y, x, pixels));
                 }
 
-                ++k;
+                // Do a line feed, if not the printing will resume on the same line
+                printerOutputStream.write(LINE_FEED);
             }
+            printerOutputStream.write(SET_LINE_SPACE_32);
+            printerOutputStream.write(LINE_FEED);
+
+            printerOutputStream.flush();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "failed to print data");
+            e.printStackTrace();
         }
-
     }
 
-    public static byte[] thresholdToBWPic(Bitmap mBitmap) {
-        int[] pixels = new int[mBitmap.getWidth() * mBitmap.getHeight()];
-        byte[] data = new byte[mBitmap.getWidth() * mBitmap.getHeight()];
-        mBitmap.getPixels(pixels, 0, mBitmap.getWidth(), 0, 0, mBitmap.getWidth(), mBitmap.getHeight());
-        format_K_threshold(pixels, mBitmap.getWidth(), mBitmap.getHeight(), data);
-        return data;
-    }
-    private static int[] p0 = new int[]{0, 128};
-    private static int[] p1 = new int[]{0, 64};
-    private static int[] p2 = new int[]{0, 32};
-    private static int[] p3 = new int[]{0, 16};
-    private static int[] p4 = new int[]{0, 8};
-    private static int[] p5 = new int[]{0, 4};
-    private static int[] p6 = new int[]{0, 2};
+    public static int[][] getPixelsSlow(Bitmap image2) {
 
-    public static Bitmap resizeImage(Bitmap bitmap, int w, int h) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        float scaleWidth = (float)w / (float)width;
-        float scaleHeight = (float)h / (float)height;
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-        return resizedBitmap;
-    }
-
-    public static Bitmap toGrayscale(Bitmap bmpOriginal) {
-        int height = bmpOriginal.getHeight();
-        int width = bmpOriginal.getWidth();
-        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bmpGrayscale);
-        Paint paint = new Paint();
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0.0F);
-        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
-        paint.setColorFilter(f);
-        c.drawBitmap(bmpOriginal, 0.0F, 0.0F, paint);
-        return bmpGrayscale;
-    }
-    public static byte[] eachLinePixToCmd(byte[] src, int nWidth, int nMode) {
-        int nHeight = src.length / nWidth;
-        int nBytesPerLine = nWidth / 8;
-        byte[] data = new byte[nHeight * (8 + nBytesPerLine)];
-
-        int k = 0;
-
-        for(int i = 0; i < nHeight; ++i) {
-            int offset = i * (8 + nBytesPerLine);
-            data[offset + 0] = 29;
-            data[offset + 1] = 118;
-            data[offset + 2] = 48;
-            data[offset + 3] = (byte)(nMode & 1);
-            data[offset + 4] = (byte)(nBytesPerLine % 256);
-            data[offset + 5] = (byte)(nBytesPerLine / 256);
-            data[offset + 6] = 1;
-            data[offset + 7] = 0;
-
-            for(int j = 0; j < nBytesPerLine; ++j) {
-                data[offset + 8 + j] = (byte)(p0[src[k]] + p1[src[k + 1]] + p2[src[k + 2]] + p3[src[k + 3]] + p4[src[k + 4]] + p5[src[k + 5]] + p6[src[k + 6]] + src[k + 7]);
-                k += 8;
-            }
-        }
-
-        return data;
-    }
-
-
-
-    public static Bitmap getPixelsSlow(String encodedImage) {
-        
-
-        Log.v("encodeimage", String.valueOf(encodedImage));
-
-        String base64Image = encodedImage.split(",")[1];
-
-        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-        Bitmap image2 = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        // Bitmap imageT =
-        // BitmapFactory.decodeResource(context.getResources(),R.drawable.insta);
-        try{
-            int check=image2.getWidth();
-            Log.v("imagedatacheck", String.valueOf(check));
-            // the bitmap is valid & not null or empty
-
-        }catch (Exception w){
-            // the bitmap, not valid eighter null or empty
-            Log.v("imagedata2", String.valueOf(w.getMessage()));
-        }
-
-        Log.v("image2", String.valueOf(image2));
         Bitmap image = resizeTheImageForPrinting(image2);
-
 
         int width = image.getWidth();
         int height = image.getHeight();
@@ -512,7 +320,7 @@ private String getBase64FromImageURL(String url) {
                 result[row][col] = getRGB(image, col, row);
             }
         }
-        return image;
+        return result;
     }
 
     private byte[] recollectSlice(int y, int x, int[][] img) {
