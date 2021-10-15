@@ -89,11 +89,27 @@ export function exchange_text(text, options) {
         }
     }
     temp.length && bytes.concat(iconv.encode(temp, m_options.encoding));
-    // add option bytes
-    for (var key in m_options) {
-        if (typeof m_options[key] === "boolean" && options_controller[key])
-            bytes.concat(options_controller[key]);
+
+    // check for "encoding" flag
+    if (typeof m_options["encoding"] === "boolean" && options_controller["encoding"]) {
+        bytes.concat(options_controller["encoding"]);
     }
+
+    // check for "tailingLine" flag
+    if (typeof m_options["tailingLine"] === "boolean" && options_controller["tailingLine"]) {
+        bytes.concat(options_controller["tailingLine"]);
+    }
+
+    // check for "cut" flag
+    if (typeof m_options["cut"] === "boolean" && options_controller["cut"]) {
+        bytes.concat(options_controller["cut"]);
+    }
+
+    // check for "beep" flag
+    if (typeof m_options["beep"] === "boolean" && options_controller["beep"]) {
+        bytes.concat(options_controller["beep"]);
+    }
+
     return bytes.toBuffer();
 }
 // export async function exchange_image(
