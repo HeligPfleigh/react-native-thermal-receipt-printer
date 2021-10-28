@@ -26,6 +26,7 @@ export declare const USBPrinter: {
     closeConn: () => Promise<void>;
     printText: (text: string, opts?: PrinterOptions) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
+    printImage: (imgUrl: string, opts?: {}) => void;
 };
 export declare const BLEPrinter: {
     init: () => Promise<void>;

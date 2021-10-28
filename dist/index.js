@@ -91,6 +91,12 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printImage: function (imgUrl, opts) {
+        if (opts === void 0) { opts = {}; }
+        RNUSBPrinter.printImageData(imgUrl, function (error) {
+            return console.warn(error);
+        });
+    },
 };
 export var BLEPrinter = {
     init: function () {
