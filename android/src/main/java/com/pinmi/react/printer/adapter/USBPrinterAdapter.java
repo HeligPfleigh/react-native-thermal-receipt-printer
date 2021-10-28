@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -267,7 +268,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
             return;
         }
 
-        Log.v(LOG_TAG, "start to print image data " + data);
+        Log.v(LOG_TAG, "start to print image data " + bitmapImage);
         boolean isConnected = openConnection();
         if (isConnected) {
             Log.v(LOG_TAG, "Connected to device");
@@ -280,12 +281,9 @@ public class USBPrinterAdapter implements PrinterAdapter {
             for (int y = 0; y < pixels.length; y += 24) {
                 // Like I said before, when done sending data,
                 // the printer will resume to normal text printing
-                //printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
                 mUsbDeviceConnection.bulkTransfer(mEndPoint, SELECT_BIT_IMAGE_MODE, SELECT_BIT_IMAGE_MODE.length, 100000);
-                // Set nL and nH based on the width of the image
-                //printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
-                //        , (byte)((0xff00 & pixels[y].length) >> 8)});
 
+                // Set nL and nH based on the width of the image
                 byte[] row = new byte[]{(byte)(0x00ff & pixels[y].length)
                         , (byte)((0xff00 & pixels[y].length) >> 8)};
                 
@@ -294,69 +292,21 @@ public class USBPrinterAdapter implements PrinterAdapter {
                 for (int x = 0; x < pixels[y].length; x++) {
                     // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
                     byte[] slice = recollectSlice(y, x, pixels);
-
-
-                    // printerOutputStream.write(recollectSlice(y, x, pixels));
-
                     mUsbDeviceConnection.bulkTransfer(mEndPoint, slice, slice.length, 100000);
                 }
 
                 // Do a line feed, if not the printing will resume on the same line
-                //printerOutputStream.write(LINE_FEED);
-
                 mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
             }
-            //printerOutputStream.write(SET_LINE_SPACE_32);
+
             mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_32, SET_LINE_SPACE_32.length, 100000);
-            //printerOutputStream.write(LINE_FEED);
             mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
-
-
-            
-//            int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, bytes, bytes.length, 100000);
-//            Log.i(LOG_TAG, "Return Status: b-->" + b);
-
         } else {
             String msg = "failed to connected to device";
             Log.v(LOG_TAG, msg);
             errorCallback.invoke(msg);
         }
 
-
-        final Socket socket = this.mSocket;
-
-        try {
-            int[][] pixels = getPixelsSlow(bitmapImage);
-
-            OutputStream printerOutputStream = socket.getOutputStream();
-
-            printerOutputStream.write(SET_LINE_SPACE_24);
-            printerOutputStream.write(CENTER_ALIGN);
-
-            for (int y = 0; y < pixels.length; y += 24) {
-                // Like I said before, when done sending data,
-                // the printer will resume to normal text printing
-                printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
-                // Set nL and nH based on the width of the image
-                printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
-                        , (byte)((0xff00 & pixels[y].length) >> 8)});
-                for (int x = 0; x < pixels[y].length; x++) {
-                    // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
-                    byte[]
-                    printerOutputStream.write(recollectSlice(y, x, pixels));
-                }
-
-                // Do a line feed, if not the printing will resume on the same line
-                printerOutputStream.write(LINE_FEED);
-            }
-            printerOutputStream.write(SET_LINE_SPACE_32);
-            printerOutputStream.write(LINE_FEED);
-
-            printerOutputStream.flush();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "failed to print data");
-            e.printStackTrace();
-        }
     }
 
     public static int[][] getPixelsSlow(Bitmap image2) {
@@ -439,29 +389,4 @@ public class USBPrinterAdapter implements PrinterAdapter {
                 (int) (image.getHeight() * decreaseSizeBy), true);
         return resized;
     }
-
-    @Override
-    public void printImageData(String imageUrl, Callback errorCallback) {
-        final String rawData = data;
-        Log.v(LOG_TAG, "start to print raw data " + data);
-        boolean isConnected = openConnection();
-        if (isConnected) {
-            Log.v(LOG_TAG, "Connected to device");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    byte[] bytes = Base64.decode(rawData, Base64.DEFAULT);
-                    int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, bytes, bytes.length, 100000);
-                    Log.i(LOG_TAG, "Return Status: b-->" + b);
-                }
-            }).start();
-        } else {
-            String msg = "failed to connected to device";
-            Log.v(LOG_TAG, msg);
-            errorCallback.invoke(msg);
-        }
-
-    }
-
-
 }

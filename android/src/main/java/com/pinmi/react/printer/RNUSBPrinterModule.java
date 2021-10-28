@@ -62,9 +62,10 @@ public class RNUSBPrinterModule extends ReactContextBaseJavaModule implements RN
         adapter.printRawData(base64Data, errorCallback);
     }
 
+    @ReactMethod
     @Override
     public void printImageData(String imageUrl, Callback errorCallback) {
-
+        adapter.printImageData(imageUrl, errorCallback);
     }
 
 
