@@ -14,12 +14,22 @@ import android.hardware.usb.UsbManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,7 +238,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
         }
     }
 
-public static Bitmap getBitmapFromURL(String src) {
+    public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -276,7 +286,7 @@ public static Bitmap getBitmapFromURL(String src) {
                 //printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
                 //        , (byte)((0xff00 & pixels[y].length) >> 8)});
 
-                byte[] row = ew byte[]{(byte)(0x00ff & pixels[y].length)
+                byte[] row = new byte[]{(byte)(0x00ff & pixels[y].length)
                         , (byte)((0xff00 & pixels[y].length) >> 8)};
                 
                 mUsbDeviceConnection.bulkTransfer(mEndPoint, row, row.length, 100000);
@@ -302,13 +312,9 @@ public static Bitmap getBitmapFromURL(String src) {
             mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
 
 
-
-
-
-
-
-            int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, bytes, bytes.length, 100000);
-            Log.i(LOG_TAG, "Return Status: b-->" + b);
+            
+//            int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, bytes, bytes.length, 100000);
+//            Log.i(LOG_TAG, "Return Status: b-->" + b);
 
         } else {
             String msg = "failed to connected to device";
