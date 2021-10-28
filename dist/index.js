@@ -93,7 +93,7 @@ export var USBPrinter = {
     },
     printImage: function (imgUrl, opts) {
         if (opts === void 0) { opts = {}; }
-        RNUSBPrinter.printImageData(imgUrl, function (error) {
+        return RNUSBPrinter.printImageData(imgUrl, function (error) {
             return console.warn(error);
         });
     },
