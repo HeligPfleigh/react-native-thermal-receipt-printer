@@ -202,6 +202,18 @@ export var NetPrinter = {
             });
         }
     },
+    printQrCode: function (qrCode, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (Platform.OS === "ios") {
+            RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
+        }
+        // else {
+        //     RNNetPrinter.printImageData(imgUrl, function (error) {
+        //         return console.warn(error);
+        //     });
+        // }
+    },
+    
 
 };
 export var NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
