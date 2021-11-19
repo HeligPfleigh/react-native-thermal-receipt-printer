@@ -189,4 +189,9 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     public void printImageData(String imageUrl, Callback errorCallback) {
 
     }
+
+    @Override
+    public void printQrCode(String qrCode, Callback errorCallback) {
+
+    }
 }
