@@ -207,11 +207,11 @@ export var NetPrinter = {
         if (Platform.OS === "ios") {
             RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
         }
-        // else {
-        //     RNNetPrinter.printQrCode(qrCode, opts, function (error) {
-        //         return console.warn(error);
-        //     });
-        // }
+         else {
+             RNNetPrinter.printQrCode(qrCode, opts, function (error) {
+                 return console.warn(error);
+             });
+         }
     },
     
 
