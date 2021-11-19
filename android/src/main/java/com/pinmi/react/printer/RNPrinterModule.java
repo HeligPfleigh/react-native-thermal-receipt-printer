@@ -37,5 +37,8 @@ public interface RNPrinterModule {
     @ReactMethod
     public void printImageData(String imageUrl, Callback errorCallback) ;
 
+    @ReactMethod
+    public void printQrCode(String qrCode, Callback errorCallback) ;
+
 }
 
