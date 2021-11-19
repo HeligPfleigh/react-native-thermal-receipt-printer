@@ -269,5 +269,32 @@ RCT_EXPORT_METHOD(closeConn) {
     }
 }
 
+RCT_EXPORT_METHOD(printQrCode:(NSString *)qrCode
+                  printerOptions:(NSDictionary *)options
+                  fail:(RCTResponseSenderBlock)errorCallback) {
+    @try {
+        
+        !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
+       
+        
+        NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
+        
+        NSInteger printerWidth = 576;
+        
+        if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
+            printerWidth = 384;
+        }
+        
+        if(qrCode != nil){
+            
+            [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
+            [[PrinterSDK defaultPrinterSDK] printQrCode:qrCode ];
+        }
+        
+    } @catch (NSException *exception) {
+        errorCallback(@[exception.reason]);
+    }
+}
+
 @end
 
