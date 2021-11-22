@@ -97,6 +97,12 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printQrCode: function (qrCode, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printQrCode(qrCode, function (error) {
+            return console.warn(error);
+        });
+    },
 };
 export var BLEPrinter = {
     init: function () {
@@ -208,7 +214,7 @@ export var NetPrinter = {
             RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
         }
          else {
-             RNNetPrinter.printQrCode(qrCode, opts, function (error) {
+             RNNetPrinter.printQrCode(qrCode, function (error) {
                  return console.warn(error);
              });
          }
