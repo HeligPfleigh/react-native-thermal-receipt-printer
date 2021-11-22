@@ -8,7 +8,9 @@ import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
+import com.facebook.common.internal.ImmutableMap;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -19,6 +21,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.encoder.ByteMatrix;
+import com.pinmi.react.printer.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +34,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import android.graphics.BitmapFactory;
@@ -263,12 +269,11 @@ public class NetPrinterAdapter implements PrinterAdapter {
         }
     }
 
-
     @Override
     public void printImageData(final String imageUrl, Callback errorCallback) {
         final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
 
-        if(bitmapImage == null) {
+        if (bitmapImage == null) {
             errorCallback.invoke("image not found");
             return;
         }
@@ -293,8 +298,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 // the printer will resume to normal text printing
                 printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
                 // Set nL and nH based on the width of the image
-                printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
-                        , (byte)((0xff00 & pixels[y].length) >> 8)});
+                printerOutputStream.write(
+                        new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
                 for (int x = 0; x < pixels[y].length; x++) {
                     // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
                     printerOutputStream.write(recollectSlice(y, x, pixels));
@@ -315,9 +320,9 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
     @Override
     public void printQrCode(String qrCode, Callback errorCallback) {
-        final Bitmap bitmapImage = TextToQrImageEncode(imageUrl);
+        final Bitmap bitmapImage = TextToQrImageEncode(qrCode);
 
-        if(bitmapImage == null) {
+        if (bitmapImage == null) {
             errorCallback.invoke("image not found");
             return;
         }
@@ -342,8 +347,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 // the printer will resume to normal text printing
                 printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
                 // Set nL and nH based on the width of the image
-                printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
-                        , (byte)((0xff00 & pixels[y].length) >> 8)});
+                printerOutputStream.write(
+                        new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
                 for (int x = 0; x < pixels[y].length; x++) {
                     // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
                     printerOutputStream.write(recollectSlice(y, x, pixels));
@@ -362,44 +367,31 @@ public class NetPrinterAdapter implements PrinterAdapter {
         }
     }
 
+    private Bitmap TextToQrImageEncode(String Value) {
 
+        com.google.zxing.Writer writer = new QRCodeWriter();
 
-    private Bitmap TextToQrImageEncode(String Value) throws WriterException {
-        BitMatrix bitMatrix;
+        BitMatrix bitMatrix = null;
         try {
-            bitMatrix = new MultiFormatWriter().encode(
-                    Value,
-                    BarcodeFormat.DATA_MATRIX.QR_CODE,
-                    QRcodeWidth, QRcodeWidth, null
-            );
+            bitMatrix = writer.encode(Value, com.google.zxing.BarcodeFormat.QR_CODE, 250, 250,
+                    ImmutableMap.of(EncodeHintType.MARGIN, 1));
+            int width = 250;
+            int height = 250;
+            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
-        } catch (IllegalArgumentException Illegalargumentexception) {
-
-            return null;
-        }
-        int bitMatrixWidth = bitMatrix.getWidth();
-
-        int bitMatrixHeight = bitMatrix.getHeight();
-
-        int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
-
-        for (int y = 0; y < bitMatrixHeight; y++) {
-            int offset = y * bitMatrixWidth;
-
-            for (int x = 0; x < bitMatrixWidth; x++) {
-
-                pixels[offset + x] = bitMatrix.get(x, y) ?
-                        getResources().getColor(R.color.black):getResources().getColor(R.color.white);
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    bmp.setPixel(i, j, bitMatrix.get(i, j) ? Color.BLACK : Color.WHITE);
+                }
             }
+            return bmp;
+        } catch (WriterException e) {
+            // Log.e("QR ERROR", ""+e);
+
         }
-        Bitmap bitmap = Bitmap.createBitmap(bitMatrixWidth, bitMatrixHeight, Bitmap.Config.ARGB_4444);
 
-        bitmap.setPixels(pixels, 0, 500, 0, 0, bitMatrixWidth, bitMatrixHeight);
-        return bitmap;
+        return null;
     }
-
-
-
 
     public static int[][] getPixelsSlow(Bitmap image2) {
 
