@@ -17,6 +17,14 @@ import android.util.Log;
 import android.widget.Toast;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.encoder.ByteMatrix;
+import com.facebook.common.internal.ImmutableMap;
 
 
 import com.facebook.react.bridge.Callback;
@@ -309,8 +317,81 @@ public class USBPrinterAdapter implements PrinterAdapter {
 
     }
 
+    private Bitmap TextToQrImageEncode(String Value) {
+
+        com.google.zxing.Writer writer = new QRCodeWriter();
+
+        BitMatrix bitMatrix = null;
+        try {
+            bitMatrix = writer.encode(Value, com.google.zxing.BarcodeFormat.QR_CODE, 250, 250,
+                    ImmutableMap.of(EncodeHintType.MARGIN, 1));
+            int width = 250;
+            int height = 250;
+            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    bmp.setPixel(i, j, bitMatrix.get(i, j) ? Color.BLACK : Color.WHITE);
+                }
+            }
+            return bmp;
+        } catch (WriterException e) {
+            // Log.e("QR ERROR", ""+e);
+
+        }
+
+        return null;
+    }
+
     @Override
     public void printQrCode(String qrCode, Callback errorCallback) {
+
+        final Bitmap bitmapImage = TextToQrImageEncode(qrCode);
+
+        if(bitmapImage == null) {
+            errorCallback.invoke("image not found");
+            return;
+        }
+
+        Log.v(LOG_TAG, "start to print image data " + bitmapImage);
+        boolean isConnected = openConnection();
+        if (isConnected) {
+            Log.v(LOG_TAG, "Connected to device");
+            int[][] pixels = getPixelsSlow(bitmapImage);
+
+            int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_24, SET_LINE_SPACE_24.length, 100000);
+
+            b = mUsbDeviceConnection.bulkTransfer(mEndPoint, CENTER_ALIGN, CENTER_ALIGN.length, 100000);
+
+            for (int y = 0; y < pixels.length; y += 24) {
+                // Like I said before, when done sending data,
+                // the printer will resume to normal text printing
+                mUsbDeviceConnection.bulkTransfer(mEndPoint, SELECT_BIT_IMAGE_MODE, SELECT_BIT_IMAGE_MODE.length, 100000);
+
+                // Set nL and nH based on the width of the image
+                byte[] row = new byte[]{(byte)(0x00ff & pixels[y].length)
+                        , (byte)((0xff00 & pixels[y].length) >> 8)};
+
+                mUsbDeviceConnection.bulkTransfer(mEndPoint, row, row.length, 100000);
+
+                for (int x = 0; x < pixels[y].length; x++) {
+                    // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
+                    byte[] slice = recollectSlice(y, x, pixels);
+                    mUsbDeviceConnection.bulkTransfer(mEndPoint, slice, slice.length, 100000);
+                }
+
+                // Do a line feed, if not the printing will resume on the same line
+                mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
+            }
+
+            mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_32, SET_LINE_SPACE_32.length, 100000);
+            mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
+        } else {
+            String msg = "failed to connected to device";
+            Log.v(LOG_TAG, msg);
+            errorCallback.invoke(msg);
+        }
+
 
     }
 
