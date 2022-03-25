@@ -72,8 +72,8 @@ export default function App() {
             break;
           case "net":
             await NetPrinter.connectPrinter(
-              selectedPrinter?.host || "",
-              selectedPrinter?.port || 9100
+              "192.168.1.100",
+              9100
             );
             break;
           case "usb":
@@ -95,8 +95,10 @@ export default function App() {
 
   const handlePrint = async () => {
     try {
+      // [options valueForKey:@"imageWidth"];
       const Printer = printerList[selectedValue];
-      await Printer.printText("<C>sample text</C>\n");
+      await Printer.printImage("https://howmuch-pk.s3.ap-southeast-1.amazonaws.com/spree/stores/1380/squared_large/logo-for-grocery-store-vector-21609822.jpeg", {imageWidth: 100, paddingX: 300});
+      await Printer.printText("<C>sample text bjhbfhjbdjhfbjfhdvfjdvhjdbfjbjhfdbghjfbgbhjfdgbjfdhbgbjhdfgbjhdfbghjdbghdbjgdhhbgghdjfhbgjdfbgbhjd</C>\n");
     } catch (err) {
       console.warn(err);
     }
@@ -180,7 +182,7 @@ export default function App() {
         title="Print sample"
         onPress={handlePrint}
       />
-      <Loader loading={loading} />
+     
     </View>
   );
 }
