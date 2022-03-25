@@ -36,10 +36,10 @@ var billTo64Buffer = function (text, opts) {
     var buffer = EPToolkit.exchange_text(text, options);
     return buffer.toString("base64");
 };
-var textPreprocessingIOS = function (text) {
+var textPreprocessingIOS = function (text, isCut) {
     var options = {
         beep: true,
-        cut: true,
+        cut: isCut,
     };
     return {
         text: text
@@ -91,6 +91,12 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printImage: function (imgUrl, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printImageData(imgUrl, function (error) {
+            return console.warn(error);
+        });
+    },
 };
 export var BLEPrinter = {
     init: function () {
@@ -117,7 +123,7 @@ export var BLEPrinter = {
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text);
+            var processedText = textPreprocessingIOS(text, false);
             RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
@@ -129,7 +135,7 @@ export var BLEPrinter = {
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text);
+            var processedText = textPreprocessingIOS(text, true);
             RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
@@ -164,7 +170,7 @@ export var NetPrinter = {
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text);
+            var processedText = textPreprocessingIOS(text, false);
             RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
@@ -176,7 +182,7 @@ export var NetPrinter = {
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text);
+            var processedText = textPreprocessingIOS(text, true);
             RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
@@ -185,6 +191,30 @@ export var NetPrinter = {
             });
         }
     },
+    printImage: function (imgUrl, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (Platform.OS === "ios") {
+            RNNetPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
+        }
+        else {
+            RNNetPrinter.printImageData(imgUrl, function (error) {
+                return console.warn(error);
+            });
+        }
+    },
+    printQrCode: function (qrCode, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (Platform.OS === "ios") {
+            RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
+        }
+         else {
+             RNNetPrinter.printQrCode(qrCode, opts, function (error) {
+                 return console.warn(error);
+             });
+         }
+    },
+    
+
 };
 export var NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
 export var RN_THERMAL_RECEIPT_PRINTER_EVENTS;
