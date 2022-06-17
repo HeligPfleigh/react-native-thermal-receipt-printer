@@ -97,6 +97,12 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printQrCode: function (qrCode, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printQrCode(qrCode, function (error) {
+            return console.warn(error);
+        });
+    },
 };
 export var BLEPrinter = {
     init: function () {
@@ -143,6 +149,30 @@ export var BLEPrinter = {
                 return console.warn(error);
             });
         }
+    },
+    printImage: function (imgUrl, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (Platform.OS === "ios") {
+            console.log("printImage is not supported on iOS");
+            RNBLEPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
+        }
+        else {
+            RNBLEPrinter.printImageData(imgUrl, function (error) {
+                return console.warn(error);
+            });
+        }
+    },
+
+    printQrCode: function (qrCode, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (Platform.OS === "ios") {
+            RNBLEPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
+        }
+         else {
+            RNBLEPrinter.printQrCode(qrCode, function (error) {
+                 return console.warn(error);
+             });
+         }
     },
 };
 export var NetPrinter = {
@@ -208,7 +238,7 @@ export var NetPrinter = {
             RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
         }
          else {
-             RNNetPrinter.printQrCode(qrCode, opts, function (error) {
+             RNNetPrinter.printQrCode(qrCode, function (error) {
                  return console.warn(error);
              });
          }
