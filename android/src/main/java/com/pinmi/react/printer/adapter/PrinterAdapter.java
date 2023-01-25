@@ -15,8 +15,7 @@ import java.util.List;
 
 public interface PrinterAdapter {
 
-
-    public void init(ReactApplicationContext reactContext, Callback successCallback,  Callback errorCallback);
+    public void init(ReactApplicationContext reactContext, Callback successCallback, Callback errorCallback);
 
     public List<PrinterDevice> getDeviceList(Callback errorCallback);
 
@@ -25,8 +24,4 @@ public interface PrinterAdapter {
     public void closeConnectionIfExists();
 
     public void printRawData(String rawBase64Data, Callback errorCallback);
-
-    public void printImageData(String imageUrl, Callback errorCallback);
-
-    public void printQrCode(String qrCode, Callback errorCallback);
 }

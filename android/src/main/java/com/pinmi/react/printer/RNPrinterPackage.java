@@ -16,11 +16,8 @@ import java.util.List;
 public class RNPrinterPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.asList(new NativeModule[]{
-                new RNUSBPrinterModule(reactContext),
-                new RNBLEPrinterModule(reactContext),
-                new RNNetPrinterModule(reactContext),
-        });
+        return Arrays.asList(new NativeModule[] { new RNUSBPrinterModule(reactContext),
+                new RNBLEPrinterModule(reactContext), new RNNetPrinterModule(reactContext), });
     }
 
     @Override

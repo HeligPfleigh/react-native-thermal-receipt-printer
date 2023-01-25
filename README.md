@@ -1,91 +1,57 @@
 # react-native-thermal-receipt-printer
 
-Fork of `react-native-printer` and add implement for auto connect printer with usb
-A React Native Library to support USB/BLE/Net printer
+Fork of `react-native-thermal-receipt-printer` with added support for locales and QR Code Printing.
+This fork is not compatible 1:1 with the original version. The supported tags have changed.
 
-![Node.js Package](https://github.com/HeligPfleigh/react-native-thermal-receipt-printer/workflows/Node.js%20Package/badge.svg)
+[react-native-thermal-receipt-printer](https://github.com/HeligPfleigh/react-native-thermal-receipt-printer)
 
-## Installation
+## Predefined tags
 
-```
-yarn add react-native-thermal-receipt-printer
-```
-
-## Troubleshoot
-
-- when install in `react-native` version >= 0.60, xcode show this error
-
-```
-duplicate symbols for architecture x86_64
-```
-
-that because the .a library uses [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket) library and Flipper uses it too
-
-_Podfile_
-
-```diff
-...
-  use_native_modules!
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
-  # add_flipper_pods!
-  # post_install do |installer|
-  #   flipper_post_install(installer)
-  # end
-...
-```
-
-and comment out code related to Flipper in `ios/AppDelegate.m`
-
-## Support
-
-| Printer    | Android            | IOS                |
-| ---------- | ------------------ | ------------------ |
-| USBPrinter | :heavy_check_mark: |                    |
-| BLEPrinter | :heavy_check_mark: | :heavy_check_mark: |
-| NetPrinter | :heavy_check_mark: | :heavy_check_mark: |
-
-## Predefined tag
 | Tags          | Description           |
 |:-------------:|:---------------------:|
-| C             | Center                |
-| D             | Medium font           |
-| B             | Large font            |
-| M             | Medium font           |
-| CM            | Medium font, centered |
-| CB            | Medium font, centered |
-| CD            | Large font, centered  |
+| Text          | Prints normal text    |
+| NewLine       | Feed                  |
+| QRCode        | Prints QR Code        |
 
-## Development workflow
+### Text
 
-To get started with the project, run `yarn bootstrap` in the root directory to install the required dependencies for each package:
-
-```sh
-yarn bootstrap
+```xml
+<Text align="center" fontWidth="1" fontHeight="1">Example text</Text>
 ```
 
-While developing, you can run the [example app](/example/) to test your changes.
+Supported attributes:
 
-To start the packager:
+| Attribute          | Description                             |
+|:------------------:|:---------------------------------------:|
+| font               | Font type, values: 0 - ?                |
+| align              | Align text, values: left, center, right |
+| fontWidth          | Font width, values: 0 - 4               |
+| fontHeight         | Font height, values: 0 - 4              |
+| bold               | Bold, values: 0 - 1                     |
 
-```sh
-yarn example start
+TODO more info from printer documentation about font types
+
+### NewLine
+
+```xml
+<NewLine />
 ```
 
-To run the example app on Android:
+### QRCode
 
-```sh
-yarn example dev-android
+```xml
+<QRCode version='0' errorCorrectionLevel='3' magnification='6'>http://example.com</QRCode>
 ```
 
-To run the example app on iOS:
+Supported attributes:
 
-```sh
-yarn example ios
-```
+| Attribute             | Description                             |
+|:---------------------:|:---------------------------------------:|
+| version               | Code type, values: 0 - ?                |
+| errorCorrectionLevel  | Error correction level, values: 0 - 3   |
+| magnification         | Magnification, values: 1 - 8            |
+
+TODO get more info from printer documentation about supported code types
 
 ## Usage
 
@@ -96,13 +62,13 @@ import {
   BLEPrinter,
 } from "react-native-thermal-receipt-printer";
 
-USBPrinter.printText("<C>sample text</C>");
-USBPrinter.printBill("<C>sample bill</C>");
+USBPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
+USBPrinter.printBill("<Text>sample bill</Text>");
 ```
 
 ## Example
 
-### USBPrinter (only support android)
+### USBPrinter (only supported on android)
 
 ```typescript
 interface IUSBPrinter {
@@ -112,27 +78,39 @@ interface IUSBPrinter {
 }
 ```
 
-```javascript
-  const [printers, setPrinters] = useState([]);
-  const [currentPrinter, setCurrentPrinter] = useState();
+```typescript
+  type State = {
+    printers: IUSBPrinter[];
+    currentPrinter: IUSBPrinter;
+  }
 
-  useEffect = () => {
-    if(Platform.OS == 'android'){
-      USBPrinter.init().then(()=> {
-        //list printers
-        USBPrinter.getDeviceList().then(setPrinters);
-      })
+  ...
+
+  async componentDidMount() {
+    if (Platform.OS == "android") {
+      await USBPrinter.init();
+      var availablePrinters = await USBPrinter.getDeviceList();
+
+      this.setState({
+        printers: availablePrinters
+      });
     }
   }
 
-  const _connectPrinter = (printer) => USBPrinter.connectPrinter(printer.vendorID, printer.productId).then(() => setCurrentPrinter(printer))
+  async connectPrinter(printer: IUSBPrinter) {
+    await USBPrinter.connectPrinter(printer.vendor_id, printer.product_id);
 
-  const printTextTest = () => {
-    currentPrinter && USBPrinter.printText("<C>sample text</C>\n");
+    this.setState({
+      currentPrinter: printer
+    });
   }
 
-  const printBillTest = () => {
-    currentPrinter && USBPrinter.printBill("<C>sample bill</C>");
+  printText() {
+    USBPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
+  }
+
+  getPrinterDescription(printer: IUSBPrinter) {
+    return `device_name: ${printer.device_name}, vendor_id: ${printer.vendor_id}, product_id: ${printer.product_id}`;
   }
 
   ...
@@ -140,23 +118,19 @@ interface IUSBPrinter {
   return (
     <View style={styles.container}>
       {
-        printers.map(printer => (
-          <TouchableOpacity key={printer.device_id} onPress={() => _connectPrinter(printer)}>
-            {`device_name: ${printer.device_name}, device_id: ${printer.device_id}, vendor_id: ${printer.vendor_id}, product_id: ${printer.product_id}`}
+        this.state.printers.map(printer => (
+          <TouchableOpacity key={printer.device_name} onPress={() => connectPrinter(printer)}>
+            <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
-          ))
+        ))
       }
-      <TouchableOpacity onPress={printTextTest}>
+      <TouchableOpacity onPress={() => this.printText()}>
         <Text>Print Text</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={printBillTest}>
-        <Text>Print Bill Text</Text>
       </TouchableOpacity>
     </View>
   )
 
   ...
-
 ```
 
 ### BLEPrinter
@@ -168,29 +142,37 @@ interface IBLEPrinter {
 }
 ```
 
-```javascript
-  const [printers, setPrinters] = useState([]);
-  const [currentPrinter, setCurrentPrinter] = useState();
+```typescript
+  type State = {
+    printers: IBLEPrinter[];
+    currentPrinter: IBLEPrinter;
+  }
 
-  useEffect(() => {
-    BLEPrinter.init().then(()=> {
-      BLEPrinter.getDeviceList().then(setPrinters);
+  ...
+
+  async componentDidMount() {
+    await BLEPrinter.init();
+    var availablePrinters = await BLEPrinter.getDeviceList();
+
+    this.setState({
+      printers: availablePrinters
     });
-  }, []);
-
-  _connectPrinter => (printer) => {
-    //connect printer
-    BLEPrinter.connectPrinter(printer.inner_mac_address).then(
-      setCurrentPrinter,
-      error => console.warn(error))
   }
 
-  printTextTest = () => {
-    currentPrinter && USBPrinter.printText("<C>sample text</C>\n");
+  async connectPrinter(printer: IBLEPrinter) {
+    await BLEPrinter.connectPrinter(printer.inner_mac_address);
+
+    this.setState({
+      currentPrinter: printer
+    });
   }
 
-  printBillTest = () => {
-    currentPrinter && USBPrinter.printBill("<C>sample bill</C>");
+  printText() {
+    BLEPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
+  }
+
+  getPrinterDescription(printer: IBLEPrinter) {
+    return `device_name: ${printer.device_name}, inner_mac_address: ${printer.inner_mac_address}`;
   }
 
   ...
@@ -199,22 +181,18 @@ interface IBLEPrinter {
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.inner_mac_address} onPress={() => _connectPrinter(printer)}>
-            {`device_name: ${printer.device_name}, inner_mac_address: ${printer.inner_mac_address}`}
+          <TouchableOpacity key={printer.device_name} onPress={() => connectPrinter(printer)}>
+            <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
-          ))
+        ))
       }
-      <TouchableOpacity onPress={printTextTest}>
+      <TouchableOpacity onPress={() => this.printText()}>
         <Text>Print Text</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={printBillTest}>
-        <Text>Print Bill Text</Text>
       </TouchableOpacity>
     </View>
   )
 
   ...
-
 ```
 
 ### NetPrinter
@@ -227,56 +205,57 @@ interface INetPrinter {
 }
 ```
 
-_Note:_ get list device for net printers is support scanning in local ip but not recommended
+_Note:_ getDeviceList does support scanning in local network, but is not recommended
 
-```javascript
-
-  componentDidMount = () => {
-    NetPrinter.init().then(() => {
-      this.setState(Object.assign({}, this.state, {printers: [{host: '192.168.10.241', port: 9100}]}))
-      })
-  }
-
-  _connectPrinter => (host, port) => {
-    //connect printer
-    NetPrinter.connectPrinter(host, port).then(
-      (printer) => this.setState(Object.assign({}, this.state, {currentPrinter: printer})),
-      error => console.warn(error))
-}
-
-  printTextTest = () => {
-    if (this.state.currentPrinter) {
-      NetPrinter.printText("<C>sample text</C>\n");
-    }
-  }
-
-  printBillTest = () => {
-    if(this.state.currentPrinter) {
-      NetPrinter.printBill("<C>sample bill</C>");
-    }
+```typescript
+  type State = {
+    printers: INetPrinter[];
+    currentPrinter: INetPrinter;
   }
 
   ...
 
-  render() {
-    return (
-      <View style={styles.container}>
-        {
-          this.state.printers.map(printer => (
-            <TouchableOpacity key={printer.device_id} onPress={(printer) => this._connectPrinter(printer.host, printer.port)}>
-              {`device_name: ${printer.device_name}, host: ${printer.host}, port: ${printer.port}`}
-            </TouchableOpacity>
-            ))
-        }
-        <TouchableOpacity onPress={() => this.printTextTest()}>
-          <Text> Print Text </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.printBillTest()}>
-          <Text> Print Bill Text </Text>
-        </TouchableOpacity>
-      </View>
-    )
+  async componentDidMount() {
+    await NetPrinter.init();
+    var availablePrinters = [{host: '192.168.10.241', port: 9100}];
+
+    this.setState({
+      printers: availablePrinters
+    });
   }
+
+  async connectPrinter(printer: INetPrinter) {
+    let printer = await NetPrinter.connectPrinter(printer.host, printer.port);
+
+    this.setState({
+      currentPrinter: printer
+    });
+  }
+
+  printText() {
+    NetPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
+  }
+
+  getPrinterDescription(printer: INetPrinter) {
+    return `device_name: ${printer.device_name}, host: ${printer.host}, port: ${printer.port}`;
+  }
+
+  ...
+
+  return (
+    <View style={styles.container}>
+      {
+        this.state.printers.map(printer => (
+          <TouchableOpacity key={printer.device_name} onPress={() => connectPrinter(printer)}>
+            <Text>{this.getPrinterDescription(printer)}</Text>
+          </TouchableOpacity>
+        ))
+      }
+      <TouchableOpacity onPress={() => this.printText()}>
+        <Text>Print Text</Text>
+      </TouchableOpacity>
+    </View>
+  )
 
   ...
 

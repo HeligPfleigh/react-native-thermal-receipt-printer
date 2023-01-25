@@ -1,7 +1,5 @@
 package com.pinmi.react.printer;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -20,7 +18,7 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
     private PrinterAdapter adapter;
     private ReactApplicationContext reactContext;
 
-    public RNNetPrinterModule(ReactApplicationContext reactContext){
+    public RNNetPrinterModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
     }
@@ -29,7 +27,7 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
     @Override
     public void init(Callback successCallback, Callback errorCallback) {
         this.adapter = NetPrinterAdapter.getInstance();
-        this.adapter.init(reactContext,  successCallback, errorCallback);
+        this.adapter.init(reactContext, successCallback, errorCallback);
     }
 
     @ReactMethod
@@ -48,7 +46,6 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
         } catch (Exception ex) {
             errorCallback.invoke(ex.getMessage());
         }
-        // this.adapter.getDeviceList(errorCallback);
     }
 
     @ReactMethod
@@ -61,22 +58,6 @@ public class RNNetPrinterModule extends ReactContextBaseJavaModule implements RN
     public void printRawData(String base64Data, Callback errorCallback) {
         adapter.printRawData(base64Data, errorCallback);
     }
-
-    @ReactMethod
-    @Override
-    public void printImageData(String imageUrl, Callback errorCallback) {
-        Log.v("imageUrl", imageUrl);
-        adapter.printImageData(imageUrl, errorCallback);
-    }
-
-    @ReactMethod
-    @Override
-    public void printQrCode(String qrCode, Callback errorCallback) {
-        Log.v("qrCode", qrCode);
-        adapter.printQrCode(qrCode, errorCallback);
-    }
-
-
 
     @Override
     public String getName() {

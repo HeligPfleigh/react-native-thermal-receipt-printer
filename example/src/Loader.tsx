@@ -25,7 +25,7 @@ interface LoaderProps {
 }
 
 const Loader: React.FC<LoaderProps> = ({ loading }: LoaderProps) => {
-  const noop = () => {};
+  const noop = () => { };
   return (
     <Modal
       visible={loading}

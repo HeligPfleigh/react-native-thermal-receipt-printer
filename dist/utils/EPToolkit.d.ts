@@ -4,6 +4,7 @@ declare type IOptions = {
     cut: boolean;
     tailingLine: boolean;
     encoding: string;
+    codepage: number;
 };
 export declare function exchange_text(text: string, options: IOptions): Buffer;
 export {};
