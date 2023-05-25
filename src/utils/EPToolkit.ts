@@ -1,9 +1,7 @@
 import { Buffer } from "buffer";
 import * as iconv from "iconv-lite";
-
 var XMLParser = require("react-xml-parser");
-
-import BufferHelper from "./buffer-helper";
+import { BufferHelper } from "./buffer-helper";
 
 function b(c: string): number {
   return c.charCodeAt(0);

@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-export default class BufferHelper {
+export class BufferHelper {
   buffers: Buffer[];
   size: number;
 
@@ -13,24 +13,7 @@ export default class BufferHelper {
     return this.size;
   }
 
-  concat = (buffer: Buffer): BufferHelper => {
-    this.buffers.push(buffer);
-    this.size += buffer.length;
-    return this;
-  };
-
-  empty = (): BufferHelper => {
-    this.buffers = [];
-    this.size = 0;
-    return this;
-  };
-
-  toBuffer = (): Buffer => Buffer.concat(this.buffers, this.size);
-
-  toString = (encoding: BufferEncoding): string =>
-    this.toBuffer().toString(encoding);
-
-  load = (stream: any, callback: any) => {
+  load(stream: any, callback: any) {
     stream.on("data", (trunk: Buffer) => {
       this.concat(trunk);
     });
@@ -39,4 +22,24 @@ export default class BufferHelper {
     });
     stream.once("error", callback);
   };
+
+  concat(buffer: Buffer): BufferHelper {
+    this.buffers.push(buffer);
+    this.size += buffer.length;
+    return this;
+  };
+
+  empty(): BufferHelper {
+    this.buffers = [];
+    this.size = 0;
+    return this;
+  };
+
+  toBuffer(): Buffer {
+    return Buffer.concat(this.buffers, this.size);
+  }
+
+  toString(encoding: BufferEncoding): string {
+    return this.toBuffer().toString(encoding);
+  }
 }
