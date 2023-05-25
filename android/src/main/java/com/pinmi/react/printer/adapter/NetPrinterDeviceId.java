@@ -3,7 +3,6 @@ package com.pinmi.react.printer.adapter;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public class NetPrinterDeviceId extends PrinterDeviceId {
     private String host;
     private Integer port;

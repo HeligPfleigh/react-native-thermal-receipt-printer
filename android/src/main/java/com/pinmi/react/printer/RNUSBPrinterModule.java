@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * Created by xiesubin on 2017/9/22.
  */
-
 public class RNUSBPrinterModule extends ReactContextBaseJavaModule implements RNPrinterModule {
 
     protected ReactApplicationContext reactContext;

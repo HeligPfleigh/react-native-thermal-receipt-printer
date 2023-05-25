@@ -3,7 +3,6 @@ package com.pinmi.react.printer.adapter;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public class BLEPrinterDeviceId extends PrinterDeviceId {
     private String innerMacAddress;
 
@@ -31,7 +30,6 @@ public class BLEPrinterDeviceId extends PrinterDeviceId {
         BLEPrinterDeviceId that = (BLEPrinterDeviceId) o;
 
         return innerMacAddress.equals(that.innerMacAddress);
-
     }
 
     @Override

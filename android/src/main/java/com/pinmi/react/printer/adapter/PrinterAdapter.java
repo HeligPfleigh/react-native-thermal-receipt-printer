@@ -12,7 +12,6 @@ import java.util.List;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public interface PrinterAdapter {
 
     public void init(ReactApplicationContext reactContext, Callback successCallback, Callback errorCallback);

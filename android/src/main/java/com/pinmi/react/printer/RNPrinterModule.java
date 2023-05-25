@@ -19,9 +19,7 @@ import java.util.List;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public interface RNPrinterModule {
-
     public void init(Callback successCallback, Callback errorCallback);
 
     public void closeConn();
@@ -30,5 +28,4 @@ public interface RNPrinterModule {
 
     @ReactMethod
     public void printRawData(String base64Data, Callback errorCallback);
-
 }

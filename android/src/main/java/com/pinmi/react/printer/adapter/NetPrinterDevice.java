@@ -6,7 +6,6 @@ import com.facebook.react.bridge.WritableMap;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public class NetPrinterDevice implements PrinterDevice {
     private NetPrinterDeviceId mNetPrinterDeviceId;
 
@@ -22,7 +21,8 @@ public class NetPrinterDevice implements PrinterDevice {
     @Override
     public WritableMap toRNWritableMap() {
         WritableMap deviceMap = Arguments.createMap();
-        deviceMap.putString("device_name", this.mNetPrinterDeviceId.getHost() + ":" + this.mNetPrinterDeviceId.getPort());
+        deviceMap.putString("device_name",
+                this.mNetPrinterDeviceId.getHost() + ":" + this.mNetPrinterDeviceId.getPort());
         deviceMap.putString("host", this.mNetPrinterDeviceId.getHost());
         deviceMap.putInt("port", this.mNetPrinterDeviceId.getPort());
         return deviceMap;

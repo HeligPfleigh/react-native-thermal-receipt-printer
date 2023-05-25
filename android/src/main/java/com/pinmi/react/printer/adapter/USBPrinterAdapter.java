@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * Created by xiesubin on 2017/9/20.
  */
-
 public class USBPrinterAdapter implements PrinterAdapter {
     private static USBPrinterAdapter mInstance;
 
@@ -224,5 +223,4 @@ public class USBPrinterAdapter implements PrinterAdapter {
             errorCallback.invoke(msg);
         }
     }
-
 }

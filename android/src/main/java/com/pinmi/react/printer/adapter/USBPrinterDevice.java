@@ -8,7 +8,6 @@ import com.facebook.react.bridge.WritableMap;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public class USBPrinterDevice implements PrinterDevice {
     private UsbDevice mDevice;
     private USBPrinterDeviceId usbPrinterDeviceId;
@@ -36,5 +35,4 @@ public class USBPrinterDevice implements PrinterDevice {
         deviceMap.putInt("product_id", this.mDevice.getProductId());
         return deviceMap;
     }
-
 }

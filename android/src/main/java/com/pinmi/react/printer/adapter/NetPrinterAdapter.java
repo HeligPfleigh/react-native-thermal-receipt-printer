@@ -22,14 +22,13 @@ import java.util.List;
 /**
  * Created by xiesubin on 2017/9/22.
  */
-
 public class NetPrinterAdapter implements PrinterAdapter {
     private static NetPrinterAdapter mInstance;
     private ReactApplicationContext mContext;
     private String LOG_TAG = "RNNetPrinter";
     private NetPrinterDevice mNetDevice;
 
-    // {TODO- support other ports later}
+    // TODO- support other ports later
     // private int[] PRINTER_ON_PORTS = {515, 3396, 9100, 9303};
 
     private int[] PRINTER_ON_PORTS = { 9100 };
@@ -41,7 +40,6 @@ public class NetPrinterAdapter implements PrinterAdapter {
     private boolean isRunning = false;
 
     private NetPrinterAdapter() {
-
     }
 
     public static NetPrinterAdapter getInstance() {
@@ -60,9 +58,6 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
     @Override
     public List<PrinterDevice> getDeviceList(Callback errorCallback) {
-        // errorCallback.invoke("do not need to invoke get device list for net
-        // printer");
-        // Use emitter instancee get devicelist to non block main thread
         this.scan();
         List<PrinterDevice> printerDevices = new ArrayList<>();
         return printerDevices;
@@ -71,6 +66,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     private void scan() {
         if (isRunning)
             return;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,6 +86,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     for (int i = 0; i <= 255; i++) {
                         if (i == suffix)
                             continue;
+
                         ArrayList<Integer> ports = getAvailablePorts(prefix + i);
                         if (!ports.isEmpty()) {
                             WritableMap payload = Arguments.createMap();
@@ -125,12 +122,12 @@ public class NetPrinterAdapter implements PrinterAdapter {
             if (crunchifyAddressReachable(address, port))
                 ports.add(port);
         }
+
         return ports;
     }
 
     private static boolean crunchifyAddressReachable(String address, int port) {
         try {
-
             try (Socket crunchifySocket = new Socket()) {
                 // Connects this socket to the server with a specified timeout value.
                 crunchifySocket.connect(new InetSocketAddress(address, port), 100);
@@ -188,7 +185,6 @@ public class NetPrinterAdapter implements PrinterAdapter {
             }
 
             this.mSocket = null;
-
         }
     }
 
@@ -198,9 +194,11 @@ public class NetPrinterAdapter implements PrinterAdapter {
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
             return;
         }
+
         final String rawData = rawBase64Data;
         final Socket socket = this.mSocket;
         Log.v(LOG_TAG, "start to print raw data " + rawBase64Data);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -215,6 +213,5 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 }
             }
         }).start();
-
     }
 }

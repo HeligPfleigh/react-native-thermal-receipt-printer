@@ -27,7 +27,6 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Created by xiesubin on 2017/9/21.
  */
-
 public class BLEPrinterAdapter implements PrinterAdapter {
 
     private static BLEPrinterAdapter mInstance;
@@ -137,7 +136,7 @@ public class BLEPrinterAdapter implements PrinterAdapter {
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
         this.mBluetoothSocket = device.createRfcommSocketToServiceRecord(uuid);
         this.mBluetoothSocket.connect();
-        this.mBluetoothDevice = device;// 最后一步执行
+        this.mBluetoothDevice = device;
 
     }
 

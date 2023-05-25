@@ -3,10 +3,17 @@
     "outDir": "dist",
     "module": "esnext",
     "target": "es5",
-    "lib": ["es6", "es2016", "es2017"],
+    "lib": [
+      "es6",
+      "es2016",
+      "es2017"
+    ],
     "allowJs": false,
     "jsx": "react-native",
-    "types": ["react", "node"],
+    "types": [
+      "react",
+      "node"
+    ],
     "declaration": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
@@ -14,11 +21,18 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "typeRoots": ["./src/@types/", "./node_modules/@types/"]
+    "typeRoots": [
+      "./src/@types/",
+      "./node_modules/@types/"
+    ]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
