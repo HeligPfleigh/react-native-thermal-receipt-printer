@@ -12,12 +12,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-extern NSString* PrinterConnectedNotification;
-extern NSString* PrinterDisconnectedNotification;
+extern NSString *PrinterConnectedNotification;
+extern NSString *PrinterDisconnectedNotification;
 
 @class Printer;
 
-typedef void (^PrinterScanPrintersCallback) (Printer* printer);
+typedef void (^PrinterScanPrintersCallback)(Printer *printer);
 
 typedef enum CodeBarType
 {
@@ -34,32 +34,32 @@ typedef enum CodeBarType
 
 @interface Printer : NSObject
 
-@property (nonatomic, readonly) NSString* name;
-@property (nonatomic, readonly) NSString* UUIDString;
+@property(nonatomic, readonly) NSString *name;
+@property(nonatomic, readonly) NSString *UUIDString;
 
 @end
 
 @interface PrinterSDK : NSObject
 
-+ (PrinterSDK*)defaultPrinterSDK;
++ (PrinterSDK *)defaultPrinterSDK;
 
 - (void)scanPrintersWithCompletion:(PrinterScanPrintersCallback)callback;
 - (void)stopScanPrinters;
 
-- (BOOL)connectIP:(NSString*)ipAddress;
+- (BOOL)connectIP:(NSString *)ipAddress;
 
-- (void)connectBT:(Printer*)printer;
+- (void)connectBT:(Printer *)printer;
 - (void)disconnect;
 
 - (void)setPrintWidth:(NSInteger)width;
 
-- (void)printText:(NSString*)text;
-- (void)printTextImage:(NSString*)text;
-- (void)sendHex:(NSString*)hex;
+- (void)printText:(NSString *)text;
+- (void)printTextImage:(NSString *)text;
+- (void)sendHex:(NSString *)hex;
 
-- (void)printCodeBar:(NSString*)text type:(CodeBarType)type;
-- (void)printQrCode:(NSString*)text;
-- (void)printImage:(UIImage*)image;
+- (void)printCodeBar:(NSString *)text type:(CodeBarType)type;
+- (void)printQrCode:(NSString *)text;
+- (void)printImage:(UIImage *)image;
 
 - (void)cutPaper;
 - (void)beep;
