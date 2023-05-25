@@ -1,7 +1,6 @@
-# react-native-thermal-receipt-printer
+# @intechnity/react-native-thermal-printer
 
 Fork of `react-native-thermal-receipt-printer` with added support for locales and QR Code Printing.
-This fork is not compatible 1:1 with the original version. The supported tags have changed.
 
 [react-native-thermal-receipt-printer](https://github.com/HeligPfleigh/react-native-thermal-receipt-printer)
 
@@ -60,7 +59,7 @@ import {
   USBPrinter,
   NetPrinter,
   BLEPrinter,
-} from "react-native-thermal-receipt-printer";
+} from "@intechnity/react-native-receipt-printer";
 
 USBPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
 USBPrinter.printBill("<Text>sample bill</Text>");

@@ -1,6 +1,6 @@
 ---
 name: Bug report 🐛
-about: Create a bug report for react-native-thermal-receipt-printer.
+about: Create a bug report for @intechnity/react-native-thermal-printer.
 title: ""
 labels: bug
 assignees: ""
