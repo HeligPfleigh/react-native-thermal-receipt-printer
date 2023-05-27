@@ -1,10 +1,11 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json",
-  // "compilerOptions": { todo check
-  //   "paths": {
-  //     "@intechnity/react-native-thermal-printer": [
-  //       "../src/index.ts"
-  //     ] // This mapping is relative to "baseUrl"
-  //   }
-  // }
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@intechnity/react-native-thermal-printer": [
+        "../src/index.ts"
+      ] // This mapping is relative to "baseUrl"
+    }
+  }
 }

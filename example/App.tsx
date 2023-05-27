@@ -1,118 +1,59 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
+import { SafeAreaView, StatusBar, ScrollView, View, ActivityIndicator } from 'react-native';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  BLEPrinter,
+  IBLEPrinter,
+  NetPrinter,
+  USBPrinter,
+} from '@intechnity/react-native-thermal-printer';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+type AppState = {
+  isBusy: boolean;
+  blePrinters: IBLEPrinter[];
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+class App extends React.Component<{}, AppState> {
+  blePrinter = BLEPrinter;
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  constructor(props: {}) {
+    super(props);
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+    this.state = {
+      isBusy: false,
+      blePrinters: []
+    }
+  }
+
+  async componentDidMount() {
+    this.setState({ isBusy: true });
+    await BLEPrinter.init();
+    const devices = await BLEPrinter.getDeviceList();
+
+    this.setState({
+      isBusy: false,
+      blePrinters: devices
+    });
+  }
+
+  print() {
+
+  }
+
+  render() {
+    if (this.state.isBusy) {
+      return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+
+    return (
+      <SafeAreaView>
+        <StatusBar />
+        <ScrollView contentInsetAdjustmentBehavior="automatic">
+          <View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
