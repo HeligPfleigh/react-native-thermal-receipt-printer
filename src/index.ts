@@ -1,6 +1,6 @@
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
-import * as EPToolkit from "./utils/EPToolkit";
+import { processText } from "./utils/printout-processor";
 
 const RNUSBPrinter = NativeModules.RNUSBPrinter;
 const RNBLEPrinter = NativeModules.RNBLEPrinter;
@@ -44,7 +44,7 @@ const textTo64Buffer = (text: string, opts: PrinterOptions) => {
     ...defaultOptions,
     ...opts,
   };
-  const buffer = EPToolkit.exchange_text(text, options);
+  const buffer = processText(text, options);
   return buffer.toString("base64");
 };
 
@@ -60,7 +60,7 @@ const billTo64Buffer = (text: string, opts: PrinterOptions) => {
     ...defaultOptions,
     ...opts,
   };
-  const buffer = EPToolkit.exchange_text(text, options);
+  const buffer = processText(text, options);
   return buffer.toString("base64");
 };
 

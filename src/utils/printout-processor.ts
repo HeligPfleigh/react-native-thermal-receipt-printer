@@ -40,7 +40,7 @@ const default_options: IOptions = {
   codepage: 0
 };
 
-export function exchange_text(text: string, options: IOptions): Buffer {
+export function processText(text: string, options: IOptions): Buffer {
   const adjustedOptions = options || default_options;
 
   let bytes = new BufferHelper();
@@ -99,7 +99,7 @@ function addText(node: any, bytes: BufferHelper, options: IOptions) {
   let bold = 0; //1 or 0
   let isBase64: boolean = false;
 
-  const stringToTargetAlignment = { "left": 0, "center": 1, "right": 2 };
+  const stringToTargetAlignment: any = { "left": 0, "center": 1, "right": 2 };
   const intToTargetWidth = [0x00, 0x10, 0x20, 0x30];
   const intToTargetHeight = [0x00, 0x01, 0x02, 0x03];
 
@@ -203,8 +203,8 @@ function addQRCode(node: any, bytes: BufferHelper, options: IOptions) {
 
 function addPrintOptions(bytes: BufferHelper, options: IOptions) {
   for (const key in options) {
-    if (typeof options[key] === "boolean" && PRINT_OPTIONS[key]) {
-      var controllerBytes = Buffer.from(PRINT_OPTIONS[key]);
+    if (typeof options[key as keyof IOptions] === "boolean" && PRINT_OPTIONS[key as keyof typeof PRINT_OPTIONS]) {
+      var controllerBytes = Buffer.from(PRINT_OPTIONS[key as keyof typeof PRINT_OPTIONS]);
       bytes.concat(controllerBytes);
     }
   }
