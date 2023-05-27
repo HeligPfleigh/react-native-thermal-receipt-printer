@@ -6,8 +6,8 @@
   "source": "dist/index.js",
   "scripts": {
     "pods": "cd example && pod-install --quiet",
-    "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn && yarn pods",
+    "example": "npm --prefix ./example install",
+    "bootstrap": "npm run example && npm install && npm pods",
     "build": "rimraf ./dist && tsc"
   },
   "repository": {
