@@ -1,4 +1,4 @@
-import { NativeModules, NativeEventEmitter, Platform } from "react-native";
+import { NativeModules, NativeEventEmitter } from "react-native";
 
 import { processText } from "./utils/printout-processor";
 
@@ -62,24 +62,6 @@ const billTo64Buffer = (text: string, opts: PrinterOptions) => {
   };
   const buffer = processText(text, options);
   return buffer.toString("base64");
-};
-
-const textPreprocessingIOS = (text: string) => {
-  let options = {
-    beep: true,
-    cut: true,
-  };
-  return {
-    text: text
-      .replace(/<\/?CB>/g, "")
-      .replace(/<\/?CM>/g, "")
-      .replace(/<\/?CD>/g, "")
-      .replace(/<\/?C>/g, "")
-      .replace(/<\/?D>/g, "")
-      .replace(/<\/?B>/g, "")
-      .replace(/<\/?M>/g, ""),
-    opts: options,
-  };
 };
 
 export const USBPrinter = {
@@ -159,33 +141,15 @@ export const BLEPrinter = {
     }),
 
   printText: (text: string, opts: PrinterOptions = {}): void => {
-    if (Platform.OS === "ios") {
-      const processedText = textPreprocessingIOS(text);
-      RNBLEPrinter.printRawData(
-        processedText.text,
-        processedText.opts,
-        (error: Error) => console.warn(error)
-      );
-    } else {
-      RNBLEPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-        console.warn(error)
-      );
-    }
+    RNBLEPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
+      console.warn(error)
+    );
   },
 
   printBill: (text: string, opts: PrinterOptions = {}): void => {
-    if (Platform.OS === "ios") {
-      const processedText = textPreprocessingIOS(text);
-      RNBLEPrinter.printRawData(
-        processedText.text,
-        processedText.opts,
-        (error: Error) => console.warn(error)
-      );
-    } else {
-      RNBLEPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
-        console.warn(error)
-      );
-    }
+    RNBLEPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
+      console.warn(error)
+    );
   },
 };
 
@@ -223,33 +187,15 @@ export const NetPrinter = {
     }),
 
   printText: (text: string, opts = {}): void => {
-    if (Platform.OS === "ios") {
-      const processedText = textPreprocessingIOS(text);
-      RNNetPrinter.printRawData(
-        processedText.text,
-        processedText.opts,
-        (error: Error) => console.warn(error)
-      );
-    } else {
-      RNNetPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-        console.warn(error)
-      );
-    }
+    RNNetPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
+      console.warn(error)
+    );
   },
 
   printBill: (text: string, opts = {}): void => {
-    if (Platform.OS === "ios") {
-      const processedText = textPreprocessingIOS(text);
-      RNNetPrinter.printRawData(
-        processedText.text,
-        processedText.opts,
-        (error: Error) => console.warn(error)
-      );
-    } else {
-      RNNetPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
-        console.warn(error)
-      );
-    }
+    RNNetPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
+      console.warn(error)
+    );
   },
 };
 
