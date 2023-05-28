@@ -9,7 +9,6 @@ const rootPak = JSON.parse(
 );
 
 const modules = [
-  '@babel/runtime',
   ...Object.keys({
     ...rootPak.dependencies,
     ...rootPak.peerDependencies

@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@intechnity/react-native-thermal-printer": "file:../",
+    "@intechnity/react-native-thermal-printer": "file:..",
     "react": "18.2.0",
     "react-native": "0.71.8"
   },
