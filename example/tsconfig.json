@@ -1,11 +1,3 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@intechnity/react-native-thermal-printer": [
-        "../src/index.ts"
-      ] // This mapping is relative to "baseUrl"
-    }
-  }
+  "extends": "@tsconfig/react-native/tsconfig.json"
 }

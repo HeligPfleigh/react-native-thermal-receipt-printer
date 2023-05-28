@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, ScrollView, View, ActivityIndicator } from 'react-native';
+import { SafeAreaView, StatusBar, ScrollView, View, Text } from 'react-native';
 import {
   BLEPrinter,
   IBLEPrinter,
@@ -26,12 +26,12 @@ class App extends React.Component<{}, AppState> {
 
   async componentDidMount() {
     this.setState({ isBusy: true });
-    await BLEPrinter.init();
-    const devices = await BLEPrinter.getDeviceList();
+    // await BLEPrinter.init();
+    // const devices = await BLEPrinter.getDeviceList();
 
     this.setState({
       isBusy: false,
-      blePrinters: devices
+      //blePrinters: []
     });
   }
 
@@ -41,7 +41,8 @@ class App extends React.Component<{}, AppState> {
 
   render() {
     if (this.state.isBusy) {
-      return <ActivityIndicator size="large" color="#0000ff" />;
+      return <Text>Loading...</Text>;
+      //return <ActivityIndicator size="large" color="#0000ff" />;
     }
 
     return (
@@ -49,6 +50,7 @@ class App extends React.Component<{}, AppState> {
         <StatusBar />
         <ScrollView contentInsetAdjustmentBehavior="automatic">
           <View>
+            <Text>test</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
