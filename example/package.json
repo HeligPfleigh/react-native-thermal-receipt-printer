@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@intechnity/react-native-thermal-printer": "file:..",
+    "@react-native-picker/picker": "^2.4.10",
     "react": "18.2.0",
     "react-native": "0.71.8"
   },
