@@ -59,8 +59,8 @@ RCT_EXPORT_METHOD(getDeviceList
           [_printerArray
               enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 NSDictionary *dict = @{
-                  @"device_name" : printer.name,
-                  @"inner_mac_address" : printer.UUIDString
+                  @"deviceName" : printer.name,
+                  @"innerMacAddress" : printer.UUIDString
                 };
                 [mapped addObject:dict];
               }];
@@ -75,7 +75,7 @@ RCT_EXPORT_METHOD(getDeviceList
 }
 
 RCT_EXPORT_METHOD(connectPrinter
-                  : (NSString *)inner_mac_address success
+                  : (NSString *)innerMacAddress success
                   : (RCTResponseSenderBlock)successCallback fail
                   : (RCTResponseSenderBlock)errorCallback) {
   @try {
@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(connectPrinter
     [_printerArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx,
                                                 BOOL *stop) {
       selectedPrinter = (Printer *)obj;
-      if ([inner_mac_address isEqualToString:(selectedPrinter.UUIDString)]) {
+      if ([innerMacAddress isEqualToString:(selectedPrinter.UUIDString)]) {
         found = YES;
         *stop = YES;
       }
@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(connectPrinter
     } else {
       [NSException raise:@"Invalid connection"
                   format:@"connectPrinter: Can't connect to printer %@",
-                         inner_mac_address];
+                         innerMacAddress];
     }
   } @catch (NSException *exception) {
     errorCallback(@[ exception.reason ]);

@@ -15,18 +15,18 @@ export interface PrinterOptions {
 }
 
 export interface IUSBPrinter {
-  device_name: string;
-  vendor_id: string;
-  product_id: string;
+  deviceName: string;
+  vendorId: string;
+  productId: string;
 }
 
 export interface IBLEPrinter {
-  device_name: string;
-  inner_mac_address: string;
+  deviceName: string;
+  innerMacAddress: string;
 }
 
 export interface INetPrinter {
-  device_name: string;
+  deviceName: string;
   host: string;
   port: number;
 }
@@ -48,157 +48,82 @@ const textTo64Buffer = (text: string, opts: PrinterOptions) => {
   return buffer.toString("base64");
 };
 
-const billTo64Buffer = (text: string, opts: PrinterOptions) => {
-  const defaultOptions = {
-    beep: true,
-    cut: true,
-    encoding: "UTF8",
-    tailingLine: true,
-    codepage: 0
-  };
-  const options = {
-    ...defaultOptions,
-    ...opts,
-  };
-  const buffer = processText(text, options);
-  return buffer.toString("base64");
-};
+class Printer<T> {
+  constructor(module: any) {
+    this.init = this.promisifyVoid(module.init);
+    this.getDeviceList = this.promisifyTArray(module.getDeviceList);
+    this.closeConn = this.promisifyVoid(module.closeConn);
+    this.print = (text: string, opts: PrinterOptions = {}) => {
+      module.printRawData(textTo64Buffer(text, opts), (error: Error) => console.warn(error));
+    }
+  }
 
-export const USBPrinter = {
-  init: (): Promise<void> =>
-    new Promise((resolve, reject) =>
-      RNUSBPrinter.init(
-        () => resolve(),
-        (error: Error) => reject(error)
-      )
-    ),
+  init: () => Promise<void>;
+  getDeviceList: () => Promise<T[]>;
+  closeConn: () => Promise<void>;
+  print: (text: string, opts?: PrinterOptions) => void;
 
-  getDeviceList: (): Promise<IUSBPrinter[]> =>
+  promisifyVoid = (fn: Function): () => Promise<void> => () =>
     new Promise((resolve, reject) =>
-      RNUSBPrinter.getDeviceList(
-        (printers: IUSBPrinter[]) => resolve(printers),
-        (error: Error) => reject(error)
-      )
-    ),
+      fn((error: Error) => error ? reject(error) : resolve())
+    );
 
-  connectPrinter: (vendorId: string, productId: string): Promise<IUSBPrinter> =>
+  promisifyTArray = (fn: Function): () => Promise<T[]> => () =>
     new Promise((resolve, reject) =>
-      RNUSBPrinter.connectPrinter(
+      fn((result: T[]) => resolve(result), (error: Error) => reject(error))
+    );
+}
+
+class USBPrinterWrapper extends Printer<IUSBPrinter> {
+  constructor(private module: any) {
+    super(module);
+  }
+
+  connectPrinter = (vendorId: string, productId: string): Promise<IUSBPrinter> =>
+    new Promise((resolve, reject) =>
+      this.module.connectPrinter(
         vendorId,
         productId,
         (printer: IUSBPrinter) => resolve(printer),
         (error: Error) => reject(error)
       )
-    ),
+    );
+}
 
-  closeConn: (): Promise<void> =>
-    new Promise((resolve) => {
-      RNUSBPrinter.closeConn();
-      resolve();
-    }),
+class BLEPrinterWrapper extends Printer<IBLEPrinter> {
+  constructor(private module: any) {
+    super(module);
+  }
 
-  printText: (text: string, opts: PrinterOptions = {}): void =>
-    RNUSBPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
-    ),
-
-  printBill: (text: string, opts: PrinterOptions = {}): void =>
-    RNUSBPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
-    ),
-};
-
-export const BLEPrinter = {
-  init: (): Promise<void> =>
+  connectPrinter = (innerMacAddress: string): Promise<IBLEPrinter> =>
     new Promise((resolve, reject) =>
-      RNBLEPrinter.init(
-        () => resolve(),
-        (error: Error) => reject(error)
-      )
-    ),
-
-  getDeviceList: (): Promise<IBLEPrinter[]> =>
-    new Promise((resolve, reject) =>
-      RNBLEPrinter.getDeviceList(
-        (printers: IBLEPrinter[]) => resolve(printers),
-        (error: Error) => reject(error)
-      )
-    ),
-
-  connectPrinter: (inner_mac_address: string): Promise<IBLEPrinter> =>
-    new Promise((resolve, reject) =>
-      RNBLEPrinter.connectPrinter(
-        inner_mac_address,
+      this.module.connectPrinter(
+        innerMacAddress,
         (printer: IBLEPrinter) => resolve(printer),
         (error: Error) => reject(error)
       )
-    ),
-
-  closeConn: (): Promise<void> =>
-    new Promise((resolve) => {
-      RNBLEPrinter.closeConn();
-      resolve();
-    }),
-
-  printText: (text: string, opts: PrinterOptions = {}): void => {
-    RNBLEPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
     );
-  },
+}
 
-  printBill: (text: string, opts: PrinterOptions = {}): void => {
-    RNBLEPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
-    );
-  },
-};
+class NetPrinterWrapper extends Printer<INetPrinter> {
+  constructor(private module: any) {
+    super(module);
+  }
 
-export const NetPrinter = {
-  init: (): Promise<void> =>
+  connectPrinter = (host: string, port: number): Promise<INetPrinter> =>
     new Promise((resolve, reject) =>
-      RNNetPrinter.init(
-        () => resolve(),
-        (error: Error) => reject(error)
-      )
-    ),
-
-  getDeviceList: (): Promise<INetPrinter[]> =>
-    new Promise((resolve, reject) =>
-      RNNetPrinter.getDeviceList(
-        (printers: INetPrinter[]) => resolve(printers),
-        (error: Error) => reject(error)
-      )
-    ),
-
-  connectPrinter: (host: string, port: number): Promise<INetPrinter> =>
-    new Promise((resolve, reject) =>
-      RNNetPrinter.connectPrinter(
+      this.module.connectPrinter(
         host,
         port,
         (printer: INetPrinter) => resolve(printer),
         (error: Error) => reject(error)
       )
-    ),
-
-  closeConn: (): Promise<void> =>
-    new Promise((resolve) => {
-      RNNetPrinter.closeConn();
-      resolve();
-    }),
-
-  printText: (text: string, opts = {}): void => {
-    RNNetPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
     );
-  },
+}
 
-  printBill: (text: string, opts = {}): void => {
-    RNNetPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
-    );
-  },
-};
-
+export const USBPrinter = new USBPrinterWrapper(RNUSBPrinter);
+export const BLEPrinter = new BLEPrinterWrapper(RNBLEPrinter);
+export const NetPrinter = new NetPrinterWrapper(RNNetPrinter);
 export const NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
 
 export enum RN_THERMAL_RECEIPT_PRINTER_EVENTS {

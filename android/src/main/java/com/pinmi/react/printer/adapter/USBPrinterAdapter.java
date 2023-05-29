@@ -58,8 +58,8 @@ public class USBPrinterAdapter implements PrinterAdapter {
                     UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         Log.i(LOG_TAG,
-                                "success to grant permission for device " + usbDevice.getDeviceId() + ", vendor_id: "
-                                        + usbDevice.getVendorId() + " product_id: " + usbDevice.getProductId());
+                                "success to grant permission for device " + usbDevice.getDeviceId() + ", vendorId: "
+                                        + usbDevice.getVendorId() + " productId: " + usbDevice.getProductId());
                         mUsbDevice = usbDevice;
                     } else {
                         Toast.makeText(context,
@@ -147,7 +147,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
         for (UsbDevice usbDevice : mUSBManager.getDeviceList().values()) {
             if (usbDevice.getVendorId() == usbPrinterDeviceId.getVendorId()
                     && usbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
-                Log.v(LOG_TAG, "request for device: vendor_id: " + usbPrinterDeviceId.getVendorId() + ", product_id: "
+                Log.v(LOG_TAG, "request for device: vendorId: " + usbPrinterDeviceId.getVendorId() + ", productId: "
                         + usbPrinterDeviceId.getProductId());
                 closeConnectionIfExists();
                 mUSBManager.requestPermission(usbDevice, mPermissionIndent);

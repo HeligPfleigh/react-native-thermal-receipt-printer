@@ -29,10 +29,10 @@ public class USBPrinterDevice implements PrinterDevice {
     @Override
     public WritableMap toRNWritableMap() {
         WritableMap deviceMap = Arguments.createMap();
-        deviceMap.putString("device_name", this.mDevice.getDeviceName());
+        deviceMap.putString("deviceName", this.mDevice.getDeviceName());
         deviceMap.putInt("device_id", this.mDevice.getDeviceId());
-        deviceMap.putInt("vendor_id", this.mDevice.getVendorId());
-        deviceMap.putInt("product_id", this.mDevice.getProductId());
+        deviceMap.putInt("vendorId", this.mDevice.getVendorId());
+        deviceMap.putInt("productId", this.mDevice.getProductId());
         return deviceMap;
     }
 }

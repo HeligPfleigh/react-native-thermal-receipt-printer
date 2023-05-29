@@ -71,9 +71,9 @@ USBPrinter.printBill("<Text>sample bill</Text>");
 
 ```typescript
 interface IUSBPrinter {
-  device_name: string;
-  vendor_id: number;
-  product_id: number;
+  deviceName: string;
+  vendorId: number;
+  productId: number;
 }
 ```
 
@@ -97,7 +97,7 @@ interface IUSBPrinter {
   }
 
   async connectPrinter(printer: IUSBPrinter) {
-    await USBPrinter.connectPrinter(printer.vendor_id, printer.product_id);
+    await USBPrinter.connectPrinter(printer.vendorId, printer.productId);
 
     this.setState({
       currentPrinter: printer
@@ -109,7 +109,7 @@ interface IUSBPrinter {
   }
 
   getPrinterDescription(printer: IUSBPrinter) {
-    return `device_name: ${printer.device_name}, vendor_id: ${printer.vendor_id}, product_id: ${printer.product_id}`;
+    return `deviceName: ${printer.deviceName}, vendorId: ${printer.vendorId}, productId: ${printer.productId}`;
   }
 
   ...
@@ -118,7 +118,7 @@ interface IUSBPrinter {
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.device_name} onPress={() => connectPrinter(printer)}>
+          <TouchableOpacity key={printer.deviceName} onPress={() => connectPrinter(printer)}>
             <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
         ))
@@ -136,8 +136,8 @@ interface IUSBPrinter {
 
 ```typescript
 interface IBLEPrinter {
-  device_name: string;
-  inner_mac_address: string;
+  deviceName: string;
+  innerMacAddress: string;
 }
 ```
 
@@ -159,7 +159,7 @@ interface IBLEPrinter {
   }
 
   async connectPrinter(printer: IBLEPrinter) {
-    await BLEPrinter.connectPrinter(printer.inner_mac_address);
+    await BLEPrinter.connectPrinter(printer.innerMacAddress);
 
     this.setState({
       currentPrinter: printer
@@ -171,7 +171,7 @@ interface IBLEPrinter {
   }
 
   getPrinterDescription(printer: IBLEPrinter) {
-    return `device_name: ${printer.device_name}, inner_mac_address: ${printer.inner_mac_address}`;
+    return `deviceName: ${printer.deviceName}, innerMacAddress: ${printer.innerMacAddress}`;
   }
 
   ...
@@ -180,7 +180,7 @@ interface IBLEPrinter {
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.device_name} onPress={() => connectPrinter(printer)}>
+          <TouchableOpacity key={printer.deviceName} onPress={() => connectPrinter(printer)}>
             <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
         ))
@@ -198,7 +198,7 @@ interface IBLEPrinter {
 
 ```typescript
 interface INetPrinter {
-  device_name: string;
+  deviceName: string;
   host: string;
   port: number;
 }
@@ -236,7 +236,7 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
   }
 
   getPrinterDescription(printer: INetPrinter) {
-    return `device_name: ${printer.device_name}, host: ${printer.host}, port: ${printer.port}`;
+    return `deviceName: ${printer.deviceName}, host: ${printer.host}, port: ${printer.port}`;
   }
 
   ...
@@ -245,7 +245,7 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.device_name} onPress={() => connectPrinter(printer)}>
+          <TouchableOpacity key={printer.deviceName} onPress={() => connectPrinter(printer)}>
             <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
         ))

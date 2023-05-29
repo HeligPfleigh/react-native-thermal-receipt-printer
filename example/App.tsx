@@ -22,11 +22,17 @@ import {
 type AppState = {
   isBusy: boolean;
   blePrinters: IBLEPrinter[];
+  netPrinters: INetPrinter[];
+  usbPrinters: IUSBPrinter[];
   activeBlePrinter?: IBLEPrinter;
+  activeNetPrinter?: INetPrinter;
+  activeUSBPrinter?: IUSBPrinter;
 }
 
 class App extends React.Component<{}, AppState> {
   blePrinter = BLEPrinter;
+  netPrinter = NetPrinter;
+  usbPrinter = USBPrinter;
 
   printText = `
 <Printout> 
@@ -42,7 +48,9 @@ class App extends React.Component<{}, AppState> {
 
     this.state = {
       isBusy: false,
-      blePrinters: []
+      blePrinters: [],
+      netPrinters: [],
+      usbPrinters: [],
     }
   }
 
@@ -67,13 +75,13 @@ class App extends React.Component<{}, AppState> {
     });
   }
 
-  async activateBlePrinter(innerMacAddress: string) {
+  async activateBlePrinter(index: number) {
     await this.resetBlePrinterConnection();
 
-    const blePrinter = this.state.blePrinters.find(x => x.inner_mac_address == innerMacAddress);
+    const blePrinter = this.state.blePrinters[index];
     if (!blePrinter) return;
 
-    await BLEPrinter.connectPrinter(blePrinter.inner_mac_address);
+    await BLEPrinter.connectPrinter(blePrinter.innerMacAddress);
 
     this.setState({ activeBlePrinter: blePrinter });
   }
@@ -87,7 +95,95 @@ class App extends React.Component<{}, AppState> {
   }
 
   printToBlePrinter() {
-    BLEPrinter.printText(this.printText);
+    BLEPrinter.print(this.printText);
+  }
+
+  async refreshNetPrinters() {
+    if (this.state.isBusy) {
+      return;
+    }
+
+    this.setState({
+      isBusy: true,
+      netPrinters: [],
+      activeNetPrinter: undefined
+    });
+
+    await this.resetNetPrinterConnection();
+    await NetPrinter.init();
+    const devices = await NetPrinter.getDeviceList();
+
+    this.setState({
+      isBusy: false,
+      netPrinters: devices
+    });
+  }
+
+  async activateNetPrinter(index: number) {
+    await this.resetNetPrinterConnection();
+
+    const netPrinter = this.state.netPrinters[index];
+    if (!netPrinter) return;
+
+    await NetPrinter.connectPrinter(netPrinter.host, netPrinter.port);
+
+    this.setState({ activeNetPrinter: netPrinter });
+  }
+
+  async resetNetPrinterConnection() {
+    const { activeNetPrinter } = this.state;
+
+    if (!activeNetPrinter) return;
+
+    await NetPrinter.closeConn();
+  }
+
+  printToNetPrinter() {
+    NetPrinter.print(this.printText);
+  }
+
+  async refreshUSBPrinters() {
+    if (this.state.isBusy) {
+      return;
+    }
+
+    this.setState({
+      isBusy: true,
+      usbPrinters: [],
+      activeUSBPrinter: undefined
+    });
+
+    await this.resetUSBPrinterConnection();
+    await USBPrinter.init();
+    const devices = await USBPrinter.getDeviceList();
+
+    this.setState({
+      isBusy: false,
+      usbPrinters: devices
+    });
+  }
+
+  async activateUSBPrinter(index: number) {
+    await this.resetUSBPrinterConnection();
+
+    const usbPrinter = this.state.usbPrinters[index];
+    if (!usbPrinter) return;
+
+    await USBPrinter.connectPrinter(usbPrinter.vendorId, usbPrinter.productId);
+
+    this.setState({ activeUSBPrinter: usbPrinter });
+  }
+
+  async resetUSBPrinterConnection() {
+    const { activeUSBPrinter } = this.state;
+
+    if (!activeUSBPrinter) return;
+
+    await USBPrinter.closeConn();
+  }
+
+  printToUSBPrinter() {
+    USBPrinter.print(this.printText);
   }
 
   render() {
@@ -105,18 +201,68 @@ class App extends React.Component<{}, AppState> {
 
             <Text style={styles.pickPrinterTitle}>Pick a printer:</Text>
             <Picker
-              selectedValue={this.state.activeBlePrinter?.inner_mac_address}
+              selectedValue={this.state.activeBlePrinter?.innerMacAddress}
               onValueChange={(itemValue, itemIndex) =>
-                this.activateBlePrinter(itemValue)
+                this.activateBlePrinter(itemIndex)
               }
               style={{ marginTop: 20 }}>
               {this.state.blePrinters.map((item, index) => (
-                <Picker.Item key={"bt-printer-" + index} label={item.device_name} value={item.inner_mac_address} />
+                <Picker.Item key={"bt-printer-" + index} label={item.deviceName} value={item.innerMacAddress} />
               ))}
             </Picker>
 
             <View style={styles.printerActionWrapper}>
               <Button disabled={!this.state.activeBlePrinter} onPress={() => this.printToBlePrinter()} title='Print' />
+            </View>
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Network Printer</Text>
+            <Text style={styles.sectionDescription}>Example printout to a network thermal printer.</Text>
+
+            <View style={styles.printerActionWrapper}>
+              <Button onPress={() => this.refreshNetPrinters()} title='Refresh network printers' />
+            </View>
+
+            <Text style={styles.pickPrinterTitle}>Pick a printer:</Text>
+            <Picker
+              selectedValue={this.state.activeNetPrinter?.host}
+              onValueChange={(itemValue, itemIndex) =>
+                this.activateNetPrinter(itemIndex)
+              }
+              style={{ marginTop: 20 }}>
+              {this.state.netPrinters.map((item, index) => (
+                <Picker.Item key={"net-printer-" + index} label={item.deviceName} value={item.host} />
+              ))}
+            </Picker>
+
+            <View style={styles.printerActionWrapper}>
+              <Button disabled={!this.state.activeNetPrinter} onPress={() => this.printToNetPrinter()} title='Print' />
+            </View>
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>USB Printer</Text>
+            <Text style={styles.sectionDescription}>Example printout to a USB thermal printer.</Text>
+
+            <View style={styles.printerActionWrapper}>
+              <Button onPress={() => this.refreshUSBPrinters()} title='Refresh USB printers' />
+            </View>
+
+            <Text style={styles.pickPrinterTitle}>Pick a printer:</Text>
+            <Picker
+              selectedValue={this.state.activeUSBPrinter?.vendorId}
+              onValueChange={(itemValue, itemIndex) =>
+                this.activateUSBPrinter(itemIndex)
+              }
+              style={{ marginTop: 20 }}>
+              {this.state.usbPrinters.map((item, index) => (
+                <Picker.Item key={"usb-printer-" + index} label={item.deviceName} value={item.vendorId} />
+              ))}
+            </Picker>
+
+            <View style={styles.printerActionWrapper}>
+              <Button disabled={!this.state.activeUSBPrinter} onPress={() => this.printToUSBPrinter()} title='Print' />
             </View>
           </View>
         </ScrollView>
