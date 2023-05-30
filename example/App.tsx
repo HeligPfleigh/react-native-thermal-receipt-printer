@@ -36,9 +36,12 @@ class App extends React.Component<{}, AppState> {
 
   printText = `
 <Printout>
-  <Text align='left' fontWidth='0' fontHeight='0' bold='0' font='0'>1 line</Text>
+  <Text align='left' fontWidth='0' fontHeight='0' bold='0' font='0'>First line</Text>
   <NewLine />
-  <Text align='center' fontWidth='2' fontHeight='2' bold='0'>2 line</Text>
+  <Text align='center' fontWidth='2' fontHeight='2' bold='0'>Second line</Text>
+  <NewLine />
+  <Text align='right' fontWidth='2' fontHeight='2' bold='0'>Third line</Text>
+  <NewLine />
   <NewLine />
   <QRCode version='0' errorCorrectionLevel='3' magnification='6'>test 123</QRCode>
 </Printout>`;
