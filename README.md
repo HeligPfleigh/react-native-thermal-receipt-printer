@@ -121,14 +121,6 @@ BLEPrinter.print(`
 
 ### USBPrinter (only supported on android)
 
-```typescript
-interface IUSBPrinterIdentity {
-  deviceName: string;
-  vendorId: number;
-  productId: number;
-}
-```
-
 ```tsx
   import {
     USBPrinter,
@@ -186,9 +178,7 @@ interface IUSBPrinterIdentity {
           </TouchableOpacity>
         ))
       }
-      <TouchableOpacity onPress={() => this.print()}>
-        <Text>Print Text</Text>
-      </TouchableOpacity>
+      <Button title='Print' onPress={() => this.print()} />
     </View>
   )
 
@@ -197,17 +187,17 @@ interface IUSBPrinterIdentity {
 
 ### BLEPrinter
 
-```typescript
-interface IBLEPrinter {
-  deviceName: string;
-  innerMacAddress: string;
-}
-```
+```tsx
+  import {
+    BLEPrinter,
+    IBLEPrinterIdentity
+  } from '@intechnity/react-native-thermal-printer';
 
-```typescript
+  ...
+
   type State = {
-    printers: IBLEPrinter[];
-    currentPrinter: IBLEPrinter;
+    printers: IBLEPrinterIdentity[];
+    currentPrinter: IBLEPrinterIdentity;
   }
 
   ...
@@ -221,7 +211,7 @@ interface IBLEPrinter {
     });
   }
 
-  async connectPrinter(printer: IBLEPrinter) {
+  async connectPrinter(printer: IBLEPrinterIdentity) {
     await BLEPrinter.connectPrinter(printer.innerMacAddress);
 
     this.setState({
@@ -229,11 +219,16 @@ interface IBLEPrinter {
     });
   }
 
-  printText() {
-    BLEPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
+  print() {
+    BLEPrinter.print(`
+<Printout>
+  <Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>
+  <NewLine />
+  <Text align='right' fontWidth='1' fontHeight='1' bold='0'>Second line</Text>
+</Printout>`);
   }
 
-  getPrinterDescription(printer: IBLEPrinter) {
+  getPrinterDescription(printer: IBLEPrinterIdentity) {
     return `deviceName: ${printer.deviceName}, innerMacAddress: ${printer.innerMacAddress}`;
   }
 
@@ -248,9 +243,7 @@ interface IBLEPrinter {
           </TouchableOpacity>
         ))
       }
-      <TouchableOpacity onPress={() => this.printText()}>
-        <Text>Print Text</Text>
-      </TouchableOpacity>
+      <Button title='Print' onPress={() => this.print()} />
     </View>
   )
 
@@ -259,34 +252,33 @@ interface IBLEPrinter {
 
 ### NetPrinter
 
-```typescript
-interface INetPrinter {
-  deviceName: string;
-  host: string;
-  port: number;
-}
-```
-
 _Note:_ getDeviceList does support scanning in local network, but is not recommended
 
-```typescript
+```tsx
+  import {
+    NetPrinter,
+    INetPrinterIdentity
+  } from '@intechnity/react-native-thermal-printer';
+
+  ...
+
   type State = {
-    printers: INetPrinter[];
-    currentPrinter: INetPrinter;
+    printers: INetPrinterIdentity[];
+    currentPrinter: INetPrinterIdentity;
   }
 
   ...
 
   async componentDidMount() {
     await NetPrinter.init();
-    var availablePrinters = [{host: '192.168.10.241', port: 9100}];
+    var availablePrinters = [{host: '192.168.1.1', port: 9100}];
 
     this.setState({
       printers: availablePrinters
     });
   }
 
-  async connectPrinter(printer: INetPrinter) {
+  async connectPrinter(printer: INetPrinterIdentity) {
     let printer = await NetPrinter.connectPrinter(printer.host, printer.port);
 
     this.setState({
@@ -294,11 +286,16 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
     });
   }
 
-  printText() {
-    NetPrinter.printText("<Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>");
+  print() {
+    NetPrinter.print(`
+<Printout>
+  <Text align='center' fontWidth='1' fontHeight='1'>Example text</Text>
+  <NewLine />
+  <Text align='right' fontWidth='1' fontHeight='1' bold='0'>Second line</Text>
+</Printout>`);
   }
 
-  getPrinterDescription(printer: INetPrinter) {
+  getPrinterDescription(printer: INetPrinterIdentity) {
     return `deviceName: ${printer.deviceName}, host: ${printer.host}, port: ${printer.port}`;
   }
 
@@ -313,9 +310,7 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
           </TouchableOpacity>
         ))
       }
-      <TouchableOpacity onPress={() => this.printText()}>
-        <Text>Print Text</Text>
-      </TouchableOpacity>
+      <Button title='Print' onPress={() => this.print()} />
     </View>
   )
 
