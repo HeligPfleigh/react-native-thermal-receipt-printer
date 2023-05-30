@@ -12,21 +12,21 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import {
   BLEPrinter,
-  IBLEPrinter,
+  IBLEPrinterIdentity,
   NetPrinter,
-  INetPrinter,
+  INetPrinterIdentity,
   USBPrinter,
-  IUSBPrinter
+  IUSBPrinterIdentity
 } from '@intechnity/react-native-thermal-printer';
 
 type AppState = {
   isBusy: boolean;
-  blePrinters: IBLEPrinter[];
-  netPrinters: INetPrinter[];
-  usbPrinters: IUSBPrinter[];
-  activeBlePrinter?: IBLEPrinter;
-  activeNetPrinter?: INetPrinter;
-  activeUSBPrinter?: IUSBPrinter;
+  blePrinters: IBLEPrinterIdentity[];
+  netPrinters: INetPrinterIdentity[];
+  usbPrinters: IUSBPrinterIdentity[];
+  activeBlePrinter?: IBLEPrinterIdentity;
+  activeNetPrinter?: INetPrinterIdentity;
+  activeUSBPrinter?: IUSBPrinterIdentity;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -35,7 +35,7 @@ class App extends React.Component<{}, AppState> {
   usbPrinter = USBPrinter;
 
   printText = `
-<Printout> 
+<Printout>
   <Text align='left' fontWidth='0' fontHeight='0' bold='0' font='0'>1 line</Text>
   <NewLine />
   <Text align='center' fontWidth='2' fontHeight='2' bold='0'>2 line</Text>

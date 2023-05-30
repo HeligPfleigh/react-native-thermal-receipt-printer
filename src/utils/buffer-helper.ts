@@ -1,4 +1,4 @@
-import { Buffer } from "buffer";
+import { Buffer } from 'buffer';
 
 export class BufferHelper {
   buffers: Buffer[];
@@ -12,16 +12,6 @@ export class BufferHelper {
   get length() {
     return this.size;
   }
-
-  load(stream: any, callback: any) {
-    stream.on("data", (trunk: Buffer) => {
-      this.concat(trunk);
-    });
-    stream.on("end", () => {
-      callback(null, this.toBuffer());
-    });
-    stream.once("error", callback);
-  };
 
   concat(buffer: Buffer): BufferHelper {
     this.buffers.push(buffer);
