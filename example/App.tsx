@@ -38,9 +38,9 @@ class App extends React.Component<{}, AppState> {
 <Printout>
   <Text align='left' fontWidth='0' fontHeight='0' bold='0' font='0'>First line</Text>
   <NewLine />
-  <Text align='center' fontWidth='2' fontHeight='2' bold='0'>Second line</Text>
+  <Text align='right' fontWidth='1' fontHeight='1' bold='0'>Second line</Text>
   <NewLine />
-  <Text align='right' fontWidth='2' fontHeight='2' bold='0'>Third line</Text>
+  <Text align='center' fontWidth='0' fontHeight='0' bold='0'>Third line</Text>
   <NewLine />
   <NewLine />
   <QRCode version='0' errorCorrectionLevel='3' magnification='6'>test 123</QRCode>
@@ -68,14 +68,19 @@ class App extends React.Component<{}, AppState> {
       activeBlePrinter: undefined
     });
 
-    await this.resetBlePrinterConnection();
-    await BLEPrinter.init();
-    const devices = await BLEPrinter.getDeviceList();
+    try {
+      await this.resetBlePrinterConnection();
+      await BLEPrinter.init();
+      const devices = await BLEPrinter.getDeviceList();
 
-    this.setState({
-      isBusy: false,
-      blePrinters: devices
-    });
+      this.setState({
+        isBusy: false,
+        blePrinters: devices
+      });
+    } catch (err) {
+      console.error('Failed to refresh BLE printers ' + err);
+      this.setState({ isBusy: false });
+    }
   }
 
   async activateBlePrinter(index: number) {
@@ -112,14 +117,19 @@ class App extends React.Component<{}, AppState> {
       activeNetPrinter: undefined
     });
 
-    await this.resetNetPrinterConnection();
-    await NetPrinter.init();
-    const devices = await NetPrinter.getDeviceList();
+    try {
+      await this.resetNetPrinterConnection();
+      await NetPrinter.init();
+      const devices = await NetPrinter.getDeviceList();
 
-    this.setState({
-      isBusy: false,
-      netPrinters: devices
-    });
+      this.setState({
+        isBusy: false,
+        netPrinters: devices ?? []
+      });
+    } catch (err) {
+      console.error('Failed to refresh NET printers: ' + err);
+      this.setState({ isBusy: false });
+    }
   }
 
   async activateNetPrinter(index: number) {
@@ -156,14 +166,19 @@ class App extends React.Component<{}, AppState> {
       activeUSBPrinter: undefined
     });
 
-    await this.resetUSBPrinterConnection();
-    await USBPrinter.init();
-    const devices = await USBPrinter.getDeviceList();
+    try {
+      await this.resetUSBPrinterConnection();
+      await USBPrinter.init();
+      const devices = await USBPrinter.getDeviceList();
 
-    this.setState({
-      isBusy: false,
-      usbPrinters: devices
-    });
+      this.setState({
+        isBusy: false,
+        usbPrinters: devices
+      });
+    } catch (err) {
+      console.error('Failed to refresh USB printers: ' + err);
+      this.setState({ isBusy: false });
+    }
   }
 
   async activateUSBPrinter(index: number) {
@@ -283,8 +298,11 @@ export default App;
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+    margin: 5,
+    padding: 20,
+    borderColor: "#bbbbbb",
+    borderWidth: 1,
+    borderRadius: 5
   },
   sectionTitle: {
     fontSize: 24,

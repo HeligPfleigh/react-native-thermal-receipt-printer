@@ -36,7 +36,7 @@ const defaultOptions: IPrintOptions = {
   codepage: 0
 };
 
-export function processText(text: string, options: IPrintOptions): Buffer {
+export function processText(text: string, options?: IPrintOptions): Buffer {
   options = {
     ...defaultOptions,
     ...options
@@ -56,15 +56,15 @@ export function processText(text: string, options: IPrintOptions): Buffer {
   xml.children.forEach((node: any) => {
     switch (node.name) {
       case 'Text':
-        addText(node, bytes, options);
+        addText(node, bytes, options!);
         break;
 
       case 'NewLine':
-        addNewLine(bytes, options);
+        addNewLine(bytes, options!);
         break;
 
       case 'QRCode':
-        addQRCode(node, bytes, options);
+        addQRCode(node, bytes, options!);
         break;
     }
   });
