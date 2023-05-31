@@ -173,7 +173,7 @@ BLEPrinter.print(`
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.deviceName} onPress={() => connectPrinter(printer)}>
+          <TouchableOpacity key={printer.deviceName} onPress={() => this.connectPrinter(printer)}>
             <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
         ))
@@ -238,7 +238,7 @@ BLEPrinter.print(`
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.deviceName} onPress={() => connectPrinter(printer)}>
+          <TouchableOpacity key={printer.deviceName} onPress={() => this.connectPrinter(printer)}>
             <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
         ))
@@ -271,7 +271,7 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
 
   async componentDidMount() {
     await NetPrinter.init();
-    var availablePrinters = [{host: '192.168.1.1', port: 9100}];
+    var availablePrinters: INetPrinterIdentity[] = [{ deviceName: 'test', host: '192.168.1.1', port: 9100 }];
 
     this.setState({
       printers: availablePrinters
@@ -279,7 +279,7 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
   }
 
   async connectPrinter(printer: INetPrinterIdentity) {
-    let printer = await NetPrinter.connectPrinter(printer.host, printer.port);
+    printer = await NetPrinter.connectPrinter(printer.host, printer.port);
 
     this.setState({
       currentPrinter: printer
@@ -305,7 +305,7 @@ _Note:_ getDeviceList does support scanning in local network, but is not recomme
     <View style={styles.container}>
       {
         this.state.printers.map(printer => (
-          <TouchableOpacity key={printer.deviceName} onPress={() => connectPrinter(printer)}>
+          <TouchableOpacity key={printer.deviceName} onPress={() => this.connectPrinter(printer)}>
             <Text>{this.getPrinterDescription(printer)}</Text>
           </TouchableOpacity>
         ))
