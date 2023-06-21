@@ -200,6 +200,37 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
     }
 }
 
+RCT_EXPORT_METHOD(printImageBase64:(NSString *)base64Qr
+                  printerOptions:(NSDictionary *)options
+                  fail:(RCTResponseSenderBlock)errorCallback) {
+    @try {
+
+        !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
+        if(![base64Qr  isEqual: @""]){
+            NSString *result = [@"data:image/png;base64," stringByAppendingString:base64Qr];
+            NSURL *url = [NSURL URLWithString:result];
+            NSData *imageData = [NSData dataWithContentsOfURL:url];
+            NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
+
+            NSInteger printerWidth = 576;
+
+            if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
+                printerWidth = 384;
+            }
+
+            if(imageData != nil){
+                UIImage* image = [UIImage imageWithData:imageData];
+                UIImage* printImage = [self getPrintImage:image printerOptions:options];
+
+                [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
+                [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
+            }
+        }
+    } @catch (NSException *exception) {
+        errorCallback(@[exception.reason]);
+    }
+}
+
 -(UIImage *)getPrintImage:(UIImage *)image
            printerOptions:(NSDictionary *)options {
     

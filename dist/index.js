@@ -91,18 +91,18 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
-    printImage: function (imgUrl, opts) {
-        if (opts === void 0) { opts = {}; }
-        return RNUSBPrinter.printImageData(imgUrl, function (error) {
-            return console.warn(error);
-        });
-    },
-    printQrCode: function (qrCode, opts) {
-        if (opts === void 0) { opts = {}; }
-        return RNUSBPrinter.printQrCode(qrCode, function (error) {
-            return console.warn(error);
-        });
-    },
+    // printImage: function (imgUrl, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     return RNUSBPrinter.printImageData(imgUrl, function (error) {
+    //         return console.warn(error);
+    //     });
+    // },
+    // printQrCode: function (qrCode, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     return RNUSBPrinter.printQrCode(qrCode, function (error) {
+    //         return console.warn(error);
+    //     });
+    // },
 };
 export var BLEPrinter = {
     init: function () {
@@ -150,30 +150,30 @@ export var BLEPrinter = {
             });
         }
     },
-    printImage: function (imgUrl, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (Platform.OS === "ios") {
-            console.log("printImage is not supported on iOS");
-            RNBLEPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
-        }
-        else {
-            RNBLEPrinter.printImageData(imgUrl, function (error) {
-                return console.warn(error);
-            });
-        }
-    },
-
-    printQrCode: function (qrCode, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (Platform.OS === "ios") {
-            RNBLEPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
-        }
-         else {
-            RNBLEPrinter.printQrCode(qrCode, function (error) {
-                 return console.warn(error);
-             });
-         }
-    },
+    // printImage: function (imgUrl, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     if (Platform.OS === "ios") {
+    //         console.log("printImage is not supported on iOS");
+    //         RNBLEPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
+    //     }
+    //     else {
+    //         RNBLEPrinter.printImageData(imgUrl, function (error) {
+    //             return console.warn(error);
+    //         });
+    //     }
+    // },
+    //
+    // printQrCode: function (qrCode, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     if (Platform.OS === "ios") {
+    //         RNBLEPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
+    //     }
+    //      else {
+    //         RNBLEPrinter.printQrCode(qrCode, function (error) {
+    //              return console.warn(error);
+    //          });
+    //      }
+    // },
 };
 export var NetPrinter = {
     init: function () {
@@ -222,29 +222,66 @@ export var NetPrinter = {
         }
     },
     printImage: function (imgUrl, opts) {
+        var _a, _b;
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            RNNetPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
-        }
-        else {
-            RNNetPrinter.printImageData(imgUrl, function (error) {
+            RNNetPrinter.printImageData(imgUrl, opts, function (error) {
                 return console.warn(error);
             });
+        } else {
+            RNNetPrinter.printImageData(
+                imgUrl,
+                (_a = opts === null || opts === void 0 ? void 0 : opts.imageWidth) !==
+                null && _a !== void 0
+                    ? _a
+                    : 0,
+                (_b = opts === null || opts === void 0 ? void 0 : opts.imageHeight) !==
+                null && _b !== void 0
+                    ? _b
+                    : 0,
+                function (error) {
+                    return console.warn(error);
+                }
+            );
         }
     },
-    printQrCode: function (qrCode, opts) {
-        if (opts === void 0) { opts = {}; }
+    printImageBase64: function (Base64, opts) {
+        var _a, _b;
+        if (opts === void 0) {
+            opts = {};
+        }
         if (Platform.OS === "ios") {
-            RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
+            RNNetPrinter.printImageBase64(Base64, opts, function (error) {
+                return console.warn(error);
+            });
+        } else {
+            RNNetPrinter.printImageBase64(
+                Base64,
+                (_a = opts === null || opts === void 0 ? void 0 : opts.imageWidth) !==
+                null && _a !== void 0
+                    ? _a
+                    : 0,
+                (_b = opts === null || opts === void 0 ? void 0 : opts.imageHeight) !==
+                null && _b !== void 0
+                    ? _b
+                    : 0,
+                function (error) {
+                    return console.warn(error);
+                }
+            );
         }
-         else {
-             RNNetPrinter.printQrCode(qrCode, function (error) {
-                 return console.warn(error);
-             });
-         }
     },
-    
-
+    // printQrCode: function (qrCode, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     if (Platform.OS === "ios") {
+    //         RNNetPrinter.printQrCode(qrCode, opts, function (error) { return console.warn(error); });
+    //     }
+    //      else {
+    //          RNNetPrinter.printQrCode(qrCode, function (error) {
+    //              return console.warn(error);
+    //          });
+    //      }
+    // },
 };
 export var NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
 export var RN_THERMAL_RECEIPT_PRINTER_EVENTS;

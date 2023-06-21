@@ -262,7 +262,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     }
 
     @Override
-    public void printImageData(String imageUrl, Callback errorCallback) {
+    public void printImageData(String imageUrl, int imageWidth, int imageHeight, Callback errorCallback) {
 
         final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
 
@@ -311,6 +311,8 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
     }
 
+    @Override
+    public void printImageBase64(final Bitmap bitmapImage, int imageWidth, int imageHeight, Callback errorCallback) {}
 
     @Override
     public void printQrCode(String qrCode, Callback errorCallback) {
