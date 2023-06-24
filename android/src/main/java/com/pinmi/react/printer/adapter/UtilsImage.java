@@ -8,6 +8,9 @@ public class UtilsImage {
         int imageWidthForResize = image.getWidth();
         int imageHeightForResize = image.getHeight();
         if (imageWidth > 0) {
+            if (imageWidthForResize > imageWidth) {
+                imageHeightForResize = (imageWidth * imageHeightForResize) / imageWidthForResize;
+            }
             imageWidthForResize = imageWidth;
         }
 
