@@ -14,7 +14,7 @@
 #else
 #import <React/RCTBridgeModule.h>
 #endif
-#import <CoreBluetooth/CoreBluetooth.h>
+// #import <CoreBluetooth/CoreBluetooth.h>
 
 @interface RNBLEPrinter : NSObject <RCTBridgeModule>{
     NSMutableArray* _printerArray;

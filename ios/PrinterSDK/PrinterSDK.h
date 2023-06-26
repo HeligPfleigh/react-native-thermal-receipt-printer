@@ -48,7 +48,7 @@ typedef enum CodeBarType
 
 - (BOOL)connectIP:(NSString*)ipAddress;
 
-- (void)connectBT:(Printer*)printer;
+// - (void)connectBT:(Printer*)printer;
 - (void)disconnect;
 
 - (void)setPrintWidth:(NSInteger)width;

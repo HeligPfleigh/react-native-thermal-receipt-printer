@@ -248,7 +248,6 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 }
             }
         }).start();
-
     }
 
     public static Bitmap getBitmapFromURL(String src) {
