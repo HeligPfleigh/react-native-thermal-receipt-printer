@@ -58,39 +58,39 @@ var textPreprocessingIOS = function (text, isCut) {
 //   return buffer.toString("base64");
 // };
 export var USBPrinter = {
-    init: function () {
-        return new Promise(function (resolve, reject) {
-            return RNUSBPrinter.init(function () { return resolve(); }, function (error) { return reject(error); });
-        });
-    },
-    getDeviceList: function () {
-        return new Promise(function (resolve, reject) {
-            return RNUSBPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
-        });
-    },
-    connectPrinter: function (vendorId, productId) {
-        return new Promise(function (resolve, reject) {
-            return RNUSBPrinter.connectPrinter(vendorId, productId, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
-        });
-    },
-    closeConn: function () {
-        return new Promise(function (resolve) {
-            RNUSBPrinter.closeConn();
-            resolve();
-        });
-    },
-    printText: function (text, opts) {
-        if (opts === void 0) { opts = {}; }
-        return RNUSBPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-            return console.warn(error);
-        });
-    },
-    printBill: function (text, opts) {
-        if (opts === void 0) { opts = {}; }
-        return RNUSBPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
-            return console.warn(error);
-        });
-    },
+    // init: function () {
+    //     return new Promise(function (resolve, reject) {
+    //         return RNUSBPrinter.init(function () { return resolve(); }, function (error) { return reject(error); });
+    //     });
+    // },
+    // getDeviceList: function () {
+    //     return new Promise(function (resolve, reject) {
+    //         return RNUSBPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
+    //     });
+    // },
+    // connectPrinter: function (vendorId, productId) {
+    //     return new Promise(function (resolve, reject) {
+    //         return RNUSBPrinter.connectPrinter(vendorId, productId, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
+    //     });
+    // },
+    // closeConn: function () {
+    //     return new Promise(function (resolve) {
+    //         RNUSBPrinter.closeConn();
+    //         resolve();
+    //     });
+    // },
+    // printText: function (text, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     return RNUSBPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
+    //         return console.warn(error);
+    //     });
+    // },
+    // printBill: function (text, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     return RNUSBPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
+    //         return console.warn(error);
+    //     });
+    // },
     // printImage: function (imgUrl, opts) {
     //     if (opts === void 0) { opts = {}; }
     //     return RNUSBPrinter.printImageData(imgUrl, function (error) {
@@ -105,51 +105,51 @@ export var USBPrinter = {
     // },
 };
 export var BLEPrinter = {
-    init: function () {
-        return new Promise(function (resolve, reject) {
-            return RNBLEPrinter.init(function () { return resolve(); }, function (error) { return reject(error); });
-        });
-    },
-    getDeviceList: function () {
-        return new Promise(function (resolve, reject) {
-            return RNBLEPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
-        });
-    },
-    connectPrinter: function (inner_mac_address) {
-        return new Promise(function (resolve, reject) {
-            return RNBLEPrinter.connectPrinter(inner_mac_address, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
-        });
-    },
-    closeConn: function () {
-        return new Promise(function (resolve) {
-            RNBLEPrinter.closeConn();
-            resolve();
-        });
-    },
-    printText: function (text, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, false);
-            RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
-        }
-        else {
-            RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-                return console.warn(error);
-            });
-        }
-    },
-    printBill: function (text, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, true);
-            RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
-        }
-        else {
-            RNBLEPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
-                return console.warn(error);
-            });
-        }
-    },
+    // init: function () {
+    //     return new Promise(function (resolve, reject) {
+    //         return RNBLEPrinter.init(function () { return resolve(); }, function (error) { return reject(error); });
+    //     });
+    // },
+    // getDeviceList: function () {
+    //     return new Promise(function (resolve, reject) {
+    //         return RNBLEPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
+    //     });
+    // },
+    // connectPrinter: function (inner_mac_address) {
+    //     return new Promise(function (resolve, reject) {
+    //         return RNBLEPrinter.connectPrinter(inner_mac_address, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
+    //     });
+    // },
+    // closeConn: function () {
+    //     return new Promise(function (resolve) {
+    //         RNBLEPrinter.closeConn();
+    //         resolve();
+    //     });
+    // },
+    // printText: function (text, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     if (Platform.OS === "ios") {
+    //         var processedText = textPreprocessingIOS(text, false);
+    //         RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
+    //     }
+    //     else {
+    //         RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
+    //             return console.warn(error);
+    //         });
+    //     }
+    // },
+    // printBill: function (text, opts) {
+    //     if (opts === void 0) { opts = {}; }
+    //     if (Platform.OS === "ios") {
+    //         var processedText = textPreprocessingIOS(text, true);
+    //         RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
+    //     }
+    //     else {
+    //         RNBLEPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
+    //             return console.warn(error);
+    //         });
+    //     }
+    // },
     // printImage: function (imgUrl, opts) {
     //     if (opts === void 0) { opts = {}; }
     //     if (Platform.OS === "ios") {

@@ -20,22 +20,22 @@ export interface INetPrinter {
     port: number;
 }
 export declare const USBPrinter: {
-    init: () => Promise<void>;
-    getDeviceList: () => Promise<IUSBPrinter[]>;
-    connectPrinter: (vendorId: string, productId: string) => Promise<IUSBPrinter>;
-    closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
-    printBill: (text: string, opts?: PrinterOptions) => void;
+    // init: () => Promise<void>;
+    // getDeviceList: () => Promise<IUSBPrinter[]>;
+    // connectPrinter: (vendorId: string, productId: string) => Promise<IUSBPrinter>;
+    // closeConn: () => Promise<void>;
+    // printText: (text: string, opts?: PrinterOptions) => void;
+    // printBill: (text: string, opts?: PrinterOptions) => void;
     // printImage: (imgUrl: string, opts?: {}) => void;
     // printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const BLEPrinter: {
-    init: () => Promise<void>;
-    getDeviceList: () => Promise<IBLEPrinter[]>;
-    connectPrinter: (inner_mac_address: string) => Promise<IBLEPrinter>;
-    closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
-    printBill: (text: string, opts?: PrinterOptions) => void;
+    // init: () => Promise<void>;
+    // getDeviceList: () => Promise<IBLEPrinter[]>;
+    // connectPrinter: (inner_mac_address: string) => Promise<IBLEPrinter>;
+    // closeConn: () => Promise<void>;
+    // printText: (text: string, opts?: PrinterOptions) => void;
+    // printBill: (text: string, opts?: PrinterOptions) => void;void
     // printImage: (imgUrl: string, opts?: {}) => void;
     // printQrCode: (qrCode: string, opts?: {}) => void;
 };
