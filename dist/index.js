@@ -11,8 +11,8 @@ var __assign = (this && this.__assign) || function () {
 };
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 import * as EPToolkit from "./utils/EPToolkit";
-var RNUSBPrinter = NativeModules.RNUSBPrinter;
-var RNBLEPrinter = NativeModules.RNBLEPrinter;
+// var RNUSBPrinter = NativeModules.RNUSBPrinter;
+// var RNBLEPrinter = NativeModules.RNBLEPrinter;
 var RNNetPrinter = NativeModules.RNNetPrinter;
 var textTo64Buffer = function (text, opts) {
     var defaultOptions = {
