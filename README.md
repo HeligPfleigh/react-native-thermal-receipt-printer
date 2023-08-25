@@ -186,11 +186,11 @@ interface IBLEPrinter {
   }
 
   printTextTest = () => {
-    currentPrinter && USBPrinter.printText("<C>sample text</C>\n");
+    currentPrinter && BLEPrinter.printText("<C>sample text</C>\n");
   }
 
   printBillTest = () => {
-    currentPrinter && USBPrinter.printBill("<C>sample bill</C>");
+    currentPrinter && BLEPrinter.printBill("<C>sample bill</C>");
   }
 
   ...
