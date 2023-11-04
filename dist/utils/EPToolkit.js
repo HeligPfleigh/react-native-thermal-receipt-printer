@@ -62,6 +62,12 @@ export function exchange_text(text, options) {
     var bytes = new BufferHelper();
     bytes.concat(init_printer_bytes);
     bytes.concat(default_space_bytes);
+
+    // utf8 bytes
+    if(options.encoding ==='UTF8'){
+        bytes.concat(Buffer.from([0x1C, 0x26, 0x1C, 0x43, 0xFF]));
+    }
+
     var temp = "";
     for (var i = 0; i < text.length; i++) {
         var ch = text[i];
