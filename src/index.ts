@@ -190,10 +190,13 @@ export const BLEPrinter = {
     }
   },
 
-  // printImage: async (imagePath: string) => {
-  //   const tmp = await imageToBuffer(imagePath);
-  //   RNBLEPrinter.printRawData(tmp, (error: Error) => console.warn(error));
-  // },
+  printImage: async (base64: string) => {
+    RNBLEPrinter.printImageData(base64, (error: Error) => {
+      if (error) {
+        console.warn(error);
+      }
+    });
+  },
 };
 
 export const NetPrinter = {

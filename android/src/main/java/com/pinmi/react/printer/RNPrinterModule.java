@@ -35,7 +35,7 @@ public interface RNPrinterModule {
     public void printRawData(String base64Data, Callback errorCallback) ;
 
     @ReactMethod
-    public void printImageData(String imageUrl, Callback errorCallback) ;
+    public void printImageData(String base64ImageData, Callback errorCallback);
 
     @ReactMethod
     public void printQrCode(String qrCode, Callback errorCallback) ;
