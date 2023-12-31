@@ -89,7 +89,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     private static final String EVENT_SCANNER_RUNNING = "scannerRunning";
 
     private final static char ESC_CHAR = 0x1B;
-    private static byte[] SELECT_BIT_IMAGE_MODE = { 0x1B, 0x2A,16 };
+    private static byte[] SELECT_BIT_IMAGE_MODE = { 0x1B, 0x2A, 33 };
     private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 24 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
@@ -282,21 +282,19 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
             OutputStream printerOutputStream = socket.getOutputStream();
 
-            printerOutputStream.write(SET_LINE_SPACE_24);
-            printerOutputStream.write(CENTER_ALIGN);
+
 
             for (int y = 0; y < pixels.length; y += 24) {
-                printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
+
                 printerOutputStream.write(
                         new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
                 for (int x = 0; x < pixels[y].length; x++) {
                     printerOutputStream.write(recollectSlice(y, x, pixels));
                 }
 
-                printerOutputStream.write(LINE_FEED);
+               
             }
-            printerOutputStream.write(SET_LINE_SPACE_32);
-            printerOutputStream.write(LINE_FEED);
+           
 
             printerOutputStream.flush();
         } catch (IOException e) {
