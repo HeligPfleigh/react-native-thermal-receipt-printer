@@ -91,6 +91,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     private final static char ESC_CHAR = 0x1B;
     private static byte[] SELECT_BIT_IMAGE_MODE = { 0x1B, 0x2A, 33 };
     private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 24 };
+    private final static byte[] SET_LINE_SPACE_18 = new byte[] { ESC_CHAR, 0x33, 18 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
@@ -282,10 +283,10 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
             OutputStream printerOutputStream = socket.getOutputStream();
 
-            // printerOutputStream.write(SET_LINE_SPACE_24);
+            printerOutputStream.write(SET_LINE_SPACE_24);
             printerOutputStream.write(CENTER_ALIGN);
 
-            for (int y = 0; y < pixels.length; y += 24) {
+            for (int y = 0; y < pixels.length; y += 18) {
                 printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
                 printerOutputStream.write(
                         new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
@@ -293,10 +294,10 @@ public class BLEPrinterAdapter implements PrinterAdapter{
                     printerOutputStream.write(recollectSlice(y, x, pixels));
                 }
 
-                // printerOutputStream.write(LINE_FEED);
+                printerOutputStream.write(LINE_FEED);
             }
-            // printerOutputStream.write(SET_LINE_SPACE_32);
-            // printerOutputStream.write(LINE_FEED);
+            printerOutputStream.write(SET_LINE_SPACE_32);
+            printerOutputStream.write(LINE_FEED);
 
             printerOutputStream.flush();
         } catch (IOException e) {
@@ -336,7 +337,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
             OutputStream printerOutputStream = socket.getOutputStream();
 
-            printerOutputStream.write(SET_LINE_SPACE_24);
+            printerOutputStream.write(SET_LINE_SPACE_18);
             printerOutputStream.write(CENTER_ALIGN);
 
             for (int y = 0; y < pixels.length; y += 24) {
@@ -408,7 +409,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
     private byte[] recollectSlice(int y, int x, int[][] img) {
         byte[] slices = new byte[] { 0, 0, 0 };
-        for (int yy = y, i = 0; yy < y + 24 && i < 3; yy += 8, i++) {
+        for (int yy = y, i = 0; yy < y + 18 && i < 3; yy += 8, i++) {
             byte slice = 0;
             for (int b = 0; b < 8; b++) {
                 int yyy = yy + b;
