@@ -283,9 +283,8 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             OutputStream printerOutputStream = socket.getOutputStream();
 
 
-
             for (int y = 0; y < pixels.length; y += 24) {
-
+                printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
                 printerOutputStream.write(
                         new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
                 for (int x = 0; x < pixels[y].length; x++) {
@@ -294,7 +293,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
                
             }
-           
+          
 
             printerOutputStream.flush();
         } catch (IOException e) {
