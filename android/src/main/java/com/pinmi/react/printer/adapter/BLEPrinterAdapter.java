@@ -288,7 +288,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
                 printerOutputStream.write(
                         new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
                 for (int x = 0; x < pixels[y].length; x++) {
-                    printerOutputStream.write(recollectSlice(y, x, pixels));
+                    printerOutputStream.write(pixels);
                 }
 
                
