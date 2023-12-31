@@ -191,6 +191,7 @@ export const BLEPrinter = {
   },
 
   printImage: async (base64: string) => {
+    console.log("PRINTING");
     RNBLEPrinter.printImageData(base64, (error: Error) => {
       if (error) {
         console.warn(error);
