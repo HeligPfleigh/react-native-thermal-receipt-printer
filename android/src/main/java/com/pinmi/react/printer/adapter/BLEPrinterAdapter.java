@@ -89,7 +89,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     private static final String EVENT_SCANNER_RUNNING = "scannerRunning";
 
     private final static char ESC_CHAR = 0x1B;
-     public static byte[] SELECT_BIT_IMAGE_MODE = {0x1B, 0x2A, 33, -128, 0};
+    private static byte[] SELECT_BIT_IMAGE_MODE = { 0x1B, 0x2A,16 };
     private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 24 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
