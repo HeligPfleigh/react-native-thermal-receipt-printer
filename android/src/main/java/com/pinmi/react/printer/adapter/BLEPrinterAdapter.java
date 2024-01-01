@@ -280,14 +280,11 @@ public class BLEPrinterAdapter implements PrinterAdapter{
                 errorCallback.invoke("image not found or decoding error");
                 return;
             }
-
-            byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 384, 0, 0);
+            byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 300, 0, 0);
             OutputStream printerOutputStream = socket.getOutputStream();
+            printerOutputStream.write(CENTER_ALIGN);
             printerOutputStream.write(ESC_CHAR);
-            printerOutputStream.write(LINE_FEED);
             printerOutputStream.write(data);
-            printerOutputStream.write(SET_LINE_SPACE_32);
-            printerOutputStream.write(LINE_FEED);
         }catch (IOException e){
             e.printStackTrace();
         }
