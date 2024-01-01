@@ -266,26 +266,28 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
     @Override
     public void printImageData(String base64Str, Callback errorCallback) {
-        // Decode the base64 string to a bitmap
-        final Bitmap bitmapImage = getBitmapFromBase64(base64Str);
-        byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 0, 0, 0);
-        final BluetoothSocket socket = this.mBluetoothSocket;
-
-        if (bitmapImage == null) {
-            errorCallback.invoke("image not found or decoding error");
-            return;
-        }
-        if(this.mBluetoothSocket == null){
-            errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
-            return;
-        }
+        try{
+            if(this.mBluetoothSocket == null){
+                errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
+                return;
+            }
+            final Bitmap bitmapImage = getBitmapFromBase64(base64Str);
+            final BluetoothSocket socket = this.mBluetoothSocket;
+            if (bitmapImage == null) {
+                errorCallback.invoke("image not found or decoding error");
+                return;
+            }
+            byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 0, 0, 0);
             OutputStream printerOutputStream = socket.getOutputStream();
-
             printerOutputStream.write(ESC_CHAR);
             printerOutputStream.write(LINE_FEED);
             printerOutputStream.write(data);
             printerOutputStream.write(SET_LINE_SPACE_32);
             printerOutputStream.write(LINE_FEED);
+        }catch (IOException e) {
+            // Log exception
+            return null;
+        }
 
 
     }
