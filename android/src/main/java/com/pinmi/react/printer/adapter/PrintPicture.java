@@ -46,8 +46,8 @@ public class PrintPicture {
      */
     public static byte[] POS_PrintBMP(Bitmap mBitmap, int nWidth, int nMode, int leftPadding) {
         // 先转黑白，再调用函数缩放位图
-        int width =250;
-        int height = 250;
+        int width =200;
+        int height = 160;
         Bitmap rszBitmap = mBitmap;
         rszBitmap = Bitmap.createScaledBitmap(mBitmap, width, height, true);
         Bitmap grayBitmap = toGrayscale(rszBitmap);
