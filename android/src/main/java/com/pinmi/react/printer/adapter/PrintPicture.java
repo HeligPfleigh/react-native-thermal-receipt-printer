@@ -47,13 +47,12 @@ public class PrintPicture {
     public static byte[] POS_PrintBMP(Bitmap mBitmap, int nWidth, int nMode, int leftPadding) {
         // 先转黑白，再调用函数缩放位图
         int width =200;
-        int height = 200;
+        int height = 160;
         Bitmap rszBitmap = mBitmap;
         rszBitmap = Bitmap.createScaledBitmap(mBitmap, width, height, true);
         Bitmap grayBitmap = toGrayscale(rszBitmap);
         byte[] dithered = thresholdToBWPic(grayBitmap);
         byte[] data = eachLinePixToCmd(dithered, width, nMode);
-
         return data;
     }
 
@@ -177,7 +176,6 @@ public class PrintPicture {
         byte[] data = new byte[nHeight * (8 + nBytesPerLine)];
         boolean offset = false;
         int k = 0;
-
         for (int i = 0; i < nHeight; ++i) {
             int var10 = i * (8 + nBytesPerLine);
             //GS v 0 m xL xH yL yH d1....dk 打印光栅位图
