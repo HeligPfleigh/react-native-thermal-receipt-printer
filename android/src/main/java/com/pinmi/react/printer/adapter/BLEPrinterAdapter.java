@@ -284,9 +284,9 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             printerOutputStream.write(data);
             printerOutputStream.write(SET_LINE_SPACE_32);
             printerOutputStream.write(LINE_FEED);
-        }catch (IOException e) {
-            // Log exception
-            return null;
+        }catch (IOException e){
+            Log.e(LOG_TAG, "failed to print data" + rawData);
+            e.printStackTrace();
         }
 
 
