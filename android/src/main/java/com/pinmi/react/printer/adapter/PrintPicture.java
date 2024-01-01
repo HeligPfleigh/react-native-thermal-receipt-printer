@@ -3,6 +3,7 @@ package com.pinmi.react.printer.adapter;
 import android.graphics.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 
 public class PrintPicture {
     private static int[] p0 = new int[]{0, 128};
@@ -48,9 +49,9 @@ public class PrintPicture {
         // 先转黑白，再调用函数缩放位图
         int width =200;
         int height = 160;
-        Bitmap rszBitmap = mBitmap;
-        rszBitmap = Bitmap.createScaledBitmap(mBitmap, width, height, true);
-        Bitmap grayBitmap = toGrayscale(rszBitmap);
+//        Bitmap rszBitmap = mBitmap;
+//        rszBitmap = Bitmap.createScaledBitmap(mBitmap, width, height, true);
+        Bitmap grayBitmap = toGrayscale(mBitmap);
         byte[] dithered = thresholdToBWPic(grayBitmap);
         byte[] data = eachLinePixToCmd(dithered, width, nMode);
         return data;
