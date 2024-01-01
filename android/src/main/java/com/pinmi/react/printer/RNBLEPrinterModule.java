@@ -13,6 +13,7 @@ import com.pinmi.react.printer.adapter.BLEPrinterDeviceId;
 import com.pinmi.react.printer.adapter.PrinterAdapter;
 import com.pinmi.react.printer.adapter.PrinterDevice;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
