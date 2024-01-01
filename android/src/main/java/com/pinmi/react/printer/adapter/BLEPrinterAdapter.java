@@ -286,10 +286,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             printerOutputStream.write(SET_LINE_SPACE_32);
             printerOutputStream.write(LINE_FEED);
 
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "failed to print data");
-            e.printStackTrace();
-        }
+
     }
 
     private Bitmap getBitmapFromBase64(String base64Str) {
