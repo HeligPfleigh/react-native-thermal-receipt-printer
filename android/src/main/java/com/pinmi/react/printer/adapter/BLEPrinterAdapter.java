@@ -1,5 +1,6 @@
 package com.pinmi.react.printer.adapter;
 
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -47,6 +48,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.pinmi.react.printer.R;
+import com.pinmi.react.printer.adapter.PrintPicture;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -90,7 +92,8 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
     private final static char ESC_CHAR = 0x1B;
     private static byte[] SELECT_BIT_IMAGE_MODE = { 0x1B, 0x2A, 33 };
-    private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 24 };
+    private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 26 };
+    private final static byte[] SET_LINE_SPACE_12 = new byte[] { ESC_CHAR, 0x33, 16 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
@@ -265,6 +268,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     public void printImageData(String base64Str, Callback errorCallback) {
         // Decode the base64 string to a bitmap
         final Bitmap bitmapImage = getBitmapFromBase64(base64Str);
+        byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 0, 0, 0);
 
         if (bitmapImage == null) {
             errorCallback.invoke("image not found or decoding error");
@@ -274,27 +278,14 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
             return;
         }
-
-        final BluetoothSocket socket = this.mBluetoothSocket;
-
-        try {
-            int[][] pixels = getPixelsSlow(bitmapImage);
-
             OutputStream printerOutputStream = socket.getOutputStream();
 
+            printerOutputStream.write(new byte[] {ESC, '@' });
+            printerOutputStream.write(new byte[] {NL});
+            printerOutputStream.write(data);
+            printerOutputStream.write(SET_LINE_SPACE_32);
+            printerOutputStream.write(LINE_FEED);
 
-            for (int y = 0; y < pixels.length; y += 24) {
-                printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
-
-                for (int x = 0; x < pixels[y].length; x++) {
-                    printerOutputStream.write(recollectSlice(y, x, pixels));
-                }
-
-               
-            }
-          
-
-            printerOutputStream.flush();
         } catch (IOException e) {
             Log.e(LOG_TAG, "failed to print data");
             e.printStackTrace();
