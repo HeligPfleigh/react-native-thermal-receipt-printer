@@ -47,8 +47,8 @@ public class PrintPicture {
     public static byte[] POS_PrintBMP(Bitmap mBitmap, int nWidth, int nMode, int leftPadding) {
         // 先转黑白，再调用函数缩放位图
         int width = ((nWidth + 7) / 8) * 8;
-        int height = mBitmap.getHeight() * width / mBitmap.getWidth();
-        height = ((height + 7) / 8) * 8;
+        int height = 300 / mBitmap.getWidth();
+//        height = ((height + 7) / 8) * 8;
         int left = leftPadding == 0 ? 0 : ((leftPadding+7) / 8) * 8;
 
         Bitmap rszBitmap = mBitmap;
