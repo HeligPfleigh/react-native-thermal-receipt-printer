@@ -96,6 +96,10 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     private final static byte[] SET_LINE_SPACE_12 = new byte[] { ESC_CHAR, 0x33, 16 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
+    private final static byte[] ESC = new byte[] {  0x1B };
+
+    private final static byte[] NL = new byte[] { 0x0A };
+
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
 
 
@@ -269,6 +273,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
         // Decode the base64 string to a bitmap
         final Bitmap bitmapImage = getBitmapFromBase64(base64Str);
         byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 0, 0, 0);
+        final BluetoothSocket socket = this.mBluetoothSocket;
 
         if (bitmapImage == null) {
             errorCallback.invoke("image not found or decoding error");
