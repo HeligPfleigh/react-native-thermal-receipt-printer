@@ -46,24 +46,13 @@ public class PrintPicture {
      */
     public static byte[] POS_PrintBMP(Bitmap mBitmap, int nWidth, int nMode, int leftPadding) {
         // 先转黑白，再调用函数缩放位图
-        int width = ((nWidth + 7) / 8) * 8;
-        int height = 300 / mBitmap.getWidth();
-//        height = ((height + 7) / 8) * 8;
-        int left = leftPadding == 0 ? 0 : ((leftPadding+7) / 8) * 8;
-
+        int width =200;
+        int height = 200;
         Bitmap rszBitmap = mBitmap;
-        if (mBitmap.getWidth() != width) {
-            rszBitmap = Bitmap.createScaledBitmap(mBitmap, width, height, true);
-        }
-
+        rszBitmap = Bitmap.createScaledBitmap(mBitmap, width, height, true);
         Bitmap grayBitmap = toGrayscale(rszBitmap);
-        if(left>0){
-            grayBitmap = pad(grayBitmap,left,0);
-        }
-
         byte[] dithered = thresholdToBWPic(grayBitmap);
-
-        byte[] data = eachLinePixToCmd(dithered, width+left, nMode);
+        byte[] data = eachLinePixToCmd(dithered, width, nMode);
 
         return data;
     }
