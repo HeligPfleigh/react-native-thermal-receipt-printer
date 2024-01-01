@@ -96,10 +96,6 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     private final static byte[] SET_LINE_SPACE_12 = new byte[] { ESC_CHAR, 0x33, 16 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
-    private final static byte[] ESC = new byte[] {  0x1B };
-
-    private final static byte[] NL = new byte[] { 0x0A };
-
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
 
 
@@ -285,8 +281,8 @@ public class BLEPrinterAdapter implements PrinterAdapter{
         }
             OutputStream printerOutputStream = socket.getOutputStream();
 
-            printerOutputStream.write(new byte[] {ESC, '@' });
-            printerOutputStream.write(new byte[] {NL});
+            printerOutputStream.write(ESC_CHAR);
+            printerOutputStream.write(LINE_FEED);
             printerOutputStream.write(data);
             printerOutputStream.write(SET_LINE_SPACE_32);
             printerOutputStream.write(LINE_FEED);
