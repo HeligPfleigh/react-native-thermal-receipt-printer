@@ -282,14 +282,9 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             }
             byte[] data = PrintPicture.POS_PrintBMP(bitmapImage, 300, 0, 0);
             OutputStream printerOutputStream = socket.getOutputStream();
-            printerOutputStream.write(SET_LINE_SPACE_24);
             printerOutputStream.write(CENTER_ALIGN);
             printerOutputStream.write(ESC_CHAR);
-            printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
             printerOutputStream.write(data);
-            printerOutputStream.write(SET_LINE_SPACE_32);
-            printerOutputStream.write(LINE_FEED);
-            printerOutputStream.flush();
         }catch (IOException e){
             e.printStackTrace();
         }
