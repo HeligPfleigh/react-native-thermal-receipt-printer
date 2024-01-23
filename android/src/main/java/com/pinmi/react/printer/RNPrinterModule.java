@@ -40,6 +40,7 @@ public interface RNPrinterModule {
     @ReactMethod
     public void printQrCode(String qrCode, Callback errorCallback) ;
 
+
      @ReactMethod
     public void printLabel(String qrCode, Callback errorCallback) ;
 
