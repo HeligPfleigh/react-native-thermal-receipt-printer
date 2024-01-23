@@ -154,16 +154,16 @@ public class USBPrinterAdapter implements PrinterAdapter {
         }
 
         USBPrinterDeviceId usbPrinterDeviceId = (USBPrinterDeviceId) printerDeviceId;
-        if (mUsbDevice != null && mUsbDevice.getVendorId() == usbPrinterDeviceId.getVendorId() && mUsbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
-            Log.i(LOG_TAG, "already selected device, do not need repeat to connect");
-            if(!mUSBManager.hasPermission(mUsbDevice)){
-                closeConnectionIfExists();
-                mUSBManager.requestPermission(mUsbDevice, mPermissionIndent);
-            }
-            successCallback.invoke(new USBPrinterDevice(mUsbDevice).toRNWritableMap());
-            return;
-        }
-        closeConnectionIfExists();
+        // if (mUsbDevice != null && mUsbDevice.getVendorId() == usbPrinterDeviceId.getVendorId() && mUsbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
+        //     Log.i(LOG_TAG, "already selected device, do not need repeat to connect");
+        //     if(!mUSBManager.hasPermission(mUsbDevice)){
+        //         closeConnectionIfExists();
+        //         mUSBManager.requestPermission(mUsbDevice, mPermissionIndent);
+        //     }
+        //     successCallback.invoke(new USBPrinterDevice(mUsbDevice).toRNWritableMap());
+        //     return;
+        // }
+        // closeConnectionIfExists();
         if (mUSBManager.getDeviceList().size() == 0) {
             errorCallback.invoke("Device list is empty, can not choose device");
             return;
