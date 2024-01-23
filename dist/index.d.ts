@@ -25,6 +25,7 @@ export declare const USBPrinter: {
     connectPrinter: (vendorId: string, productId: string) => Promise<IUSBPrinter>;
     closeConn: () => Promise<void>;
     printText: (text: string, opts?: PrinterOptions) => void;
+    printLabel: (text: string) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
 };
 export declare const BLEPrinter: {
