@@ -25,6 +25,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.facebook.common.internal.ImmutableMap;
+import com.example.tscdll.TSCUSBActivity;
+
 
 
 import com.facebook.react.bridge.Callback;
@@ -52,6 +54,8 @@ public class USBPrinterAdapter implements PrinterAdapter {
 
     private String LOG_TAG = "RNUSBPrinter";
     private Context mContext;
+
+    private TSCUSBActivity bt_api;
     private UsbManager mUSBManager;
     private PendingIntent mPermissionIndent;
     private UsbDevice mUsbDevice;
@@ -180,6 +184,20 @@ public class USBPrinterAdapter implements PrinterAdapter {
 
         errorCallback.invoke("can not find specified device");
         return;
+    }
+
+    private boolean printLabel(String testData) {
+        Log.d(LOG_TAG, "PrintLabel Called");
+        if(mUsbManager.hasPermission(device))
+        {
+            TscUSB.openport(mUsbManager,device);
+            TscUSB.sendcommand("SIZE 3,1\r\n");
+            TscUSB.sendcommand("GAP 0,0\r\n");
+            TscUSB.sendcommand("CLS\r\n");
+            TscUSB.sendcommand("TEXT 100,100,\"3\",0,1,1,\"123456\"\r\n");
+            TscUSB.sendcommand("PRINT 1\r\n");
+            TscUSB.closeport(3000);
+        }
     }
 
     private boolean openConnection() {

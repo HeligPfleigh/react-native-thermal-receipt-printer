@@ -122,6 +122,11 @@ export const USBPrinter = {
       console.warn(error)
     ),
 
+   printLabel: (text: string): void =>
+      RNUSBPrinter.printLabel(text, (error: Error) =>
+        console.warn(error)
+      ),
+
   printBill: (text: string, opts: PrinterOptions = {}): void =>
     RNUSBPrinter.printRawData(billTo64Buffer(text, opts), (error: Error) =>
       console.warn(error)
