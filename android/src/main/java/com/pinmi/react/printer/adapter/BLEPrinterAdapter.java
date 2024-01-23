@@ -1,5 +1,6 @@
 package com.pinmi.react.printer.adapter;
 
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -47,6 +48,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.pinmi.react.printer.R;
+import com.pinmi.react.printer.adapter.PrintPicture;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -90,10 +92,14 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
     private final static char ESC_CHAR = 0x1B;
     private static byte[] SELECT_BIT_IMAGE_MODE = { 0x1B, 0x2A, 33 };
-    private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 24 };
+    private final static byte[] SET_LINE_SPACE_24 = new byte[] { ESC_CHAR, 0x33, 26 };
+    private final static byte[] SET_LINE_SPACE_12 = new byte[] { ESC_CHAR, 0x33, 16 };
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
+    public static final int WIDTH_58 = 384;
+    public static final int WIDTH_80 = 576;
+    private int deviceWidth = WIDTH_58;
 
 
 
@@ -262,53 +268,38 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     }
 
     @Override
-    public void printImageData(String imageUrl, Callback errorCallback) {
-
-        final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
-
-        if (bitmapImage == null) {
-            errorCallback.invoke("image not found");
-            return;
-        }
-        if(this.mBluetoothSocket == null){
-            errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
-            return;
-        }
-
-        final BluetoothSocket socket = this.mBluetoothSocket;
-
-        try {
-            int[][] pixels = getPixelsSlow(bitmapImage);
-
-            OutputStream printerOutputStream = socket.getOutputStream();
-
-            printerOutputStream.write(SET_LINE_SPACE_24);
-            printerOutputStream.write(CENTER_ALIGN);
-
-            for (int y = 0; y < pixels.length; y += 24) {
-                // Like I said before, when done sending data,
-                // the printer will resume to normal text printing
-                printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
-                // Set nL and nH based on the width of the image
-                printerOutputStream.write(
-                        new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
-                for (int x = 0; x < pixels[y].length; x++) {
-                    // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
-                    printerOutputStream.write(recollectSlice(y, x, pixels));
-                }
-
-                // Do a line feed, if not the printing will resume on the same line
-                printerOutputStream.write(LINE_FEED);
+    public void printImageData(String base64Str, Callback errorCallback) {
+        try{
+            if(this.mBluetoothSocket == null){
+                errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
+                return;
             }
-            printerOutputStream.write(SET_LINE_SPACE_32);
-            printerOutputStream.write(LINE_FEED);
-
-            printerOutputStream.flush();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "failed to print data");
+            final Bitmap bitmapImage = getBitmapFromBase64(base64Str);
+            final BluetoothSocket socket = this.mBluetoothSocket;
+            if (bitmapImage == null) {
+                errorCallback.invoke("image not found or decoding error");
+                return;
+            }
+            byte[] data = PrintPicture.POS_PrintBMP(resizeTheImageForPrinting(bitmapImage), 300, 0, 0);
+            OutputStream printerOutputStream = socket.getOutputStream();
+            printerOutputStream.write(CENTER_ALIGN);
+            printerOutputStream.write(ESC_CHAR);
+            printerOutputStream.write(data);
+        }catch (IOException e){
             e.printStackTrace();
         }
 
+
+    }
+
+    private Bitmap getBitmapFromBase64(String base64Str) {
+        try {
+            byte[] decodedString = Base64.decode(base64Str, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, "Base64 decoding error", e);
+            return null;
+        }
     }
 
 

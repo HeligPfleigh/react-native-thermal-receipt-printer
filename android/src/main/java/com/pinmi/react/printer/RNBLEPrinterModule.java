@@ -13,6 +13,7 @@ import com.pinmi.react.printer.adapter.BLEPrinterDeviceId;
 import com.pinmi.react.printer.adapter.PrinterAdapter;
 import com.pinmi.react.printer.adapter.PrinterDevice;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,11 +68,13 @@ public class RNBLEPrinterModule extends ReactContextBaseJavaModule implements RN
     public void printRawData(String base64Data, Callback errorCallback){
         adapter.printRawData(base64Data, errorCallback);
     }
+
     @ReactMethod
     @Override
-    public void printImageData(String imageUrl, Callback errorCallback) {
-        adapter.printImageData(imageUrl, errorCallback);
+    public void printImageData(String base64ImageData, Callback errorCallback) {
+        adapter.printImageData(base64ImageData, errorCallback);
     }
+   
     @ReactMethod
     @Override
     public void printQrCode(String qrCode, Callback errorCallback) {
