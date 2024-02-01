@@ -153,11 +153,11 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             errorCallback.invoke("No bluetooth adapter available");
             return;
         }
-        // if (!bluetoothAdapter.isEnabled()) {
-        //     errorCallback.invoke("bluetooth is not enabled");
-        //     return;
-        // }
-        // BLEPrinterDeviceId blePrinterDeviceId = (BLEPrinterDeviceId)printerDeviceId;
+         if (!bluetoothAdapter.isEnabled()) {
+             errorCallback.invoke("bluetooth is not enabled");
+             return;
+         }
+         BLEPrinterDeviceId blePrinterDeviceId = (BLEPrinterDeviceId)printerDeviceId;
         // if(this.mBluetoothDevice != null){
         //     if(this.mBluetoothDevice.getAddress().equals(blePrinterDeviceId.getInnerMacAddress()) && this.mBluetoothSocket != null){
         //         Log.v(LOG_TAG, "do not need to reconnect");
