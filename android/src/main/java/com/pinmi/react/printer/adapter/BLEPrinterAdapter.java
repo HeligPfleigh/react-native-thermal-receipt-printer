@@ -153,20 +153,20 @@ public class BLEPrinterAdapter implements PrinterAdapter{
             errorCallback.invoke("No bluetooth adapter available");
             return;
         }
-        if (!bluetoothAdapter.isEnabled()) {
-            errorCallback.invoke("bluetooth is not enabled");
-            return;
-        }
-        BLEPrinterDeviceId blePrinterDeviceId = (BLEPrinterDeviceId)printerDeviceId;
-        if(this.mBluetoothDevice != null){
-            if(this.mBluetoothDevice.getAddress().equals(blePrinterDeviceId.getInnerMacAddress()) && this.mBluetoothSocket != null){
-                Log.v(LOG_TAG, "do not need to reconnect");
-                successCallback.invoke(new BLEPrinterDevice(this.mBluetoothDevice).toRNWritableMap());
-                return;
-            }else{
-                closeConnectionIfExists();
-            }
-        }
+        // if (!bluetoothAdapter.isEnabled()) {
+        //     errorCallback.invoke("bluetooth is not enabled");
+        //     return;
+        // }
+        // BLEPrinterDeviceId blePrinterDeviceId = (BLEPrinterDeviceId)printerDeviceId;
+        // if(this.mBluetoothDevice != null){
+        //     if(this.mBluetoothDevice.getAddress().equals(blePrinterDeviceId.getInnerMacAddress()) && this.mBluetoothSocket != null){
+        //         Log.v(LOG_TAG, "do not need to reconnect");
+        //         successCallback.invoke(new BLEPrinterDevice(this.mBluetoothDevice).toRNWritableMap());
+        //         return;
+        //     }else{
+        //         closeConnectionIfExists();
+        //     }
+        // }
         Set<BluetoothDevice> pairedDevices = getBTAdapter().getBondedDevices();
 
         for (BluetoothDevice device : pairedDevices) {
@@ -230,6 +230,7 @@ public class BLEPrinterAdapter implements PrinterAdapter{
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(bytes, 0, bytes.length);
                     printerOutputStream.flush();
+                    closeConnectionIfExists();
                 }catch (IOException e){
                     Log.e(LOG_TAG, "failed to print data" + rawData);
                     e.printStackTrace();

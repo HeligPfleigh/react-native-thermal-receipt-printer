@@ -241,6 +241,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(bytes, 0, bytes.length);
                     printerOutputStream.flush();
+                    closeConnectionIfExists();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print data" + rawData);
                     e.printStackTrace();
