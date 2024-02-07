@@ -29,7 +29,8 @@ const d_start_bytes = Buffer.from([27, 33, 32, 28, 33, 4]);
 const d_end_bytes = Buffer.from([27, 33, 0, 28, 33, 0]);
 
 // const cut_bytes = Buffer.from([27, 105]);
-var cut_bytes = Buffer.from([29, 86, 0]);
+// var cut_bytes = Buffer.from([29, 86, 0]);
+const cut_bytes = Buffer.from([27, 109]);
 const beep_bytes = Buffer.from([27, 66, 3, 2]);
 const line_bytes = Buffer.from([10, 10, 10, 10, 10]);
 
