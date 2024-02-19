@@ -34,7 +34,8 @@ var billTo64Buffer = function (text, opts) {
     };
     var options = __assign(__assign({}, defaultOptions), opts);
     var buffer = EPToolkit.exchange_text(text, options);
-    return buffer.toString("base64");
+    // return buffer.toString("base64");
+    return buffer.toString("base64").replace("G0AcJhxD/xsy", ""); // Atpos printer sho
 };
 var textPreprocessingIOS = function (text) {
     var options = {
