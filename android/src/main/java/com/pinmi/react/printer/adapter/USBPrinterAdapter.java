@@ -67,6 +67,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
     private final static byte[] SET_LINE_SPACE_32 = new byte[] { ESC_CHAR, 0x33, 32 };
     private final static byte[] LINE_FEED = new byte[] { 0x0A };
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
+    private boolean deviceTurnedOff = false;
 
     private USBPrinterAdapter() {
     }
@@ -95,6 +96,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 if (mUsbDevice != null) {
                     Toast.makeText(context, "USB device has been turned off", Toast.LENGTH_LONG).show();
+                    deviceTurnedOff = true;
                     closeConnectionIfExists();
                 }
             } else if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(action) || UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
@@ -154,16 +156,15 @@ public class USBPrinterAdapter implements PrinterAdapter {
         }
 
         USBPrinterDeviceId usbPrinterDeviceId = (USBPrinterDeviceId) printerDeviceId;
-        // if (mUsbDevice != null && mUsbDevice.getVendorId() == usbPrinterDeviceId.getVendorId() && mUsbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
-        //     Log.i(LOG_TAG, "already selected device, do not need repeat to connect");
-        //     if(!mUSBManager.hasPermission(mUsbDevice)){
-        //         closeConnectionIfExists();
-        //         mUSBManager.requestPermission(mUsbDevice, mPermissionIndent);
-        //     }
-        //     successCallback.invoke(new USBPrinterDevice(mUsbDevice).toRNWritableMap());
-        //     return;
-        // }
-        // closeConnectionIfExists();
+        if (deviceTurnedOff != true  && mUsbDevice != null && mUsbDevice.getVendorId() == usbPrinterDeviceId.getVendorId() && mUsbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
+            Log.i(LOG_TAG, "already selected device, do not need repeat to connect");
+            if(!mUSBManager.hasPermission(mUsbDevice)){
+                closeConnectionIfExists();
+                mUSBManager.requestPermission(mUsbDevice, mPermissionIndent);
+            }
+            successCallback.invoke(new USBPrinterDevice(mUsbDevice).toRNWritableMap());
+            return;
+        }
         if (mUSBManager.getDeviceList().size() == 0) {
             errorCallback.invoke("Device list is empty, can not choose device");
             return;
@@ -174,6 +175,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
                 closeConnectionIfExists();
                 mUSBManager.requestPermission(usbDevice, mPermissionIndent);
                 successCallback.invoke(new USBPrinterDevice(usbDevice).toRNWritableMap());
+                deviceTurnedOff = false;
                 return;
             }
         }
