@@ -1,6 +1,5 @@
 package com.pinmi.react.printer;
 
-
 import android.hardware.usb.UsbDevice;
 
 import com.facebook.react.bridge.Arguments;
@@ -23,8 +22,6 @@ import java.util.List;
 
 public interface RNPrinterModule {
 
-
-
     public void init(Callback successCallback, Callback errorCallback);
 
     public void closeConn();
@@ -32,13 +29,13 @@ public interface RNPrinterModule {
     public void getDeviceList(Callback successCallback, Callback errorCallback);
 
     @ReactMethod
-    public void printRawData(String base64Data, Callback errorCallback) ;
+    public void printRawData(String base64Data, Boolean keepConnection, Callback successCallback,
+            Callback errorCallback);
 
     @ReactMethod
-    public void printImageData(String imageUrl, Callback errorCallback) ;
+    public void printImageData(String imageUrl, Callback errorCallback);
 
     @ReactMethod
-    public void printQrCode(String qrCode, Callback errorCallback) ;
+    public void printQrCode(String qrCode, Callback errorCallback);
 
 }
-
