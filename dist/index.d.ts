@@ -24,7 +24,7 @@ export declare const USBPrinter: {
     getDeviceList: () => Promise<IUSBPrinter[]>;
     connectPrinter: (vendorId: string, productId: string) => Promise<IUSBPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts: PrinterOptions | undefined, cb: (msg: String) => void) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
 };
 export declare const BLEPrinter: {
@@ -32,7 +32,7 @@ export declare const BLEPrinter: {
     getDeviceList: () => Promise<IBLEPrinter[]>;
     connectPrinter: (inner_mac_address: string) => Promise<IBLEPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts: PrinterOptions | undefined, cb: (msg: String) => void) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
 };
 export declare const NetPrinter: {
@@ -40,7 +40,7 @@ export declare const NetPrinter: {
     getDeviceList: () => Promise<INetPrinter[]>;
     connectPrinter: (host: string, port: number) => Promise<INetPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: {}) => void;
+    printText: (text: string, opts: {} | undefined, cb: (msg: String) => void) => void;
     printBill: (text: string, opts?: {}) => void;
 };
 export declare const NetPrinterEventEmitter: NativeEventEmitter;

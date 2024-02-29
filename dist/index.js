@@ -80,11 +80,11 @@ export var USBPrinter = {
             resolve();
         });
     },
-    printText: function (text, opts) {
+    printText: function (text, opts, cb) {
         if (opts === void 0) { opts = {}; }
-        return RNUSBPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-            return console.warn(error);
-        });
+        return RNUSBPrinter.printRawData(textTo64Buffer(text, opts), function (msg) {
+            cb && cb(msg);
+        }, function (error) { return console.warn(error); });
     },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
@@ -115,16 +115,16 @@ export var BLEPrinter = {
             resolve();
         });
     },
-    printText: function (text, opts) {
+    printText: function (text, opts, cb) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
             var processedText = textPreprocessingIOS(text);
             RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
-            RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-                return console.warn(error);
-            });
+            RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (msg) {
+                cb && cb(msg);
+            }, function (error) { return console.warn(error); });
         }
     },
     printBill: function (text, opts) {
@@ -162,16 +162,18 @@ export var NetPrinter = {
             resolve();
         });
     },
-    printText: function (text, opts) {
+    printText: function (text, opts, cb) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
             var processedText = textPreprocessingIOS(text);
-            RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
+            RNNetPrinter.printRawData(processedText.text, processedText.opts, function (msg) {
+                cb && cb(msg);
+            }, function (error) { return console.warn(error); });
         }
         else {
-            RNNetPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-                return console.warn(error);
-            });
+            RNNetPrinter.printRawData(textTo64Buffer(text, opts), function (msg) {
+                cb && cb(msg);
+            }, function (error) { return console.warn(error); });
         }
     },
     printBill: function (text, opts) {

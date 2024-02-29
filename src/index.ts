@@ -118,9 +118,17 @@ export const USBPrinter = {
       resolve();
     }),
 
-  printText: (text: string, opts: PrinterOptions = {}): void =>
-    RNUSBPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-      console.warn(error)
+  printText: (
+    text: string,
+    opts: PrinterOptions = {},
+    cb: (msg: String) => void
+  ): void =>
+    RNUSBPrinter.printRawData(
+      textTo64Buffer(text, opts),
+      (msg: String) => {
+        cb && cb(msg);
+      },
+      (error: Error) => console.warn(error)
     ),
 
   printBill: (text: string, opts: PrinterOptions = {}): void =>
@@ -161,7 +169,11 @@ export const BLEPrinter = {
       resolve();
     }),
 
-  printText: (text: string, opts: PrinterOptions = {}): void => {
+  printText: (
+    text: string,
+    opts: PrinterOptions = {},
+    cb: (msg: String) => void
+  ): void => {
     if (Platform.OS === "ios") {
       const processedText = textPreprocessingIOS(text);
       RNBLEPrinter.printRawData(
@@ -170,8 +182,12 @@ export const BLEPrinter = {
         (error: Error) => console.warn(error)
       );
     } else {
-      RNBLEPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-        console.warn(error)
+      RNBLEPrinter.printRawData(
+        textTo64Buffer(text, opts),
+        (msg: String) => {
+          cb && cb(msg);
+        },
+        (error: Error) => console.warn(error)
       );
     }
   },
@@ -230,17 +246,24 @@ export const NetPrinter = {
       resolve();
     }),
 
-  printText: (text: string, opts = {}): void => {
+  printText: (text: string, opts = {}, cb: (msg: String) => void): void => {
     if (Platform.OS === "ios") {
       const processedText = textPreprocessingIOS(text);
       RNNetPrinter.printRawData(
         processedText.text,
         processedText.opts,
+        (msg: String) => {
+          cb && cb(msg);
+        },
         (error: Error) => console.warn(error)
       );
     } else {
-      RNNetPrinter.printRawData(textTo64Buffer(text, opts), (error: Error) =>
-        console.warn(error)
+      RNNetPrinter.printRawData(
+        textTo64Buffer(text, opts),
+        (msg: String) => {
+          cb && cb(msg);
+        },
+        (error: Error) => console.warn(error)
       );
     }
   },
