@@ -264,7 +264,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 try {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     // Configuration label print
-                    String labelConfig = "SIZE 4,2\nGAP 0.12,0\n";
+                    String labelConfig = "SIZE 50 mm,30 mm\nGAP 0.12,0\n";
                     printerOutputStream.write(labelConfig.getBytes());
                     printerOutputStream.write(rawData.getBytes());
                     // Command print label
