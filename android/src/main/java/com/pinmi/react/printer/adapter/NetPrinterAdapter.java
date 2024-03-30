@@ -250,6 +250,36 @@ public class NetPrinterAdapter implements PrinterAdapter {
         }).start();
     }
 
+    @Override
+    public void printLabel(String rawData, Callback errorCallback) {
+        if (this.mSocket == null) {
+            errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
+            return;
+        }
+        final Socket socket = this.mSocket;
+        Log.v(LOG_TAG, "start to print label " + rawData);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OutputStream printerOutputStream = socket.getOutputStream();
+                    // Configuration label print
+                    String labelConfig = "SIZE 4,2\nGAP 0.12,0\n";
+                    printerOutputStream.write(labelConfig.getBytes());
+                    printerOutputStream.write(rawData.getBytes());
+                    // Command print label
+                    String printCommand = "PRINT 1\n";
+                    printerOutputStream.write(printCommand.getBytes());
+                    String endCommand = "END\n";
+                    printerOutputStream.write(endCommand.getBytes());
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "failed to print label" + rawData);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);

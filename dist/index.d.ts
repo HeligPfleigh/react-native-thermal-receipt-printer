@@ -48,6 +48,7 @@ export declare const NetPrinter: {
     printBill: (text: string, opts?: {}) => void;
     printImage: (imgUrl: string, opts?: {}) => void;
     printImageBase64: (Base64: string, opts?: {}) => void;
+    printLabel: (rawLabel: string, opts?: {}) => void;
     // printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinterEventEmitter: NativeEventEmitter;

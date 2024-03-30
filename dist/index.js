@@ -271,6 +271,28 @@ export var NetPrinter = {
             );
         }
     },
+    printLabel: function (rawLabel, opts) {
+        var _a, _b;
+        if (opts === void 0) {
+            opts = {};
+        }
+        if (Platform.OS === "android") {
+            RNNetPrinter.printLabel(
+                rawLabel,
+                (_a = opts === null || opts === void 0 ? void 0 : opts.imageWidth) !==
+                null && _a !== void 0
+                    ? _a
+                    : 0,
+                (_b = opts === null || opts === void 0 ? void 0 : opts.imageHeight) !==
+                null && _b !== void 0
+                    ? _b
+                    : 0,
+                function (error) {
+                    return console.warn(error);
+                }
+            );
+        }
+    },
     // printQrCode: function (qrCode, opts) {
     //     if (opts === void 0) { opts = {}; }
     //     if (Platform.OS === "ios") {

@@ -239,8 +239,10 @@ public class BLEPrinterAdapter implements PrinterAdapter{
         }).start();
     }
 
+    @Override
+    public void printLabel(String rawBase64Data, Callback errorCallback) {
 
-    
+    }
 
     public static Bitmap getBitmapFromURL(String src) {
         try {

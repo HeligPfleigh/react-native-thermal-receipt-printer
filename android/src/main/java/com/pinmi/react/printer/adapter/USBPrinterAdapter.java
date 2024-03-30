@@ -310,6 +310,11 @@ public class USBPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
+    public void printLabel(String rawBase64Data, Callback errorCallback) {
+
+    }
+
+    @Override
     public void printImageBase64(final Bitmap bitmapImage, int imageWidth, int imageHeight, Callback errorCallback) {}
 
     @Override
