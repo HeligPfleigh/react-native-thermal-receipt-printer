@@ -11,8 +11,8 @@ var __assign = (this && this.__assign) || function () {
 };
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 import * as EPToolkit from "./utils/EPToolkit";
-// var RNUSBPrinter = NativeModules.RNUSBPrinter;
-// var RNBLEPrinter = NativeModules.RNBLEPrinter;
+var RNUSBPrinter = NativeModules.RNUSBPrinter;
+// var RNBLEPrinter = NativeModules.RNBLEPrint;
 var RNNetPrinter = NativeModules.RNNetPrinter;
 var textTo64Buffer = function (text, opts) {
     var defaultOptions = {
@@ -58,45 +58,45 @@ var textPreprocessingIOS = function (text, isCut) {
 //   return buffer.toString("base64");
 // };
 export var USBPrinter = {
-    // init: function () {
-    //     return new Promise(function (resolve, reject) {
-    //         return RNUSBPrinter.init(function () { return resolve(); }, function (error) { return reject(error); });
-    //     });
-    // },
-    // getDeviceList: function () {
-    //     return new Promise(function (resolve, reject) {
-    //         return RNUSBPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
-    //     });
-    // },
-    // connectPrinter: function (vendorId, productId) {
-    //     return new Promise(function (resolve, reject) {
-    //         return RNUSBPrinter.connectPrinter(vendorId, productId, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
-    //     });
-    // },
-    // closeConn: function () {
-    //     return new Promise(function (resolve) {
-    //         RNUSBPrinter.closeConn();
-    //         resolve();
-    //     });
-    // },
-    // printText: function (text, opts) {
-    //     if (opts === void 0) { opts = {}; }
-    //     return RNUSBPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-    //         return console.warn(error);
-    //     });
-    // },
-    // printBill: function (text, opts) {
-    //     if (opts === void 0) { opts = {}; }
-    //     return RNUSBPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
-    //         return console.warn(error);
-    //     });
-    // },
-    // printImage: function (imgUrl, opts) {
-    //     if (opts === void 0) { opts = {}; }
-    //     return RNUSBPrinter.printImageData(imgUrl, function (error) {
-    //         return console.warn(error);
-    //     });
-    // },
+    init: function () {
+        return new Promise(function (resolve, reject) {
+            return RNUSBPrinter.init(function () { return resolve(); }, function (error) { return reject(error); });
+        });
+    },
+    getDeviceList: function () {
+        return new Promise(function (resolve, reject) {
+            return RNUSBPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
+        });
+    },
+    connectPrinter: function (vendorId, productId) {
+        return new Promise(function (resolve, reject) {
+            return RNUSBPrinter.connectPrinter(vendorId, productId, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
+        });
+    },
+    closeConn: function () {
+        return new Promise(function (resolve) {
+            RNUSBPrinter.closeConn();
+            resolve();
+        });
+    },
+    printText: function (text, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
+            return console.warn(error);
+        });
+    },
+    printBill: function (text, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
+            return console.warn(error);
+        });
+    },
+    printImage: function (imgUrl, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printImageData(imgUrl, function (error) {
+            return console.warn(error);
+        });
+    },
     // printQrCode: function (qrCode, opts) {
     //     if (opts === void 0) { opts = {}; }
     //     return RNUSBPrinter.printQrCode(qrCode, function (error) {
