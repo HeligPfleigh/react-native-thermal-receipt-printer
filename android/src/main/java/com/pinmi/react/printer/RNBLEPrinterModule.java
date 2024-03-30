@@ -71,7 +71,7 @@ public class RNBLEPrinterModule extends ReactContextBaseJavaModule implements RN
     @ReactMethod
     @Override
     public void printLabel(String rawData, Callback errorCallback) {
-        adapter.printRawData(base64Data, errorCallback);
+        adapter.printRawData(rawData, errorCallback);
     }
 
     @ReactMethod
