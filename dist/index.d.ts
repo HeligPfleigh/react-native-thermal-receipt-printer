@@ -5,6 +5,49 @@ export interface PrinterOptions {
     tailingLine?: boolean;
     encoding?: string;
 }
+
+export interface PrintLabelOptions {
+    width: number;
+    height: number;
+    gap?: number;
+    reference?: number[];
+    sound?: number;
+    text?: [
+        {
+            text: string;
+            x: number;
+            y: number;
+        },
+    ];
+    qrcode?: [
+        {
+            x: 20;
+            y: 96;
+            width: 3;
+            code: string;
+        },
+    ];
+    barcode?: [
+        {
+            x: number;
+            y: number;
+            type: string;
+            height: number;
+            readable: number;
+            code: string;
+        },
+    ];
+    image?: [
+        {
+            x: number;
+            y: number;
+            mode: number;
+            width: number;
+            image: string;
+        },
+    ];
+}
+
 export interface IUSBPrinter {
     device_name: string;
     vendor_id: string;
@@ -49,6 +92,7 @@ export declare const NetPrinter: {
     printImage: (imgUrl: string, opts?: {}) => void;
     printImageBase64: (Base64: string, opts?: {}) => void;
     printLabel: (rawLabel: string, opts?: {}) => void;
+    printLabelOptions: (options: PrintLabelOptions) => void;
     // printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinterEventEmitter: NativeEventEmitter;

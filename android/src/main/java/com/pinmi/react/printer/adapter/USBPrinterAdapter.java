@@ -315,6 +315,11 @@ public class USBPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
+
+    }
+
+    @Override
     public void printImageBase64(final Bitmap bitmapImage, int imageWidth, int imageHeight, Callback errorCallback) {}
 
     @Override

@@ -244,6 +244,11 @@ public class BLEPrinterAdapter implements PrinterAdapter{
 
     }
 
+    @Override
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
+
+    }
+
     public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);

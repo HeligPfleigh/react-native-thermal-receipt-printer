@@ -37,6 +37,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import android.graphics.BitmapFactory;
 
@@ -253,7 +255,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     @Override
     public void printLabel(String rawData, Callback errorCallback) {
         if (this.mSocket == null) {
-            errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
+            errorCallback.invoke("network connection is not built, may be you forgot to connectPrinter");
             return;
         }
         final Socket socket = this.mSocket;
@@ -275,6 +277,79 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     printerOutputStream.flush();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print label" + rawData);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
+        if (this.mSocket == null) {
+            errorCallback.invoke("network connection is not built, may be you forgot to connectPrinter");
+            return;
+        }
+        final Socket socket = this.mSocket;
+        Log.v(LOG_TAG, "start to print label ");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int width = options.getInt("width");
+                    int height = options.getInt("height");
+                    int gap = options.hasKey("gap") ? options.getInt("gap") : 0;
+
+                    ReadableArray texts = options.hasKey("text")? options.getArray("text"):null;
+                    ReadableArray qrCodes = options.hasKey("qrcode")? options.getArray("qrcode"):null;
+                    ReadableArray barCodes = options.hasKey("barcode")? options.getArray("barcode"):null;
+                    ReadableArray images = options.hasKey("image")? options.getArray("image"):null;
+
+                    TscCommand tsc = new TscCommand();
+                    tsc.addSize(width,height);
+                    tsc.addGap(gap);
+                    tsc.addCls();
+
+                    // Add text to label
+                    for (int i = 0;texts!=null&& i < texts.size(); i++) {
+                        ReadableMap text = texts.getMap(i);
+                        String t = text.getString("text");
+                        int x = text.getInt("x");
+                        int y = text.getInt("y");
+                        TscCommand.FONTTYPE fonttype = this.findFontType(text.getString("fonttype"));
+                        TscCommand.ROTATION rotation = this.findRotation(text.getInt("rotation"));
+                        TscCommand.FONTMUL xscal = this.findFontMul(text.getInt("xscal"));
+                        TscCommand.FONTMUL yscal = this.findFontMul(text.getInt("xscal"));
+                        boolean bold = text.hasKey("bold") && text.getBoolean("bold");
+
+                        try {
+                            byte[] temp = t.getBytes("UTF-8");
+                            String temStr = new String(temp, "UTF-8");
+                            t = new String(temStr.getBytes("GB2312"), "GB2312");//打印的文字
+                        } catch (Exception e) {
+                            promise.reject("INVALID_TEXT", e);
+                            return;
+                        }
+
+                        tsc.addText(x, y, fonttype, rotation, xscal, yscal, t);
+
+                        if(bold){
+                            tsc.addText(x+1, y, fonttype, rotation, xscal, yscal, t);
+                            tsc.addText(x, y+1, fonttype, rotation, xscal, yscal, t);
+                        }
+                    }
+
+                    tsc.addPrint(1, 1);
+                    Vector<Byte> bytes = tsc.getCommand();
+                    byte[] tosend = new byte[bytes.size()];
+                    for(int i=0;i<bytes.size();i++){
+                        tosend[i]= bytes.get(i);
+                    }
+
+                    OutputStream printerOutputStream = socket.getOutputStream();
+                    printerOutputStream.write(tosend);
+                    printerOutputStream.flush();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "failed to print label");
                     e.printStackTrace();
                 }
             }

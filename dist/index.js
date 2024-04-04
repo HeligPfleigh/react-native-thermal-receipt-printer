@@ -279,6 +279,14 @@ export var NetPrinter = {
             );
         }
     },
+    printLabelOptions: function (options) {
+        if (Platform.OS === "android") {
+            RNNetPrinter.printLabelOptions(options, function (error) {
+                    return console.warn(error);
+                }
+            );
+        }
+    },
     // printQrCode: function (qrCode, opts) {
     //     if (opts === void 0) { opts = {}; }
     //     if (Platform.OS === "ios") {

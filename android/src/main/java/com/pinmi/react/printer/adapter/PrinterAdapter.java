@@ -29,6 +29,8 @@ public interface PrinterAdapter {
 
     public void printLabel(String rawData, Callback errorCallback);
 
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback);
+
     public void printImageData(String imageUrl, int imageWidth, int imageHeight, Callback errorCallback);
 
     public void printImageBase64(Bitmap imageUrl, int imageWidth, int imageHeight, Callback errorCallback);
