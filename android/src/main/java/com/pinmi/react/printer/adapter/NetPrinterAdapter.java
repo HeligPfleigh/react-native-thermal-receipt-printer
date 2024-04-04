@@ -613,4 +613,55 @@ public class NetPrinterAdapter implements PrinterAdapter {
         return resized;
     }
 
+    private TscCommand.BARCODETYPE findBarcodeType(String type) {
+        TscCommand.BARCODETYPE barcodeType = TscCommand.BARCODETYPE.CODE128;
+        for (TscCommand.BARCODETYPE t : TscCommand.BARCODETYPE.values()) {
+            if ((""+t.getValue()).equalsIgnoreCase(type)) {
+                barcodeType = t;
+                break;
+            }
+        }
+        return barcodeType;
+    }
+
+    private TscCommand.READABLE findReadable(int readable) {
+        TscCommand.READABLE ea = TscCommand.READABLE.EANBLE;
+        if (TscCommand.READABLE.DISABLE.getValue() == readable) {
+            ea = TscCommand.READABLE.DISABLE;
+        }
+        return ea;
+    }
+
+    private TscCommand.FONTMUL findFontMul(int scan) {
+        TscCommand.FONTMUL mul = TscCommand.FONTMUL.MUL_1;
+        for (TscCommand.FONTMUL m : TscCommand.FONTMUL.values()) {
+            if (m.getValue() == scan) {
+                mul = m;
+                break;
+            }
+        }
+        return mul;
+    }
+
+    private TscCommand.ROTATION findRotation(int rotation) {
+        TscCommand.ROTATION rt = TscCommand.ROTATION.ROTATION_0;
+        for (TscCommand.ROTATION r : TscCommand.ROTATION.values()) {
+            if (r.getValue() == rotation) {
+                rt = r;
+                break;
+            }
+        }
+        return rt;
+    }
+
+    private TscCommand.FONTTYPE findFontType(String fonttype) {
+        TscCommand.FONTTYPE ft = TscCommand.FONTTYPE.FONT_CHINESE;
+        for (TscCommand.FONTTYPE f : TscCommand.FONTTYPE.values()) {
+            if ((""+f.getValue()).equalsIgnoreCase(fonttype)) {
+                ft = f;
+                break;
+            }
+        }
+        return ft;
+    }
 }
