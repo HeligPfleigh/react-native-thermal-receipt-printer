@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReadableMap;
 import com.pinmi.react.printer.adapter.PrinterAdapter;
 import com.pinmi.react.printer.adapter.PrinterDevice;
 import com.pinmi.react.printer.adapter.PrinterDeviceId;
@@ -31,8 +32,11 @@ public interface RNPrinterModule {
     @ReactMethod
     public void printRawData(String base64Data, Callback errorCallback);
 
-     @ReactMethod
-     public void printLabel(String rawData, Callback errorCallback);
+    @ReactMethod
+    public void printLabel(String rawData, Callback errorCallback);
+
+    @ReactMethod
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback);
 
     @ReactMethod
     public void printImageData(String imageUrl, int imageWidth, int imageHeight, Callback errorCallback);

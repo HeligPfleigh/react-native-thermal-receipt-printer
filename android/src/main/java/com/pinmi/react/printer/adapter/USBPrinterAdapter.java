@@ -22,6 +22,7 @@ import android.graphics.BitmapFactory;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.ReadableMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

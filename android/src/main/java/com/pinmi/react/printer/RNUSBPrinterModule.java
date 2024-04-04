@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.pinmi.react.printer.adapter.PrinterAdapter;
 import com.pinmi.react.printer.adapter.PrinterDevice;
 import com.pinmi.react.printer.adapter.USBPrinterAdapter;
@@ -72,6 +73,12 @@ public class RNUSBPrinterModule extends ReactContextBaseJavaModule implements RN
     @Override
     public void printLabel(String rawData, Callback errorCallback) {
         adapter.printRawData(rawData, errorCallback);
+    }
+
+    @ReactMethod
+    @Override
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
+
     }
 
     @ReactMethod

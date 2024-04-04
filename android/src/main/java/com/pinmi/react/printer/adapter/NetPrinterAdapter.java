@@ -18,6 +18,8 @@ import com.google.zxing.common.BitMatrix;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -324,9 +326,9 @@ public class NetPrinterAdapter implements PrinterAdapter {
                         try {
                             byte[] temp = t.getBytes("UTF-8");
                             String temStr = new String(temp, "UTF-8");
-                            t = new String(temStr.getBytes("GB2312"), "GB2312");//打印的文字
+                            t = new String(temStr.getBytes("GB2312"), "GB2312");
                         } catch (Exception e) {
-                            promise.reject("INVALID_TEXT", e);
+                            Log.e(LOG_TAG, "Text error");
                             return;
                         }
 

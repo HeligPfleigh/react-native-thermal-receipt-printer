@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableMap;
 
 import java.io.IOException;
 import java.io.OutputStream;
