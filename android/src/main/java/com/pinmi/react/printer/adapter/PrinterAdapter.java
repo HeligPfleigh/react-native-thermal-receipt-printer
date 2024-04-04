@@ -6,6 +6,7 @@ import android.telecom.Call;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableMap;
 import android.graphics.Bitmap;
 
 import java.util.List;

@@ -317,10 +317,10 @@ public class NetPrinterAdapter implements PrinterAdapter {
                         String t = text.getString("text");
                         int x = text.getInt("x");
                         int y = text.getInt("y");
-                        TscCommand.FONTTYPE fonttype = this.findFontType(text.getString("fonttype"));
-                        TscCommand.ROTATION rotation = this.findRotation(text.getInt("rotation"));
-                        TscCommand.FONTMUL xscal = this.findFontMul(text.getInt("xscal"));
-                        TscCommand.FONTMUL yscal = this.findFontMul(text.getInt("xscal"));
+                        TscCommand.FONTTYPE fonttype = findFontType(text.getString("fonttype"));
+                        TscCommand.ROTATION rotation = findRotation(text.getInt("rotation"));
+                        TscCommand.FONTMUL xscal = findFontMul(text.getInt("xscal"));
+                        TscCommand.FONTMUL yscal = findFontMul(text.getInt("xscal"));
                         boolean bold = text.hasKey("bold") && text.getBoolean("bold");
 
                         try {
