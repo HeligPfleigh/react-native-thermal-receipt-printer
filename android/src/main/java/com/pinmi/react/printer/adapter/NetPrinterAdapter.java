@@ -340,6 +340,20 @@ public class NetPrinterAdapter implements PrinterAdapter {
                         }
                     }
 
+                    if(images != null){
+                        for (int i = 0; i < images.size(); i++) {
+                            ReadableMap img = images.getMap(i);
+                            int x = img.getInt("x");
+                            int y = img.getInt("y");
+                            int imgWidth = img.getInt("width");
+                            TscCommand.BITMAP_MODE mode = findBitmapMode(img.getInt("mode"));
+                            String image  = img.getString("image");
+                            byte[] decoded = Base64.decode(image, Base64.DEFAULT);
+                            Bitmap b = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                            tsc.addBitmap(x,y, mode, imgWidth,b);
+                        }
+                    }
+
                     tsc.addPrint(1, 1);
                     Vector<Byte> bytes = tsc.getCommand();
                     byte[] tosend = new byte[bytes.size()];
@@ -663,5 +677,16 @@ public class NetPrinterAdapter implements PrinterAdapter {
             }
         }
         return ft;
+    }
+
+    private TscCommand.BITMAP_MODE findBitmapMode(int mode){
+        TscCommand.BITMAP_MODE bm = TscCommand.BITMAP_MODE.OVERWRITE;
+        for (TscCommand.BITMAP_MODE m : TscCommand.BITMAP_MODE.values()) {
+            if (m.getValue() == mode) {
+                bm = m;
+                break;
+            }
+        }
+        return bm;
     }
 }

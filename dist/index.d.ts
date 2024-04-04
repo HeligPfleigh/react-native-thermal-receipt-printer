@@ -17,6 +17,9 @@ export interface PrintLabelOptions {
             text: string;
             x: number;
             y: number;
+            fonttype: string;
+            xscal?: number;
+            yscal?: number;
         },
     ];
     qrcode?: [
