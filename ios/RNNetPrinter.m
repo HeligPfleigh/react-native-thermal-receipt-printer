@@ -260,7 +260,7 @@ RCT_EXPORT_METHOD(printImageBase64:(NSString *)base64Qr
     CGImageRelease(newImageRef);
     UIGraphicsEndImageContext();
 
-    UIImage* paddedImage = [self addImagePadding:newImage paddingX:paddingX paddingY:0];
+    UIImage* paddedImage = [self addImagePadding:newImage paddingX:0 paddingY:0];
     return paddedImage;
 
 }
