@@ -12,25 +12,21 @@ export interface PrintLabelOptions {
     gap?: number;
     reference?: number[];
     sound?: number;
-    text?: [
-        {
-            text: string;
-            x: number;
-            y: number;
-            fonttype: string;
-            xscal?: number;
-            yscal?: number;
-            rotation?: number;
-        },
-    ];
-    qrcode?: [
-        {
-            x: 20;
-            y: 96;
-            width: 3;
-            code: string;
-        },
-    ];
+    text?: {
+        text: string;
+        x: number;
+        y: number;
+        fonttype: string;
+        xscal?: number;
+        yscal?: number;
+        rotation?: number;
+    }[];
+    qrcode?: {
+        x: 20;
+        y: 96;
+        width: 3;
+        code: string;
+    }[];
     barcode?: [
         {
             x: number;

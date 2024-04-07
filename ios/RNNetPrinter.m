@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "RNTscCommand.h"
 
 NSString *const EVENT_SCANNER_RESOLVED = @"scannerResolved";
 NSString *const EVENT_SCANNER_RUNNING = @"scannerRunning";
@@ -24,7 +25,7 @@ NSString *const EVENT_SCANNER_RUNNING = @"scannerRunning";
 @implementation PrivateIP
 
 - (NSString *)getIPAddress {
-    
+
     NSString *address = @"error";
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
@@ -40,18 +41,18 @@ NSString *const EVENT_SCANNER_RUNNING = @"scannerRunning";
                 if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
                     // Get NSString from C String
                     address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                    
+
                 }
-                
+
             }
-            
+
             temp_addr = temp_addr->ifa_next;
         }
     }
     // Free memory
     freeifaddrs(interfaces);
     return address;
-    
+
 }
 
 @end
@@ -84,7 +85,7 @@ RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self scan];
     });
-    
+
     successCallback(@[_printerArray]);
 }
 
@@ -95,10 +96,10 @@ RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
         is_scanning = YES;
         [self sendEventWithName:EVENT_SCANNER_RUNNING body:@YES];
         _printerArray = [NSMutableArray new];
-        
+
         NSString *prefix = [localIP substringToIndex:([localIP rangeOfString:@"." options:NSBackwardsSearch].location)];
         NSInteger suffix = [[localIP substringFromIndex:([localIP rangeOfString:@"." options:NSBackwardsSearch].location)] intValue];
-        
+
         for (NSInteger i = 1; i < 255; i++) {
             if (i == suffix) continue;
             NSString *testIP = [NSString stringWithFormat:@"%@.%ld", prefix, (long)i];
@@ -106,11 +107,11 @@ RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
             [[PrinterSDK defaultPrinterSDK] connectIP:testIP];
             [NSThread sleepForTimeInterval:0.5];
         }
-        
+
         NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:_printerArray];
         NSArray *arrayWithoutDuplicates = [orderedSet array];
         _printerArray = (NSMutableArray *)arrayWithoutDuplicates;
-        
+
         [self sendEventWithName:EVENT_SCANNER_RESOLVED body:_printerArray];
     } @catch (NSException *exception) {
         NSLog(@"No connection");
@@ -139,11 +140,11 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)host
     @try {
         BOOL isConnectSuccess = [[PrinterSDK defaultPrinterSDK] connectIP:host];
         !isConnectSuccess ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer %@", host] : nil;
-        
+
         connected_ip = host;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"NetPrinterConnected" object:nil];
         successCallback(@[[NSString stringWithFormat:@"Connecting to printer %@", host]]);
-        
+
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
@@ -155,12 +156,12 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
     @try {
         NSNumber* beepPtr = [options valueForKey:@"beep"];
         NSNumber* cutPtr = [options valueForKey:@"cut"];
-        
+
         BOOL beep = (BOOL)[beepPtr intValue];
         BOOL cut = (BOOL)[cutPtr intValue];
-        
+
         !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
-        
+
         // [[PrinterSDK defaultPrinterSDK] printTestPaper];
         [[PrinterSDK defaultPrinterSDK] printText:text];
         beep ? [[PrinterSDK defaultPrinterSDK] beep] : nil;
@@ -174,27 +175,27 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
                   printerOptions:(NSDictionary *)options
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
-        
+
         !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
         NSURL* url = [NSURL URLWithString:imgUrl];
         NSData* imageData = [NSData dataWithContentsOfURL:url];
-        
+
         NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
-        
+
         NSInteger printerWidth = 576;
-        
+
         if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
             printerWidth = 384;
         }
-        
+
         if(imageData != nil){
             UIImage* image = [UIImage imageWithData:imageData];
             UIImage* printImage = [self getPrintImage:image printerOptions:options];
-            
+
             [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
             [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
         }
-        
+
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
@@ -233,20 +234,20 @@ RCT_EXPORT_METHOD(printImageBase64:(NSString *)base64Qr
 
 -(UIImage *)getPrintImage:(UIImage *)image
            printerOptions:(NSDictionary *)options {
-    
+
     NSNumber* nWidth = [options valueForKey:@"imageWidth"];
     NSNumber* nPaddingX = [options valueForKey:@"paddingX"];
-    
+
     CGFloat newWidth = 150;
     if(nWidth != nil) {
         newWidth = [nWidth floatValue];
     }
-    
+
     CGFloat paddingX = 250;
     if(nPaddingX != nil) {
         paddingX = [nPaddingX floatValue];
     }
-    
+
     CGFloat newHeight = (newWidth / image.size.width) * image.size.height;
     CGSize newSize = CGSizeMake(newWidth, newHeight);
     UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0);
@@ -256,7 +257,7 @@ RCT_EXPORT_METHOD(printImageBase64:(NSString *)base64Qr
     CGContextDrawImage(context, CGRectMake(0, 0, newWidth, newHeight), immageRef);
     CGImageRef newImageRef = CGBitmapContextCreateImage(context);
     UIImage* newImage = [UIImage imageWithCGImage:newImageRef];
-    
+
     CGImageRelease(newImageRef);
     UIGraphicsEndImageContext();
 
@@ -271,7 +272,7 @@ RCT_EXPORT_METHOD(printImageBase64:(NSString *)base64Qr
 {
     CGFloat width = image.size.width + paddingX;
     CGFloat height = image.size.height + paddingY;
-    
+
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), true, 0.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
@@ -283,10 +284,10 @@ RCT_EXPORT_METHOD(printImageBase64:(NSString *)base64Qr
     CGContextDrawImage(context, CGRectMake(originX, originY, image.size.width, image.size.height), immageRef);
     CGImageRef newImageRef = CGBitmapContextCreateImage(context);
     UIImage* paddedImage = [UIImage imageWithCGImage:newImageRef];
-    
+
     CGImageRelease(newImageRef);
     UIGraphicsEndImageContext();
-    
+
     return paddedImage;
 }
 
@@ -304,24 +305,101 @@ RCT_EXPORT_METHOD(printQrCode:(NSString *)qrCode
                   printerOptions:(NSDictionary *)options
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
-        
+
         !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
-       
-        
+
+
         NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
-        
+
         NSInteger printerWidth = 576;
-        
+
         if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
             printerWidth = 384;
         }
-        
+
         if(qrCode != nil){
-            
+
             [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
             [[PrinterSDK defaultPrinterSDK] printQrCode:qrCode ];
         }
-        
+
+    } @catch (NSException *exception) {
+        errorCallback(@[exception.reason]);
+    }
+}
+
+RCT_EXPORT_METHOD(printLabelOptions:(NSDictionary *) options withResolve:(RCTPromiseResolveBlock)resolve
+                  fail:(RCTResponseSenderBlock)errorCallback)
+{
+     @try {
+        NSInteger width = [[options valueForKey:@"width"] integerValue];
+        NSInteger height = [[options valueForKey:@"height"] integerValue];
+        NSInteger gap = [[options valueForKey:@"gap"] integerValue];
+        NSString *tear = [options valueForKey:@"tear"];
+        if(!tear || ![@"ON" isEqualToString:tear]) tear = @"OFF";
+        NSArray *texts = [options objectForKey:@"text"];
+        NSArray *qrCodes = [options objectForKey:@"qrcode"];
+        NSArray *barCodes = [options objectForKey:@"barcode"];
+        NSArray *images = [options objectForKey:@"image"];
+        RNTscCommand *tsc = [[RNTscCommand alloc] init];
+        [tsc addSize:width height:height];
+        [tsc addGap:gap];
+        if(reference && [reference count] ==2){
+            NSInteger x = [[reference objectAtIndex:0] integerValue];
+            NSInteger y = [[reference objectAtIndex:1] integerValue];
+            NSLog(@"refernce  %ld y:%ld ",x,y);
+            [tsc addReference:x y:y];
+        }else{
+            [tsc addReference:0 y:0];
+        }
+        [tsc addTear:tear];
+        if(home && home == 1){
+          [tsc addBackFeed:16];
+          [tsc addHome];
+        }
+        [tsc addCls];
+
+        //Add Texts
+        for(int i=0; texts && i<[texts count];i++){
+            NSDictionary * text = [texts objectAtIndex:i];
+            NSString *t = [text valueForKey:@"text"];
+            NSInteger x = [[text valueForKey:@"x"] integerValue];
+            NSInteger y = [[text valueForKey:@"y"] integerValue];
+            NSString *fontType = [text valueForKey:@"fonttype"];
+            NSInteger rotation = [[text valueForKey:@"rotation"] integerValue];
+            NSInteger xscal = [[text valueForKey:@"xscal"] integerValue];
+            NSInteger yscal = [[text valueForKey:@"yscal"] integerValue];
+            Boolean bold = [[text valueForKey:@"bold"] boolValue];
+
+            [tsc addText:x y:y fontType:fontType rotation:rotation xscal:xscal yscal:yscal text:t];
+            if(bold){
+                [tsc addText:x+1 y:y fontType:fontType
+                    rotation:rotation xscal:xscal yscal:yscal  text:t];
+                [tsc addText:x y:y+1 fontType:fontType
+                    rotation:rotation xscal:xscal yscal:yscal  text:t];
+            }
+        }
+
+        //images
+        for (int i = 0; images && i < [images count]; i++) {
+            NSDictionary *img = [images objectAtIndex:i];
+            NSInteger x = [[img valueForKey:@"x"] integerValue];
+            NSInteger y = [[img valueForKey:@"y"] integerValue];
+            NSInteger imgWidth = [[img valueForKey:@"width"] integerValue];
+            NSInteger mode = [[img valueForKey:@"mode"] integerValue];
+            NSString *image  = [img valueForKey:@"image"];
+            NSData *imageData = [[NSData alloc] initWithBase64EncodedString:image options:0];
+            UIImage *uiImage = [[UIImage alloc] initWithData:imageData];
+            [tsc addBitmap:x y:y bitmapMode:mode width:imgWidth bitmap:uiImage];
+        }
+
+        [tsc addPrint:1 n:1];
+        _pendingReject = reject;
+        _pendingResolve = resolve;
+        toPrint = tsc.command;
+        !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
+
+        [[PrinterSDK defaultPrinterSDK] printText:toPrint];
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
