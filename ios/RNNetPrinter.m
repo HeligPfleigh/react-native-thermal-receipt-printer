@@ -344,19 +344,6 @@ RCT_EXPORT_METHOD(printLabelOptions:(NSDictionary *) options withResolve:(RCTPro
         RNTscCommand *tsc = [[RNTscCommand alloc] init];
         [tsc addSize:width height:height];
         [tsc addGap:gap];
-        if(reference && [reference count] ==2){
-            NSInteger x = [[reference objectAtIndex:0] integerValue];
-            NSInteger y = [[reference objectAtIndex:1] integerValue];
-            NSLog(@"refernce  %ld y:%ld ",x,y);
-            [tsc addReference:x y:y];
-        }else{
-            [tsc addReference:0 y:0];
-        }
-        [tsc addTear:tear];
-        if(home && home == 1){
-          [tsc addBackFeed:16];
-          [tsc addHome];
-        }
         [tsc addCls];
 
         //Add Texts
@@ -394,12 +381,8 @@ RCT_EXPORT_METHOD(printLabelOptions:(NSDictionary *) options withResolve:(RCTPro
         }
 
         [tsc addPrint:1 n:1];
-        _pendingReject = reject;
-        _pendingResolve = resolve;
-        toPrint = tsc.command;
+        NSData *toPrint = tsc.command;
         !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
-
-        [[PrinterSDK defaultPrinterSDK] printText:toPrint];
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
