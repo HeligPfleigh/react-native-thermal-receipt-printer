@@ -328,7 +328,7 @@ RCT_EXPORT_METHOD(printQrCode:(NSString *)qrCode
     }
 }
 
-RCT_EXPORT_METHOD(printLabelOptions:(NSDictionary *) options withResolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(printLabelOptions:(NSDictionary *) options
                   fail:(RCTResponseSenderBlock)errorCallback)
 {
      @try {
