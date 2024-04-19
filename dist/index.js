@@ -191,7 +191,7 @@ export var NetPrinter = {
             return RNNetPrinter.connectPrinter(host, port, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
         });
     },
-    connectPrinterStamp: function (host, port) {
+    connectStampPrinter: function (host, port) {
         return new Promise(function (resolve, reject) {
             return RNNetPrinter.connectStampPrinter(host, port, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
         });
