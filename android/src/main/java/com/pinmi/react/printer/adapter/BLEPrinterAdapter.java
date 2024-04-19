@@ -241,14 +241,13 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     }
 
     @Override
-    public void printLabel(String rawBase64Data, Callback errorCallback) {
-
-    }
+    public void printLabelOptions(final ReadableMap options, Callback errorCallback) {}
 
     @Override
-    public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
+    public void selectStampDevice(PrinterDeviceId printerDeviceId, Callback sucessCallback, Callback errorCallback) {}
 
-    }
+    @Override
+    public void closeConnectionStampIfExists() {}
 
     public static Bitmap getBitmapFromURL(String src) {
         try {

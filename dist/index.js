@@ -191,6 +191,11 @@ export var NetPrinter = {
             return RNNetPrinter.connectPrinter(host, port, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
         });
     },
+    connectPrinterStamp: function (host, port) {
+        return new Promise(function (resolve, reject) {
+            return RNNetPrinter.connectStampPrinter(host, port, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
+        });
+    },
     closeConn: function () {
         return new Promise(function (resolve) {
             RNNetPrinter.closeConn();
@@ -266,14 +271,6 @@ export var NetPrinter = {
                     ? _b
                     : 0,
                 function (error) {
-                    return console.warn(error);
-                }
-            );
-        }
-    },
-    printLabel: function (rawLabel, opts) {
-        if (Platform.OS === "android") {
-            RNNetPrinter.printLabel(rawLabel, function (error) {
                     return console.warn(error);
                 }
             );

@@ -55,6 +55,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     private ReactApplicationContext mContext;
     private String LOG_TAG = "RNNetPrinter";
     private NetPrinterDevice mNetDevice;
+    private NetPrinterDevice mStampNetDevice;
 
     // {TODO- support other ports later}
     // private int[] PRINTER_ON_PORTS = {515, 3396, 9100, 9303};
@@ -71,6 +72,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     private static byte[] CENTER_ALIGN = { 0x1B, 0X61, 0X31 };
 
     private Socket mSocket;
+    private  Socket mStampSocket;
 
     private boolean isRunning = false;
 
@@ -214,6 +216,35 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
+    public void selectStampDevice(PrinterDeviceId printerDeviceId, Callback sucessCallback, Callback errorCallback) {
+        NetPrinterDeviceId netPrinterDeviceId = (NetPrinterDeviceId) printerDeviceId;
+
+        if (this.mStampSocket != null && !this.mStampSocket.isClosed()
+                && mStampNetDevice.getPrinterDeviceId().equals(netPrinterDeviceId)) {
+            Log.i(LOG_TAG, "already selected device, do not need repeat to connect");
+            sucessCallback.invoke(this.mStampNetDevice.toRNWritableMap());
+            return;
+        }
+
+        try {
+            Socket socket = new Socket(netPrinterDeviceId.getHost(), netPrinterDeviceId.getPort());
+            if (socket.isConnected()) {
+                closeConnectionIfExists();
+                this.mStampSocket = socket;
+                this.mStampNetDevice = new NetPrinterDevice(netPrinterDeviceId.getHost(), netPrinterDeviceId.getPort());
+                sucessCallback.invoke(this.mStampNetDevice.toRNWritableMap());
+            } else {
+                errorCallback.invoke("unable to build connection with host: " + netPrinterDeviceId.getHost()
+                        + ", port: " + netPrinterDeviceId.getPort());
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            errorCallback.invoke("failed to connect printer: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void closeConnectionIfExists() {
         if (this.mSocket != null) {
             if (!this.mSocket.isClosed()) {
@@ -226,6 +257,21 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
             this.mSocket = null;
 
+        }
+    }
+
+    @Override
+    public void closeConnectionStampIfExists() {
+        if (this.mStampSocket != null) {
+            if (!this.mStampSocket.isClosed()) {
+                try {
+                    this.mStampSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            this.mSocket = null;
         }
     }
 
@@ -246,6 +292,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(bytes, 0, bytes.length);
                     printerOutputStream.flush();
+                    socket.close();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print data" + rawData);
                     e.printStackTrace();
@@ -255,43 +302,12 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
-    public void printLabel(String rawData, Callback errorCallback) {
-        if (this.mSocket == null) {
-            errorCallback.invoke("network connection is not built, may be you forgot to connectPrinter");
-            return;
-        }
-        final Socket socket = this.mSocket;
-        Log.v(LOG_TAG, "start to print label " + rawData);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    OutputStream printerOutputStream = socket.getOutputStream();
-                    // Configuration label print
-                    String labelConfig = "SIZE 50 mm,30 mm\nGAP 0.12,0\nCLS\n";
-                    printerOutputStream.write(labelConfig.getBytes());
-                    printerOutputStream.write(rawData.getBytes());
-                    // Command print label
-                    String printCommand = "PRINT 1\n";
-                    printerOutputStream.write(printCommand.getBytes());
-                    String endCommand = "END\n";
-                    printerOutputStream.write(endCommand.getBytes());
-                    printerOutputStream.flush();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "failed to print label" + rawData);
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    @Override
     public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
-        if (this.mSocket == null) {
+        if (this.mStampSocket == null) {
             errorCallback.invoke("network connection is not built, may be you forgot to connectPrinter");
             return;
         }
-        final Socket socket = this.mSocket;
+        final Socket socket = this.mStampSocket;
         Log.v(LOG_TAG, "start to print label ");
         new Thread(new Runnable() {
             @Override
@@ -364,6 +380,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(tosend);
                     printerOutputStream.flush();
+                    socket.close();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print label");
                     e.printStackTrace();
@@ -480,6 +497,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
             printerOutputStream.write(LINE_FEED);
 
             printerOutputStream.flush();
+            socket.close();
         } catch (IOException e) {
             Log.e(LOG_TAG, "failed to print data");
             e.printStackTrace();

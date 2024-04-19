@@ -86,6 +86,7 @@ export declare const NetPrinter: {
     init: () => Promise<void>;
     getDeviceList: () => Promise<INetPrinter[]>;
     connectPrinter: (host: string, port: number) => Promise<INetPrinter>;
+    connectStampPrinter: (host: string, port: number) => Promise<INetPrinter>;
     closeConn: () => Promise<void>;
     printText: (text: string, opts?: {}) => void;
     printBill: (text: string, opts?: {}) => void;

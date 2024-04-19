@@ -24,11 +24,12 @@ public interface PrinterAdapter {
 
     public void selectDevice(PrinterDeviceId printerDeviceId, Callback successCallback, Callback errorCallback);
 
+    public void selectStampDevice(PrinterDeviceId printerDeviceId, Callback successCallback, Callback errorCallback);
+
     public void closeConnectionIfExists();
+    public void closeConnectionStampIfExists();
 
     public void printRawData(String rawBase64Data, Callback errorCallback);
-
-    public void printLabel(String rawData, Callback errorCallback);
 
     public void printLabelOptions(final ReadableMap options, Callback errorCallback);
 

@@ -33,9 +33,6 @@ public interface RNPrinterModule {
     public void printRawData(String base64Data, Callback errorCallback);
 
     @ReactMethod
-    public void printLabel(String rawData, Callback errorCallback);
-
-    @ReactMethod
     public void printLabelOptions(final ReadableMap options, Callback errorCallback);
 
     @ReactMethod
