@@ -229,7 +229,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
         try {
             Socket socket = new Socket(netPrinterDeviceId.getHost(), netPrinterDeviceId.getPort());
             if (socket.isConnected()) {
-                closeConnectionIfExists();
+                closeConnectionStampIfExists();
                 this.mStampSocket = socket;
                 this.mStampNetDevice = new NetPrinterDevice(netPrinterDeviceId.getHost(), netPrinterDeviceId.getPort());
                 sucessCallback.invoke(this.mStampNetDevice.toRNWritableMap());
@@ -271,7 +271,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 }
             }
 
-            this.mSocket = null;
+            this.mStampSocket = null;
         }
     }
 
@@ -497,7 +497,6 @@ public class NetPrinterAdapter implements PrinterAdapter {
             printerOutputStream.write(LINE_FEED);
 
             printerOutputStream.flush();
-            socket.close();
         } catch (IOException e) {
             Log.e(LOG_TAG, "failed to print data");
             e.printStackTrace();
