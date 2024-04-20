@@ -292,7 +292,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(bytes, 0, bytes.length);
                     printerOutputStream.flush();
-                    socket.close();
+                    closeConnectionIfExists();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print data" + rawData);
                     e.printStackTrace();
@@ -380,7 +380,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(tosend);
                     printerOutputStream.flush();
-                    socket.close();
+                    closeConnectionStampIfExists();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print label");
                     e.printStackTrace();
