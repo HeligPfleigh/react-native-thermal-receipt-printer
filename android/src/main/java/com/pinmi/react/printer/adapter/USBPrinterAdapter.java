@@ -1,4 +1,5 @@
 package com.pinmi.react.printer.adapter;
+import static com.pinmi.react.printer.adapter.UtilsImage.getPixelsSlow;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -20,6 +21,8 @@ import android.graphics.BitmapFactory;
 
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReadableMap;
@@ -34,6 +37,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by xiesubin on 2017/9/20.
@@ -231,6 +235,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
                     byte[] bytes = Base64.decode(rawData, Base64.DEFAULT);
                     int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, bytes, bytes.length, 100000);
                     Log.i(LOG_TAG, "Return Status: b-->" + b);
+                    closeConnectionIfExists();
                 }
             }).start();
         } else {
@@ -273,7 +278,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
         boolean isConnected = openConnection();
         if (isConnected) {
             Log.v(LOG_TAG, "Connected to device");
-            int[][] pixels = getPixelsSlow(bitmapImage);
+            int[][] pixels = getPixelsSlow(bitmapImage, imageWidth, imageHeight);
 
             int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_24, SET_LINE_SPACE_24.length, 100000);
 
@@ -312,7 +317,87 @@ public class USBPrinterAdapter implements PrinterAdapter {
 
     @Override
     public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
+        Log.v(LOG_TAG, "start to print label");
+        boolean isConnected = openConnection();
+        if (isConnected) {
+            Log.v(LOG_TAG, "Connected to device");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int width = options.getInt("width");
+                    int height = options.getInt("height");
+                    int gap = options.hasKey("gap") ? options.getInt("gap") : 0;
 
+                    ReadableArray texts = options.hasKey("text")? options.getArray("text"):null;
+                    ReadableArray qrCodes = options.hasKey("qrcode")? options.getArray("qrcode"):null;
+                    ReadableArray barCodes = options.hasKey("barcode")? options.getArray("barcode"):null;
+                    ReadableArray images = options.hasKey("image")? options.getArray("image"):null;
+
+                    TscCommand tsc = new TscCommand();
+                    tsc.addSize(width,height);
+                    tsc.addGap(gap);
+                    tsc.addCls();
+
+                    // Add text to label
+                    for (int i = 0;texts!=null&& i < texts.size(); i++) {
+                        ReadableMap text = texts.getMap(i);
+                        String t = text.getString("text");
+                        int x = text.getInt("x");
+                        int y = text.getInt("y");
+                        TscCommand.FONTTYPE fonttype = findFontType(text.getString("fonttype"));
+                        TscCommand.ROTATION rotation = findRotation(text.getInt("rotation"));
+                        TscCommand.FONTMUL xscal = findFontMul(text.getInt("xscal"));
+                        TscCommand.FONTMUL yscal = findFontMul(text.getInt("xscal"));
+                        boolean bold = text.hasKey("bold") && text.getBoolean("bold");
+
+                        try {
+                            byte[] temp = t.getBytes("UTF-8");
+                            String temStr = new String(temp, "UTF-8");
+                            t = new String(temStr.getBytes("GB2312"), "GB2312");
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "Text error");
+                            return;
+                        }
+
+                        tsc.addText(x, y, fonttype, rotation, xscal, yscal, t);
+
+                        if(bold){
+                            tsc.addText(x+1, y, fonttype, rotation, xscal, yscal, t);
+                            tsc.addText(x, y+1, fonttype, rotation, xscal, yscal, t);
+                        }
+                    }
+
+                    if(images != null){
+                        for (int i = 0; i < images.size(); i++) {
+                            ReadableMap img = images.getMap(i);
+                            int x = img.getInt("x");
+                            int y = img.getInt("y");
+                            int imgWidth = img.getInt("width");
+                            TscCommand.BITMAP_MODE mode = findBitmapMode(img.getInt("mode"));
+                            String image  = img.getString("image");
+                            byte[] decoded = Base64.decode(image, Base64.DEFAULT);
+                            Bitmap b = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                            tsc.addBitmap(x,y, mode, imgWidth,b);
+                        }
+                    }
+
+                    tsc.addPrint(1, 1);
+                    Vector<Byte> bytes = tsc.getCommand();
+                    byte[] tosend = new byte[bytes.size()];
+                    for(int i=0;i<bytes.size();i++){
+                        tosend[i]= bytes.get(i);
+                    }
+
+                    int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, tosend, tosend.length, 100000);
+                    Log.i(LOG_TAG, "Return Status: b-->" + b);
+                    closeConnectionIfExists();
+                }
+            }).start();
+        } else {
+            String msg = "failed to connected to device";
+            Log.v(LOG_TAG, msg);
+            errorCallback.invoke(msg);
+        }
     }
 
     @Override
@@ -322,26 +407,56 @@ public class USBPrinterAdapter implements PrinterAdapter {
     public void closeConnectionStampIfExists() {}
 
     @Override
-    public void printImageBase64(final Bitmap bitmapImage, int imageWidth, int imageHeight, Callback errorCallback) {}
+    public void printImageBase64(final Bitmap bitmapImage, int imageWidth, int imageHeight, Callback errorCallback) {
+        if(bitmapImage == null) {
+            errorCallback.invoke("image not found");
+            return;
+        }
+
+        Log.v(LOG_TAG, "start to print image data " + bitmapImage);
+        boolean isConnected = openConnection();
+        if (isConnected) {
+            Log.v(LOG_TAG, "Connected to device");
+            int[][] pixels = getPixelsSlow(bitmapImage, imageWidth, imageHeight);
+
+            int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_24, SET_LINE_SPACE_24.length, 100000);
+
+            b = mUsbDeviceConnection.bulkTransfer(mEndPoint, CENTER_ALIGN, CENTER_ALIGN.length, 100000);
+
+            for (int y = 0; y < pixels.length; y += 24) {
+                // Like I said before, when done sending data,
+                // the printer will resume to normal text printing
+                mUsbDeviceConnection.bulkTransfer(mEndPoint, SELECT_BIT_IMAGE_MODE, SELECT_BIT_IMAGE_MODE.length, 100000);
+
+                // Set nL and nH based on the width of the image
+                byte[] row = new byte[]{(byte)(0x00ff & pixels[y].length)
+                        , (byte)((0xff00 & pixels[y].length) >> 8)};
+
+                mUsbDeviceConnection.bulkTransfer(mEndPoint, row, row.length, 100000);
+
+                for (int x = 0; x < pixels[y].length; x++) {
+                    // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
+                    byte[] slice = recollectSlice(y, x, pixels);
+                    mUsbDeviceConnection.bulkTransfer(mEndPoint, slice, slice.length, 100000);
+                }
+
+                // Do a line feed, if not the printing will resume on the same line
+                mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
+            }
+
+            mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_32, SET_LINE_SPACE_32.length, 100000);
+            mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
+        } else {
+            String msg = "failed to connected to device";
+            Log.v(LOG_TAG, msg);
+            errorCallback.invoke(msg);
+        }
+
+    }
 
     @Override
     public void printQrCode(String qrCode, Callback errorCallback) {
 
-    }
-
-    public static int[][] getPixelsSlow(Bitmap image2) {
-
-        Bitmap image = resizeTheImageForPrinting(image2);
-
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int[][] result = new int[height][width];
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                result[row][col] = getRGB(image, col, row);
-            }
-        }
-        return result;
     }
 
     private byte[] recollectSlice(int y, int x, int[][] img) {
@@ -408,5 +523,68 @@ public class USBPrinterAdapter implements PrinterAdapter {
         Bitmap resized = Bitmap.createScaledBitmap(image, (int) (image.getWidth() * decreaseSizeBy),
                 (int) (image.getHeight() * decreaseSizeBy), true);
         return resized;
+    }
+
+    private TscCommand.BARCODETYPE findBarcodeType(String type) {
+        TscCommand.BARCODETYPE barcodeType = TscCommand.BARCODETYPE.CODE128;
+        for (TscCommand.BARCODETYPE t : TscCommand.BARCODETYPE.values()) {
+            if ((""+t.getValue()).equalsIgnoreCase(type)) {
+                barcodeType = t;
+                break;
+            }
+        }
+        return barcodeType;
+    }
+
+    private TscCommand.READABLE findReadable(int readable) {
+        TscCommand.READABLE ea = TscCommand.READABLE.EANBLE;
+        if (TscCommand.READABLE.DISABLE.getValue() == readable) {
+            ea = TscCommand.READABLE.DISABLE;
+        }
+        return ea;
+    }
+
+    private TscCommand.FONTMUL findFontMul(int scan) {
+        TscCommand.FONTMUL mul = TscCommand.FONTMUL.MUL_1;
+        for (TscCommand.FONTMUL m : TscCommand.FONTMUL.values()) {
+            if (m.getValue() == scan) {
+                mul = m;
+                break;
+            }
+        }
+        return mul;
+    }
+
+    private TscCommand.ROTATION findRotation(int rotation) {
+        TscCommand.ROTATION rt = TscCommand.ROTATION.ROTATION_0;
+        for (TscCommand.ROTATION r : TscCommand.ROTATION.values()) {
+            if (r.getValue() == rotation) {
+                rt = r;
+                break;
+            }
+        }
+        return rt;
+    }
+
+    private TscCommand.FONTTYPE findFontType(String fonttype) {
+        TscCommand.FONTTYPE ft = TscCommand.FONTTYPE.FONT_CHINESE;
+        for (TscCommand.FONTTYPE f : TscCommand.FONTTYPE.values()) {
+            if ((""+f.getValue()).equalsIgnoreCase(fonttype)) {
+                ft = f;
+                break;
+            }
+        }
+        return ft;
+    }
+
+    private TscCommand.BITMAP_MODE findBitmapMode(int mode){
+        TscCommand.BITMAP_MODE bm = TscCommand.BITMAP_MODE.OVERWRITE;
+        for (TscCommand.BITMAP_MODE m : TscCommand.BITMAP_MODE.values()) {
+            if (m.getValue() == mode) {
+                bm = m;
+                break;
+            }
+        }
+        return bm;
     }
 }

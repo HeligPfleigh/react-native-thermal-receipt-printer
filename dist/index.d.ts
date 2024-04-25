@@ -71,6 +71,8 @@ export declare const USBPrinter: {
     printBill: (text: string, opts?: PrinterOptions) => void;
     printImage: (imgUrl: string, opts?: {}) => void;
     printQrCode: (qrCode: string, opts?: {}) => void;
+    printImageBase64: (Base64: string, opts?: {}) => void;
+    printLabelOptions: (options: PrintLabelOptions) => void;
 };
 export declare const BLEPrinter: {
     // init: () => Promise<void>;

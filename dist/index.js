@@ -97,6 +97,34 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printImageBase64: function (Base64, opts) {
+        var _a, _b;
+        if (opts === void 0) {
+            opts = {};
+        }
+        if (Platform.OS === "android") {
+            RNUSBPrinter.printImageBase64(
+                Base64,
+                (_a = opts === null || opts === void 0 ? void 0 : opts.imageWidth) !==
+                null && _a !== void 0
+                    ? _a
+                    : 0,
+                (_b = opts === null || opts === void 0 ? void 0 : opts.imageHeight) !==
+                null && _b !== void 0
+                    ? _b
+                    : 0,
+                function (error) {
+                    return console.warn(error);
+                }
+            );
+        }
+    },
+    printLabelOptions: function (options) {
+        RNNetPrinter.printLabelOptions(options, function (error) {
+                return console.warn(error);
+            }
+        );
+    },
     // printQrCode: function (qrCode, opts) {
     //     if (opts === void 0) { opts = {}; }
     //     return RNUSBPrinter.printQrCode(qrCode, function (error) {

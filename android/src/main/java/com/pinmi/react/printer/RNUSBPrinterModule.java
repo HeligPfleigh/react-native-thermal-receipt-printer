@@ -12,6 +12,10 @@ import com.pinmi.react.printer.adapter.PrinterDevice;
 import com.pinmi.react.printer.adapter.USBPrinterAdapter;
 import com.pinmi.react.printer.adapter.USBPrinterDeviceId;
 
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
+import android.util.Base64;
+
 import java.util.List;
 
 /**
@@ -72,13 +76,15 @@ public class RNUSBPrinterModule extends ReactContextBaseJavaModule implements RN
     @ReactMethod
     @Override
     public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
-
+        adapter.printLabelOptions(options, errorCallback);
     }
 
     @ReactMethod
     @Override
-    public void printImageBase64(String imageUrl, int imageWidth, int imageHeight, Callback errorCallback) {
-//             adapter.printImageData(imageUrl, 0, 0, errorCallback);
+    public void printImageBase64(String base64, int imageWidth, int imageHeight, Callback errorCallback) {
+        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        adapter.printImageBase64(decodedByte, imageWidth, imageHeight, errorCallback);
     }
 
     @ReactMethod
