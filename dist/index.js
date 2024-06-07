@@ -120,7 +120,7 @@ export var USBPrinter = {
         }
     },
     printLabelOptions: function (options) {
-        RNNetPrinter.printLabelOptions(options, function (error) {
+        RNUSBPrinter.printLabelOptions(options, function (error) {
                 return console.warn(error);
             }
         );
