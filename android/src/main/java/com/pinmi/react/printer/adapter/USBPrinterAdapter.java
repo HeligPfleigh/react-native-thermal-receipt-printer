@@ -219,7 +219,6 @@ public class USBPrinterAdapter implements PrinterAdapter {
                         return false;
                     }
                     if (usbDeviceConnection.claimInterface(usbInterface, true)) {
-
                         mStampEndPoint = ep;
                         mUsbStampInterface = usbInterface;
                         mUsbStampConnection = usbDeviceConnection;
@@ -481,7 +480,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
                         tosend[i]= bytes.get(i);
                     }
 
-                    int b = mUsbStampConnection.bulkTransfer(mEndPoint, tosend, tosend.length, 100000);
+                    int b = mUsbStampConnection.bulkTransfer(mStampEndPoint, tosend, tosend.length, 100000);
                     Log.i(LOG_TAG, "Return Status: b-->" + b);
                     closeConnectionStampIfExists();
                 }
