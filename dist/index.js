@@ -73,6 +73,11 @@ export var USBPrinter = {
             return RNUSBPrinter.connectPrinter(vendorId, productId, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
         });
     },
+    connectStampPrinter: function (vendorId, productId) {
+        return new Promise(function (resolve, reject) {
+            return RNUSBPrinter.connectStampPrinter(vendorId, productId, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
+        });
+    },
     closeConn: function () {
         return new Promise(function (resolve) {
             RNUSBPrinter.closeConn();

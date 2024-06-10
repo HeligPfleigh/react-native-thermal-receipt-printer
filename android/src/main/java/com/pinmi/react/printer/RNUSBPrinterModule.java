@@ -99,6 +99,11 @@ public class RNUSBPrinterModule extends ReactContextBaseJavaModule implements RN
         adapter.selectDevice(USBPrinterDeviceId.valueOf(vendorId, productId), successCallback, errorCallback);
     }
 
+    @ReactMethod
+    public void connectStampPrinter(Integer vendorId, Integer productId, Callback successCallback, Callback errorCallback) {
+        adapter.selectStampDevice(USBPrinterDeviceId.valueOf(vendorId, productId), successCallback, errorCallback);
+    }
+
     @Override
     public String getName() {
         return "RNUSBPrinter";

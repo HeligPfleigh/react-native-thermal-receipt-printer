@@ -55,6 +55,9 @@ public class USBPrinterAdapter implements PrinterAdapter {
     private UsbDeviceConnection mUsbDeviceConnection;
     private UsbInterface mUsbInterface;
     private UsbEndpoint mEndPoint;
+    private UsbDeviceConnection mUsbStampConnection;
+    private UsbInterface mUsbStampInterface;
+    private UsbEndpoint mStampEndPoint;
     private static final String ACTION_USB_PERMISSION = "com.pinmi.react.USBPrinter.USB_PERMISSION";
     private static final String EVENT_USB_DEVICE_ATTACHED = "usbAttached";
 
@@ -93,6 +96,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
                 if (mUsbDevice != null) {
                     Toast.makeText(context, "USB device has been turned off", Toast.LENGTH_LONG).show();
                     closeConnectionIfExists();
+                    closeConnectionStampIfExists();
                 }
             } else if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(action) || UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
                 synchronized (this) {
@@ -142,6 +146,95 @@ public class USBPrinterAdapter implements PrinterAdapter {
         return lists;
     }
 
+    @Override
+    public void selectStampDevice(PrinterDeviceId printerDeviceId, Callback successCallback, Callback errorCallback) {
+        if (mUSBManager == null) {
+            errorCallback.invoke("USBManager is not initialized before select device");
+            return;
+        }
+
+        USBPrinterDeviceId usbPrinterDeviceId = (USBPrinterDeviceId) printerDeviceId;
+        if (mUsbDevice != null && mUsbDevice.getVendorId() == usbPrinterDeviceId.getVendorId() && mUsbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
+            Log.i(LOG_TAG, "already selected device, do not need repeat to connect");
+            if(!mUSBManager.hasPermission(mUsbDevice)){
+                closeConnectionStampIfExists();
+                mUSBManager.requestPermission(mUsbDevice, mPermissionIndent);
+            }
+            successCallback.invoke(new USBPrinterDevice(mUsbDevice).toRNWritableMap());
+            return;
+        }
+        closeConnectionStampIfExists();
+        if (mUSBManager.getDeviceList().size() == 0) {
+            errorCallback.invoke("Device list is empty, can not choose device");
+            return;
+        }
+        for (UsbDevice usbDevice : mUSBManager.getDeviceList().values()) {
+            if (usbDevice.getVendorId() == usbPrinterDeviceId.getVendorId() && usbDevice.getProductId() == usbPrinterDeviceId.getProductId()) {
+                Log.v(LOG_TAG, "request for device: vendor_id: " + usbPrinterDeviceId.getVendorId() + ", product_id: " + usbPrinterDeviceId.getProductId());
+                closeConnectionStampIfExists();
+                mUSBManager.requestPermission(usbDevice, mPermissionIndent);
+                successCallback.invoke(new USBPrinterDevice(usbDevice).toRNWritableMap());
+                return;
+            }
+        }
+
+        errorCallback.invoke("can not find specified device");
+        return;
+    }
+
+    @Override
+    public void closeConnectionStampIfExists() {
+        if (mUsbStampConnection != null) {
+            mUsbStampConnection.releaseInterface(mUsbStampInterface);
+            mUsbStampConnection.close();
+            mUsbStampInterface = null;
+            mStampEndPoint = null;
+            mUsbStampConnection = null;
+        }
+    }
+
+    private boolean openStampConnection() {
+        if (mUsbDevice == null) {
+            Log.e(LOG_TAG, "USB Deivce is not initialized");
+            return false;
+        }
+        if (mUSBManager == null) {
+            Log.e(LOG_TAG, "USB Manager is not initialized");
+            return false;
+        }
+
+        if (mUsbStampConnection != null) {
+            Log.i(LOG_TAG, "USB Connection already connected");
+            return true;
+        }
+
+        UsbInterface usbInterface = mUsbDevice.getInterface(0);
+        for (int i = 0; i < usbInterface.getEndpointCount(); i++) {
+            final UsbEndpoint ep = usbInterface.getEndpoint(i);
+            if (ep.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK) {
+                if (ep.getDirection() == UsbConstants.USB_DIR_OUT) {
+                    UsbDeviceConnection usbDeviceConnection = mUSBManager.openDevice(mUsbDevice);
+                    if (usbDeviceConnection == null) {
+                        Log.e(LOG_TAG, "failed to open USB Connection");
+                        return false;
+                    }
+                    if (usbDeviceConnection.claimInterface(usbInterface, true)) {
+
+                        mStampEndPoint = ep;
+                        mUsbStampInterface = usbInterface;
+                        mUsbStampConnection = usbDeviceConnection;
+                        Log.i(LOG_TAG, "Device connected");
+                        return true;
+                    } else {
+                        usbDeviceConnection.close();
+                        Log.e(LOG_TAG, "failed to claim usb connection");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public void selectDevice(PrinterDeviceId printerDeviceId, Callback successCallback, Callback errorCallback) {
@@ -318,7 +411,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
     @Override
     public void printLabelOptions(final ReadableMap options, Callback errorCallback) {
         Log.v(LOG_TAG, "start to print label");
-        boolean isConnected = openConnection();
+        boolean isConnected = openStampConnection();
         if (isConnected) {
             Log.v(LOG_TAG, "Connected to device");
             new Thread(new Runnable() {
@@ -388,9 +481,9 @@ public class USBPrinterAdapter implements PrinterAdapter {
                         tosend[i]= bytes.get(i);
                     }
 
-                    int b = mUsbDeviceConnection.bulkTransfer(mEndPoint, tosend, tosend.length, 100000);
+                    int b = mUsbStampConnection.bulkTransfer(mEndPoint, tosend, tosend.length, 100000);
                     Log.i(LOG_TAG, "Return Status: b-->" + b);
-                    closeConnectionIfExists();
+                    closeConnectionStampIfExists();
                 }
             }).start();
         } else {
@@ -399,12 +492,6 @@ public class USBPrinterAdapter implements PrinterAdapter {
             errorCallback.invoke(msg);
         }
     }
-
-    @Override
-    public void selectStampDevice(PrinterDeviceId printerDeviceId, Callback sucessCallback, Callback errorCallback) {}
-
-    @Override
-    public void closeConnectionStampIfExists() {}
 
     @Override
     public void printImageBase64(final Bitmap bitmapImage, int imageWidth, int imageHeight, Callback errorCallback) {
