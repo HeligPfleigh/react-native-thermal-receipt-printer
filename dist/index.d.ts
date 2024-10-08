@@ -24,30 +24,24 @@ export declare const USBPrinter: {
     getDeviceList: () => Promise<IUSBPrinter[]>;
     connectPrinter: (vendorId: string, productId: string) => Promise<IUSBPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts: PrinterOptions | undefined, cb: (msg: String) => void) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
-    printImage: (imgUrl: string, opts?: {}) => void;
-    printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const BLEPrinter: {
     init: () => Promise<void>;
     getDeviceList: () => Promise<IBLEPrinter[]>;
     connectPrinter: (inner_mac_address: string) => Promise<IBLEPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts: PrinterOptions | undefined, cb: (msg: String) => void) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
-    printImage: (imgUrl: string, opts?: {}) => void;
-    printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinter: {
     init: () => Promise<void>;
     getDeviceList: () => Promise<INetPrinter[]>;
     connectPrinter: (host: string, port: number) => Promise<INetPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: {}) => void;
+    printText: (text: string, opts: {} | undefined, cb: (msg: String) => void) => void;
     printBill: (text: string, opts?: {}) => void;
-    printImage: (imgUrl: string, opts?: {}) => void;
-    printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinterEventEmitter: NativeEventEmitter;
 export declare enum RN_THERMAL_RECEIPT_PRINTER_EVENTS {

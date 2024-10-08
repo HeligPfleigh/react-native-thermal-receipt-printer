@@ -225,7 +225,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
-    public void printRawData(String rawBase64Data, Callback errorCallback) {
+    public void printRawData(String rawBase64Data, Boolean keepConnection, Callback successCallback,
+            Callback errorCallback) {
         if (this.mSocket == null) {
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
             return;
@@ -241,6 +242,12 @@ public class NetPrinterAdapter implements PrinterAdapter {
                     OutputStream printerOutputStream = socket.getOutputStream();
                     printerOutputStream.write(bytes, 0, bytes.length);
                     printerOutputStream.flush();
+                    Log.e(LOG_TAG, Boolean.toString(keepConnection));
+                    if (keepConnection != true) {
+                        closeConnectionIfExists();
+                        Log.e(LOG_TAG, "Connection  Closed");
+                    }
+                    successCallback.invoke("Print SuccessFully");
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "failed to print data" + rawData);
                     e.printStackTrace();
